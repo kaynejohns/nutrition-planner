@@ -11,20 +11,20 @@ const Card = ({ children, className = "" }) => (
 );
 const SectionTitle = ({ title, subtitle }) => (
   <div className="mb-3">
-    <h2 className="text-lg font-semibold tracking-tight text-slate-900 dark:text-slate-100">{title}</h2>
-    {subtitle && <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">{subtitle}</p>}
+    <h2 className="text-2xl md:text-3xl font-bold tracking-tight text-emerald-700 dark:text-emerald-300 drop-shadow">{title}</h2>
+    {subtitle && <p className="text-base md:text-lg text-sky-700 dark:text-sky-300 mt-1">{subtitle}</p>}
   </div>
 );
 const Label = ({ children }) => (
-  <label className="text-[11px] font-semibold text-slate-600 dark:text-slate-300 uppercase tracking-wide">{children}</label>
+  <label className="text-xs md:text-base font-semibold text-slate-600 dark:text-slate-300 uppercase tracking-wide">{children}</label>
 );
 // slider + number input aligned in one row
 const NumberInput = ({ value, onChange, min = 0, max = 9999, step = 1, suffix = "", ...props }) => (
-  <div className="flex items-center gap-3 w-full">
-    <input type="range" value={value} min={min} max={max} step={step} onChange={(e)=>onChange(Number(e.target.value))} className="flex-1 accent-emerald-600" {...props}/>
-    <div className="flex items-center gap-1 w-28">
-      <input type="number" value={value} onChange={(e)=>onChange(Number(e.target.value))} className="w-full border dark:border-slate-700 bg-white dark:bg-slate-900 rounded-lg px-2 py-1 text-slate-800 dark:text-slate-100"/>
-      {suffix && <span className="text-sm text-slate-500 dark:text-slate-400 whitespace-nowrap">{suffix}</span>}
+  <div className="flex items-center gap-4 w-full">
+    <input type="range" value={value} min={min} max={max} step={step} onChange={(e)=>onChange(Number(e.target.value))} className="flex-1 accent-emerald-600 h-4 md:h-6" {...props}/>
+    <div className="flex items-center gap-2 w-32">
+      <input type="number" value={value} onChange={(e)=>onChange(Number(e.target.value))} className="w-full border dark:border-slate-700 bg-white dark:bg-slate-900 rounded-lg px-3 py-2 text-lg md:text-xl text-slate-800 dark:text-slate-100"/>
+      {suffix && <span className="text-base md:text-lg text-emerald-700 dark:text-emerald-300 font-semibold whitespace-nowrap">{suffix}</span>}
     </div>
   </div>
 );
@@ -165,6 +165,7 @@ export default function App(){
   // ---------- UI ----------
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-50 to-slate-100 dark:from-slate-950 dark:to-slate-900 text-slate-900 dark:text-slate-100">
+      <div className="p-4 bg-emerald-500 text-white font-bold text-center rounded-b-xl shadow-lg mb-2">Tailwind is working!</div>
       {/* Header */}
       <header className="sticky top-0 z-10 backdrop-blur bg-white/60 dark:bg-slate-950/60 border-b border-slate-200/70 dark:border-slate-800 print:hidden">
         <div className="max-w-7xl mx-auto px-6 py-3 flex items-center justify-between">
@@ -401,9 +402,9 @@ export default function App(){
 
 function KV({ label, value, big }){
   return (
-    <div className={`flex justify-between ${big?"text-base":"text-sm"}`}>
-      <span className="text-slate-600 dark:text-slate-300">{label}</span>
-      <span className="font-semibold">{value}</span>
+    <div className={`flex justify-between items-center ${big?"text-xl md:text-2xl font-bold text-emerald-700 dark:text-emerald-300":"text-base md:text-lg"}`}>
+      <span className="text-slate-600 dark:text-slate-300 font-semibold">{label}</span>
+      <span className="font-bold text-emerald-700 dark:text-emerald-300">{value}</span>
     </div>
   );
 }
