@@ -130,7 +130,7 @@ function readState(){
 }
 
 // ---------- Performance Tab Components ----------
-const WeeklySessionDay = ({ day, dayIndex, session, onUpdate, calories }) => {
+const WeeklySessionDay = ({ day, dayIndex, session, onUpdate, trainingCalories, totalCalories, macros }) => {
   const updateSession = (field, value) => {
     onUpdate({ ...session, [field]: value });
   };
@@ -155,8 +155,11 @@ const WeeklySessionDay = ({ day, dayIndex, session, onUpdate, calories }) => {
       <div className="flex items-center justify-between mb-3">
         <h3 className="text-lg font-semibold text-slate-800 dark:text-slate-200 capitalize">{day}</h3>
         <div className="text-right">
-          <div className="text-sm text-slate-600 dark:text-slate-400">Training Calories</div>
-          <div className="text-xl font-bold text-emerald-700 dark:text-emerald-300">{calories} kcal</div>
+          <div className="text-sm text-slate-600 dark:text-slate-400">Total Daily Calories</div>
+          <div className="text-xl font-bold text-emerald-700 dark:text-emerald-300">{totalCalories} kcal</div>
+          <div className="text-xs text-slate-500 dark:text-slate-400">
+            Training: {trainingCalories} kcal
+          </div>
         </div>
       </div>
 
@@ -260,6 +263,28 @@ const WeeklySessionDay = ({ day, dayIndex, session, onUpdate, calories }) => {
           </div>
         </div>
       )}
+
+      {/* Macro Breakdown */}
+      <div className="border-t border-slate-200 dark:border-slate-700 pt-3 mt-3">
+        <h4 className="text-sm font-semibold text-slate-700 dark:text-slate-300 mb-3">Daily Macros</h4>
+        <div className="grid grid-cols-3 gap-3 text-center">
+          <div className="bg-slate-100 dark:bg-slate-700 rounded-lg p-2">
+            <div className="text-xs text-slate-600 dark:text-slate-400">Carbs</div>
+            <div className="text-lg font-bold text-emerald-700 dark:text-emerald-300">{macros.carbs}g</div>
+            <div className="text-xs text-slate-500">5-8g/kg</div>
+          </div>
+          <div className="bg-slate-100 dark:bg-slate-700 rounded-lg p-2">
+            <div className="text-xs text-slate-600 dark:text-slate-400">Protein</div>
+            <div className="text-lg font-bold text-blue-700 dark:text-blue-300">{macros.protein}g</div>
+            <div className="text-xs text-slate-500">1.8g/kg</div>
+          </div>
+          <div className="bg-slate-100 dark:bg-slate-700 rounded-lg p-2">
+            <div className="text-xs text-slate-600 dark:text-slate-400">Fat</div>
+            <div className="text-lg font-bold text-orange-700 dark:text-orange-300">{macros.fat}g</div>
+            <div className="text-xs text-slate-500">Remaining</div>
+          </div>
+        </div>
+      </div>
     </div>
   );
 };
@@ -401,7 +426,7 @@ export default function App(){
   const sodiumNeeded = useMemo(()=> Math.round(fluidNeeded * sodiumMgPerL), [fluidNeeded, sodiumMgPerL]);
 
   // Performance tab calculations
-  const dailyCalories = useMemo(() => {
+  const dailyTrainingCalories = useMemo(() => {
     const days = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
     return days.map(day => {
       const session = weeklySessions[day];
@@ -413,10 +438,42 @@ export default function App(){
     });
   }, [weeklySessions, weightKg]);
 
+  const dailyTotalCalories = useMemo(() => {
+    return dailyTrainingCalories.map(trainingCalories => {
+      // Base calories = BMR + non-training activity + training calories
+      return nonTraining + trainingCalories;
+    });
+  }, [dailyTrainingCalories, nonTraining]);
+
   const weeklyTotalCalories = useMemo(() => 
-    dailyCalories.reduce((sum, calories) => sum + calories, 0), 
-    [dailyCalories]
+    dailyTotalCalories.reduce((sum, calories) => sum + calories, 0), 
+    [dailyTotalCalories]
   );
+
+  // Calculate daily macros for each day
+  const dailyMacros = useMemo(() => {
+    return dailyTotalCalories.map(totalCalories => {
+      // Use the same macro calculation logic as the main app
+      const targetMacroCalories = Math.round(totalCalories * 0.95); // 95% of total calories for macros
+      
+      // Calculate carbs based on training load (5-8g/kg range)
+      const carbG = Math.round(weightKg * 6.5); // Middle of 5-8g range
+      const proteinG = Math.round(weightKg * 1.8); // 1.8g/kg as specified
+      const carbKcal = carbG * 4;
+      const proteinKcal = proteinG * 4;
+      const remainingKcal = targetMacroCalories - carbKcal - proteinKcal;
+      const fatG = Math.round(remainingKcal / 9);
+      const fatKcal = fatG * 9;
+      
+      return {
+        carbs: carbG,
+        protein: proteinG,
+        fat: fatG,
+        totalCalories: totalCalories,
+        macroCalories: carbKcal + proteinKcal + fatKcal
+      };
+    });
+  }, [dailyTotalCalories, weightKg]);
 
   // ---------- Actions ----------
   const copyShareLink = async () => {
@@ -767,6 +824,31 @@ export default function App(){
           {tab === "performance" && (
             <motion.div key="performance" initial={{opacity:0,y:8}} animate={{opacity:1,y:0}} exit={{opacity:0,y:-8}} transition={{duration:0.25}} className="space-y-4 sm:space-y-6">
               <Card>
+                <SectionTitle title="Athlete Profile" subtitle="Basic info for calorie and macro calculations" />
+                <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
+                  <div className="text-center p-3 bg-slate-50 dark:bg-slate-800 rounded-lg">
+                    <div className="text-xs text-slate-600 dark:text-slate-400">Weight</div>
+                    <div className="text-lg font-bold text-emerald-700 dark:text-emerald-300">{weightKg} kg</div>
+                  </div>
+                  <div className="text-center p-3 bg-slate-50 dark:bg-slate-800 rounded-lg">
+                    <div className="text-xs text-slate-600 dark:text-slate-400">Height</div>
+                    <div className="text-lg font-bold text-emerald-700 dark:text-emerald-300">{heightCm} cm</div>
+                  </div>
+                  <div className="text-center p-3 bg-slate-50 dark:bg-slate-800 rounded-lg">
+                    <div className="text-xs text-slate-600 dark:text-slate-400">BMR</div>
+                    <div className="text-lg font-bold text-emerald-700 dark:text-emerald-300">{bmr} kcal</div>
+                  </div>
+                  <div className="text-center p-3 bg-slate-50 dark:bg-slate-800 rounded-lg">
+                    <div className="text-xs text-slate-600 dark:text-slate-400">Base Activity</div>
+                    <div className="text-lg font-bold text-emerald-700 dark:text-emerald-300">{nonTraining} kcal</div>
+                  </div>
+                </div>
+                <p className="text-xs text-slate-500 dark:text-slate-400">
+                  Note: Update your weight, height, and activity level in the Daily tab to adjust calculations.
+                </p>
+              </Card>
+
+              <Card>
                 <SectionTitle title="Weekly Training Schedule" subtitle="Plan your sessions and track daily calories" />
                 <div className="space-y-4">
                   {['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'].map((day, index) => (
@@ -781,7 +863,9 @@ export default function App(){
                           [day]: updatedSession
                         }));
                       }}
-                      calories={dailyCalories[index]}
+                      trainingCalories={dailyTrainingCalories[index]}
+                      totalCalories={dailyTotalCalories[index]}
+                      macros={dailyMacros[index]}
                     />
                   ))}
                 </div>
@@ -789,21 +873,26 @@ export default function App(){
 
               <div className="grid lg:grid-cols-2 gap-4 sm:gap-6">
                 <Card>
-                  <SectionTitle title="Daily Calories" subtitle="Training calories per day" />
+                  <SectionTitle title="Daily Calories" subtitle="Total calories per day (resting + training)" />
                   <div className="space-y-2">
                     {['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'].map((day, index) => (
                       <div key={day} className="flex justify-between items-center p-2 bg-slate-50 dark:bg-slate-800 rounded-lg">
                         <span className="font-medium capitalize">{day}</span>
-                        <span className="font-bold text-emerald-700 dark:text-emerald-300">
-                          {dailyCalories[index]} kcal
-                        </span>
+                        <div className="text-right">
+                          <div className="font-bold text-emerald-700 dark:text-emerald-300">
+                            {dailyTotalCalories[index]} kcal
+                          </div>
+                          <div className="text-xs text-slate-500">
+                            Training: {dailyTrainingCalories[index]} kcal
+                          </div>
+                        </div>
                       </div>
                     ))}
                   </div>
                 </Card>
 
                 <Card>
-                  <SectionTitle title="Weekly Summary" subtitle="Total training calories" />
+                  <SectionTitle title="Weekly Summary" subtitle="Total calories for the week" />
                   <div className="text-center">
                     <div className="text-3xl font-bold text-emerald-700 dark:text-emerald-300 mb-2">
                       {weeklyTotalCalories} kcal
@@ -811,13 +900,16 @@ export default function App(){
                     <div className="text-sm text-slate-600 dark:text-slate-400">
                       Average: {Math.round(weeklyTotalCalories / 7)} kcal/day
                     </div>
+                    <div className="text-xs text-slate-500 mt-2">
+                      Includes resting + training calories
+                    </div>
                   </div>
                 </Card>
               </div>
 
               <Card>
-                <SectionTitle title="Weekly Calorie Chart" subtitle="Visual breakdown of daily training calories" />
-                <WeeklyCalorieChart dailyCalories={dailyCalories} />
+                <SectionTitle title="Weekly Calorie Chart" subtitle="Visual breakdown of daily total calories" />
+                <WeeklyCalorieChart dailyCalories={dailyTotalCalories} />
               </Card>
             </motion.div>
           )}
