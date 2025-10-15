@@ -72,26 +72,26 @@ function strengthKcalPerDay(weightKg, weeklyHours) {
   return (weightKg * weeklyHours * 6) / 7; // ~6 kcal per kg per hour
 }
 
-// Performance tab calorie calculations
+// Performance tab calorie calculations using MET values
 function calculateSessionCalories(weightKg, duration, type, intensity) {
   if (duration === 0) return 0;
   
-  const intensityMultipliers = {
-    easy: 1.0,
-    hard: 1.4,
-    severe: 1.8
+  // MET values for different activities and intensities
+  const metValues = {
+    run: { easy: 6.0, hard: 10.0, severe: 12.0 },
+    bike: { easy: 6.0, hard: 10.0, severe: 12.0 },
+    swim: { easy: 5.8, hard: 9.8, severe: 11.0 },
+    hitt: { easy: 6.0, hard: 10.0, severe: 12.0 },
+    strength: { easy: 3.0, hard: 5.0, severe: 6.0 }
   };
   
-  const typeMultipliers = {
-    bike: 0.4,
-    swim: 1.2,
-    run: 1.0,
-    hitt: 1.3,
-    strength: 0.6
-  };
+  const met = metValues[type][intensity];
   
-  const baseKcal = weightKg * (duration / 60) * typeMultipliers[type] * intensityMultipliers[intensity];
-  return Math.round(baseKcal);
+  // Formula: (MET × body weight in kg × 3.5) / 200 = kcal/min
+  const kcalPerMinute = (met * weightKg * 3.5) / 200;
+  const totalCalories = kcalPerMinute * duration;
+  
+  return Math.round(totalCalories);
 }
 
 function clamp(n, a, b) { return Math.max(a, Math.min(b, n)); }
