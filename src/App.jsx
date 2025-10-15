@@ -293,6 +293,9 @@ const WeeklyCalorieChart = ({ dailyTotalCalories, dailyTrainingCalories, weeklyS
   const maxCalories = Math.max(...dailyTotalCalories, 100);
   const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
   
+  // Debug logging
+  console.log('Chart data:', { dailyTotalCalories, nonTraining, maxCalories, weightKg });
+  
   // Session type colors
   const sessionColors = {
     run: 'from-red-500 to-red-400',
@@ -333,8 +336,8 @@ const WeeklyCalorieChart = ({ dailyTotalCalories, dailyTrainingCalories, weeklyS
       <div className="flex items-end justify-between h-64 space-x-2">
         {dailyTotalCalories.map((totalCalories, index) => {
           const sessions = getSessionBreakdown(index);
-          const restingHeight = (nonTraining / maxCalories) * 100;
-          const sessionHeights = sessions.map(session => (session.calories / maxCalories) * 100);
+          const restingHeight = (nonTraining / maxCalories) * 240; // Use 240px as base height
+          const sessionHeights = sessions.map(session => (session.calories / maxCalories) * 240);
           
           return (
             <div key={index} className="flex flex-col items-center flex-1">
@@ -343,7 +346,7 @@ const WeeklyCalorieChart = ({ dailyTotalCalories, dailyTrainingCalories, weeklyS
                 {/* Resting calories (base) */}
                 <div
                   className="w-full bg-gradient-to-t from-slate-400 to-slate-300 rounded-t-lg"
-                  style={{ height: `${Math.max(restingHeight, 2)}%` }}
+                  style={{ height: `${Math.max(restingHeight, 8)}px` }}
                   title={`Resting: ${nonTraining} kcal`}
                 />
                 
@@ -352,7 +355,7 @@ const WeeklyCalorieChart = ({ dailyTotalCalories, dailyTrainingCalories, weeklyS
                   <div
                     key={sessionIndex}
                     className={`w-full bg-gradient-to-t ${sessions[sessionIndex].color} transition-all duration-300 hover:opacity-80`}
-                    style={{ height: `${Math.max(height, 1)}%` }}
+                    style={{ height: `${Math.max(height, 4)}px` }}
                     title={`${sessions[sessionIndex].type}: ${sessions[sessionIndex].calories} kcal`}
                   />
                 ))}
