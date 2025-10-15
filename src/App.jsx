@@ -1,36 +1,54 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import "./index.css";
-<div className="p-3 bg-emerald-600 text-white rounded-lg">Tailwind OK</div>
 
 // ---------- UI primitives ----------
 const Card = ({ children, className = "" }) => (
-  <div className={`bg-white/90 dark:bg-slate-900/80 backdrop-blur rounded-2xl shadow-sm ring-1 ring-slate-200/70 dark:ring-slate-800 p-5 ${className}`}>
+  <div className={`bg-white/95 dark:bg-slate-900/95 backdrop-blur-sm rounded-3xl shadow-lg ring-1 ring-slate-200/50 dark:ring-slate-700/50 p-4 sm:p-6 ${className}`}>
     {children}
   </div>
 );
+
 const SectionTitle = ({ title, subtitle }) => (
-  <div className="mb-3">
-    <h2 className="text-2xl md:text-3xl font-bold tracking-tight text-emerald-700 dark:text-emerald-300 drop-shadow">{title}</h2>
-    {subtitle && <p className="text-base md:text-lg text-sky-700 dark:text-sky-300 mt-1">{subtitle}</p>}
+  <div className="mb-4 sm:mb-6">
+    <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold tracking-tight text-emerald-700 dark:text-emerald-300 drop-shadow-sm">{title}</h2>
+    {subtitle && <p className="text-sm sm:text-base lg:text-lg text-sky-700 dark:text-sky-300 mt-1">{subtitle}</p>}
   </div>
 );
+
 const Label = ({ children }) => (
-  <label className="text-xs md:text-base font-semibold text-slate-600 dark:text-slate-300 uppercase tracking-wide">{children}</label>
+  <label className="text-xs sm:text-sm font-semibold text-slate-600 dark:text-slate-300 uppercase tracking-wide">{children}</label>
 );
 // slider + number input aligned in one row
 const NumberInput = ({ value, onChange, min = 0, max = 9999, step = 1, suffix = "", ...props }) => (
-  <div className="flex items-center gap-4 w-full">
-    <input type="range" value={value} min={min} max={max} step={step} onChange={(e)=>onChange(Number(e.target.value))} className="flex-1 accent-emerald-600 h-4 md:h-6" {...props}/>
-    <div className="flex items-center gap-2 w-32">
-      <input type="number" value={value} onChange={(e)=>onChange(Number(e.target.value))} className="w-full border dark:border-slate-700 bg-white dark:bg-slate-900 rounded-lg px-3 py-2 text-lg md:text-xl text-slate-800 dark:text-slate-100"/>
-      {suffix && <span className="text-base md:text-lg text-emerald-700 dark:text-emerald-300 font-semibold whitespace-nowrap">{suffix}</span>}
+  <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4 w-full">
+    <input 
+      type="range" 
+      value={value} 
+      min={min} 
+      max={max} 
+      step={step} 
+      onChange={(e)=>onChange(Number(e.target.value))} 
+      className="flex-1 accent-emerald-600 h-6 sm:h-8 rounded-lg" 
+      {...props}
+    />
+    <div className="flex items-center gap-2 w-full sm:w-32">
+      <input 
+        type="number" 
+        value={value} 
+        onChange={(e)=>onChange(Number(e.target.value))} 
+        className="flex-1 sm:w-full border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 rounded-xl px-3 py-2.5 text-base sm:text-lg text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all"
+        min={min}
+        max={max}
+        step={step}
+      />
+      {suffix && <span className="text-sm sm:text-base text-emerald-700 dark:text-emerald-300 font-semibold whitespace-nowrap">{suffix}</span>}
     </div>
   </div>
 );
 // label left, control right (for aligned rows)
 const InputRow = ({ label, children }) => (
-  <div className="flex items-center gap-4">
+  <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
     <Label>{label}</Label>
     <div className="flex-1">{children}</div>
   </div>
@@ -164,33 +182,62 @@ export default function App(){
 
   // ---------- UI ----------
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-50 to-slate-100 dark:from-slate-950 dark:to-slate-900 text-slate-900 dark:text-slate-100">
-      <div className="p-4 bg-emerald-500 text-white font-bold text-center rounded-b-xl shadow-lg mb-2">Tailwind is working!</div>
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-emerald-50/30 to-slate-100 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 text-slate-900 dark:text-slate-100">
       {/* Header */}
-      <header className="sticky top-0 z-10 backdrop-blur bg-white/60 dark:bg-slate-950/60 border-b border-slate-200/70 dark:border-slate-800 print:hidden">
-        <div className="max-w-7xl mx-auto px-6 py-3 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="h-8 w-8 rounded-xl bg-emerald-600" />
-            <div>
-              <div className="text-xl font-bold leading-tight">Nutrition Planner</div>
-              <div className="text-xs text-slate-500 dark:text-slate-400">Running fuel calculator</div>
+      <header className="sticky top-0 z-20 backdrop-blur-md bg-white/80 dark:bg-slate-950/80 border-b border-slate-200/50 dark:border-slate-700/50 print:hidden shadow-sm">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 sm:py-4">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4">
+            <div className="flex items-center gap-3">
+              <div className="h-8 w-8 sm:h-10 sm:w-10 rounded-xl bg-gradient-to-br from-emerald-500 to-emerald-600 shadow-lg" />
+              <div>
+                <div className="text-lg sm:text-xl font-bold leading-tight text-slate-900 dark:text-slate-100">Nutrition Planner</div>
+                <div className="text-xs sm:text-sm text-slate-600 dark:text-slate-400">Running fuel calculator</div>
+              </div>
+            </div>
+            <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
+              <button 
+                onClick={()=>setDark(v=>!v)} 
+                className="px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-sm font-medium hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors"
+              >
+                {dark ? "☀️ Light" : "🌙 Dark"}
+              </button>
+              <button 
+                onClick={copyShareLink} 
+                className="px-3 py-2 rounded-xl bg-gradient-to-r from-emerald-500 to-emerald-600 text-white text-sm font-medium hover:from-emerald-600 hover:to-emerald-700 transition-all shadow-sm"
+              >
+                📋 Share
+              </button>
+              <button 
+                onClick={downloadCSV} 
+                className="px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-sm font-medium hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors"
+              >
+                📊 CSV
+              </button>
+              <button 
+                onClick={exportPDF} 
+                className="px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-sm font-medium hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors"
+              >
+                📄 PDF
+              </button>
             </div>
           </div>
-          <div className="flex items-center gap-2">
-            <button onClick={()=>setDark(v=>!v)} className="px-3 py-1 rounded-xl border border-slate-300 dark:border-slate-700">{dark ? "Light" : "Dark"}</button>
-            <button onClick={copyShareLink} className="px-3 py-1 rounded-xl bg-emerald-600 text-white">Copy Link</button>
-            <button onClick={downloadCSV} className="px-3 py-1 rounded-xl border border-slate-300 dark:border-slate-700">Download CSV</button>
-            <button onClick={exportPDF} className="px-3 py-1 rounded-xl border border-slate-300 dark:border-slate-700">Export PDF</button>
-          </div>
         </div>
-        <div className="max-w-7xl mx-auto px-6 pb-3">
-          <div className="inline-flex rounded-2xl border border-slate-200 dark:border-slate-800 overflow-hidden">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 pb-3 sm:pb-4">
+          <div className="inline-flex rounded-2xl border border-slate-200 dark:border-slate-700 overflow-hidden shadow-sm">
             {[
               {id:"daily",label:"Daily"},
               {id:"race",label:"Race Week"},
               {id:"hydration",label:"Hydration"},
             ].map(t => (
-              <button key={t.id} onClick={()=>setTab(t.id)} className={`px-4 py-2 text-sm ${tab===t.id?"bg-slate-900 text-white dark:bg-slate-800":"bg-white dark:bg-slate-900 text-slate-600"}`}>
+              <button 
+                key={t.id} 
+                onClick={()=>setTab(t.id)} 
+                className={`px-3 sm:px-4 py-2 text-sm font-medium transition-all ${
+                  tab===t.id
+                    ? "bg-gradient-to-r from-emerald-500 to-emerald-600 text-white shadow-sm" 
+                    : "bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700"
+                }`}
+              >
                 {t.label}
               </button>
             ))}
@@ -199,19 +246,29 @@ export default function App(){
       </header>
 
       {/* Main */}
-      <main className="max-w-7xl mx-auto px-6 py-8 print:px-8">
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 py-6 sm:py-8 print:px-8">
         <AnimatePresence mode="wait">
           {tab === "daily" && (
             <motion.div key="daily" initial={{opacity:0,y:8}} animate={{opacity:1,y:0}} exit={{opacity:0,y:-8}} transition={{duration:0.25}}>
               {/* Inputs */}
-              <div className="grid xl:grid-cols-2 gap-6 mb-6">
+              <div className="grid lg:grid-cols-2 gap-4 sm:gap-6 mb-6 sm:mb-8">
                 <Card>
                   <SectionTitle title="Athlete" subtitle="Basics for BMR and per-kg macros" />
                   <div className="space-y-4">
                     <InputRow label="Sex">
                       <div className="flex gap-2">
                         {["male","female"].map(s=>(
-                          <button key={s} onClick={()=>setSex(s)} className={`px-3 py-1 rounded-xl border ${sex===s?"bg-slate-900 dark:bg-slate-800 text-white":"bg-white dark:bg-slate-900"}`}>{s}</button>
+                          <button 
+                            key={s} 
+                            onClick={()=>setSex(s)} 
+                            className={`px-4 py-2 rounded-xl border text-sm font-medium transition-all ${
+                              sex===s
+                                ? "bg-gradient-to-r from-slate-700 to-slate-800 dark:from-slate-600 dark:to-slate-700 text-white shadow-sm" 
+                                : "bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-300 dark:border-slate-600 hover:bg-slate-50 dark:hover:bg-slate-700"
+                            }`}
+                          >
+                            {s}
+                          </button>
                         ))}
                       </div>
                     </InputRow>
@@ -230,21 +287,41 @@ export default function App(){
                     <InputRow label="Day Type">
                       <div className="flex gap-2 flex-wrap">
                         {[{id:"key",label:"Key"},{id:"normal",label:"Normal"},{id:"recovery",label:"Recovery"}].map(d=> (
-                          <button key={d.id} onClick={()=>setDayType(d.id)} className={`px-3 py-1 rounded-xl border ${dayType===d.id?"bg-emerald-600 text-white":"bg-white dark:bg-slate-900"}`}>{d.label}</button>
+                          <button 
+                            key={d.id} 
+                            onClick={()=>setDayType(d.id)} 
+                            className={`px-4 py-2 rounded-xl border text-sm font-medium transition-all ${
+                              dayType===d.id
+                                ? "bg-gradient-to-r from-emerald-500 to-emerald-600 text-white shadow-sm" 
+                                : "bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-300 dark:border-slate-600 hover:bg-slate-50 dark:hover:bg-slate-700"
+                            }`}
+                          >
+                            {d.label}
+                          </button>
                         ))}
                       </div>
                     </InputRow>
                     <InputRow label="Goal">
                       <div className="flex gap-2 flex-wrap">
                         {[{id:"performance",label:"Performance"},{id:"maintain_weight",label:"Maintain"},{id:"slight_loss",label:"Slight loss"}].map(g=> (
-                          <button key={g.id} onClick={()=>setGoal(g.id)} className={`px-3 py-1 rounded-xl border ${goal===g.id?"bg-blue-600 text-white":"bg-white dark:bg-slate-900"}`}>{g.label}</button>
+                          <button 
+                            key={g.id} 
+                            onClick={()=>setGoal(g.id)} 
+                            className={`px-4 py-2 rounded-xl border text-sm font-medium transition-all ${
+                              goal===g.id
+                                ? "bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-sm" 
+                                : "bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-300 dark:border-slate-600 hover:bg-slate-50 dark:hover:bg-slate-700"
+                            }`}
+                          >
+                            {g.label}
+                          </button>
                         ))}
                       </div>
                     </InputRow>
                   </div>
                 </Card>
 
-                <Card className="xl:col-span-2">
+                <Card className="lg:col-span-2">
                   <SectionTitle title="Macro Targets (g/kg)" subtitle="Auto-scales if calories too low" />
                   <div className="space-y-4">
                     <InputRow label="Carbohydrate (low)"><NumberInput value={carbLow} onChange={setCarbLow} min={3} max={10} step={0.1} suffix="g/kg" /></InputRow>
@@ -257,7 +334,7 @@ export default function App(){
               </div>
 
               {/* Outputs */}
-              <div className="grid lg:grid-cols-3 gap-6 mb-8">
+              <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mb-6 sm:mb-8">
                 <motion.div initial={{opacity:0,y:8}} animate={{opacity:1,y:0}} transition={{delay:0.05}}>
                   <Card>
                     <SectionTitle title="Daily Energy" />
@@ -299,7 +376,7 @@ export default function App(){
                 </motion.div>
               </div>
 
-              <div className="grid lg:grid-cols-2 gap-6 mb-8">
+              <div className="grid lg:grid-cols-2 gap-4 sm:gap-6 mb-6 sm:mb-8">
                 <motion.div initial={{opacity:0,y:8}} animate={{opacity:1,y:0}} transition={{delay:0.2}}>
                   <Card>
                     <SectionTitle title="Example Menu (scalable)" />
@@ -312,9 +389,9 @@ export default function App(){
                         {title:"Dinner",items:["Pasta (120 g dry)","Lean beef (180 g)","Tomato sauce"]},
                         {title:"Evening Snack",items:["Milk","Toast + nut butter"]},
                       ].map((m,i)=> (
-                        <div key={i} className="border border-slate-200 dark:border-slate-800 rounded-xl p-3">
-                          <div className="font-medium mb-1">{m.title}</div>
-                          <ul className="list-disc pl-5 text-sm text-slate-700 dark:text-slate-300">
+                        <div key={i} className="border border-slate-200 dark:border-slate-700 rounded-xl p-3 sm:p-4 bg-slate-50/50 dark:bg-slate-800/50">
+                          <div className="font-semibold mb-2 text-slate-800 dark:text-slate-200">{m.title}</div>
+                          <ul className="list-disc pl-4 text-sm text-slate-700 dark:text-slate-300 space-y-1">
                             {m.items.map((it,j)=>(<li key={j}>{it}</li>))}
                           </ul>
                         </div>
@@ -326,7 +403,7 @@ export default function App(){
                 <motion.div initial={{opacity:0,y:8}} animate={{opacity:1,y:0}} transition={{delay:0.25}}>
                   <Card>
                     <SectionTitle title="Guidelines" />
-                    <ul className="list-disc pl-5 text-sm space-y-1 text-slate-700 dark:text-slate-300">
+                    <ul className="list-disc pl-4 text-sm space-y-2 text-slate-700 dark:text-slate-300">
                       <li>Carb periodisation: push to upper range on key days / long runs.</li>
                       <li>Protein ~0.3 g/kg per feeding × 4–5 meals to optimise MPS.</li>
                       <li>Fats mostly from olive oil, nuts, avocado, fatty fish.</li>
@@ -334,8 +411,13 @@ export default function App(){
                       <li>Monitor iron/ferritin each block if training hard.</li>
                       <li>Red flags: unintended weight loss, low mood, persistent fatigue → increase calories.</li>
                     </ul>
-                    <div className="mt-3 flex gap-2 print:hidden">
-                      <button onClick={resetAll} className="px-3 py-1 rounded-xl border border-slate-300 dark:border-slate-700">Reset</button>
+                    <div className="mt-4 flex gap-2 print:hidden">
+                      <button 
+                        onClick={resetAll} 
+                        className="px-4 py-2 rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-sm font-medium hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors"
+                      >
+                        🔄 Reset All
+                      </button>
                     </div>
                   </Card>
                 </motion.div>
@@ -344,48 +426,48 @@ export default function App(){
           )}
 
           {tab === "race" && (
-            <motion.div key="race" initial={{opacity:0,y:8}} animate={{opacity:1,y:0}} exit={{opacity:0,y:-8}} transition={{duration:0.25}} className="space-y-4">
+            <motion.div key="race" initial={{opacity:0,y:8}} animate={{opacity:1,y:0}} exit={{opacity:0,y:-8}} transition={{duration:0.25}} className="space-y-4 sm:space-y-6">
               <Card>
                 <SectionTitle title="Race Week Checklist" subtitle="Taper fuelling and day-by-day plan" />
-                <ul className="list-disc pl-5 text-sm space-y-1">
-                  <li><b>Mon–Wed:</b> Maintain calories; carbs ~6–7 g/kg; normal protein/fat. Hydrate to pale yellow urine.</li>
-                  <li><b>Thu–Fri:</b> Carbs ~7–9 g/kg; reduce fibre; spread across 4–6 meals; sip electrolytes.</li>
-                  <li><b>Race-eve dinner:</b> Simple carbs + lean protein; avoid heavy fats/fibre; 500–750 ml fluids.</li>
-                  <li><b>Race morning:</b> 2–3 h pre: 1–3 g/kg carbs + 20–25 g protein; 15–20 min pre: small sip (100–200 ml).</li>
-                  <li><b>Post-race:</b> 1.0–1.2 g/kg carbs in 1–2 h; 25–30 g protein; 1000–1500 mg sodium over the afternoon.</li>
+                <ul className="list-disc pl-4 text-sm space-y-3 text-slate-700 dark:text-slate-300">
+                  <li><span className="font-semibold text-emerald-700 dark:text-emerald-300">Mon–Wed:</span> Maintain calories; carbs ~6–7 g/kg; normal protein/fat. Hydrate to pale yellow urine.</li>
+                  <li><span className="font-semibold text-emerald-700 dark:text-emerald-300">Thu–Fri:</span> Carbs ~7–9 g/kg; reduce fibre; spread across 4–6 meals; sip electrolytes.</li>
+                  <li><span className="font-semibold text-emerald-700 dark:text-emerald-300">Race-eve dinner:</span> Simple carbs + lean protein; avoid heavy fats/fibre; 500–750 ml fluids.</li>
+                  <li><span className="font-semibold text-emerald-700 dark:text-emerald-300">Race morning:</span> 2–3 h pre: 1–3 g/kg carbs + 20–25 g protein; 15–20 min pre: small sip (100–200 ml).</li>
+                  <li><span className="font-semibold text-emerald-700 dark:text-emerald-300">Post-race:</span> 1.0–1.2 g/kg carbs in 1–2 h; 25–30 g protein; 1000–1500 mg sodium over the afternoon.</li>
                 </ul>
               </Card>
               <Card>
                 <SectionTitle title="Pre-Race Meal Builder" />
                 <div className="grid sm:grid-cols-3 gap-3 text-sm">
-                  <div className="border rounded-xl p-3">Bagel + honey</div>
-                  <div className="border rounded-xl p-3">Rice bowl + eggs</div>
-                  <div className="border rounded-xl p-3">Oats + banana + whey</div>
+                  <div className="border border-slate-200 dark:border-slate-700 rounded-xl p-3 bg-slate-50/50 dark:bg-slate-800/50 text-slate-700 dark:text-slate-300">Bagel + honey</div>
+                  <div className="border border-slate-200 dark:border-slate-700 rounded-xl p-3 bg-slate-50/50 dark:bg-slate-800/50 text-slate-700 dark:text-slate-300">Rice bowl + eggs</div>
+                  <div className="border border-slate-200 dark:border-slate-700 rounded-xl p-3 bg-slate-50/50 dark:bg-slate-800/50 text-slate-700 dark:text-slate-300">Oats + banana + whey</div>
                 </div>
-                <p className="text-xs text-slate-500 mt-2">Aim 1–3 g/kg carbs 2–3 h pre-race; keep fat/fibre low.</p>
+                <p className="text-xs text-slate-500 dark:text-slate-400 mt-3">Aim 1–3 g/kg carbs 2–3 h pre-race; keep fat/fibre low.</p>
               </Card>
             </motion.div>
           )}
 
           {tab === "hydration" && (
-            <motion.div key="hydration" initial={{opacity:0,y:8}} animate={{opacity:1,y:0}} exit={{opacity:0,y:-8}} transition={{duration:0.25}} className="space-y-4">
+            <motion.div key="hydration" initial={{opacity:0,y:8}} animate={{opacity:1,y:0}} exit={{opacity:0,y:-8}} transition={{duration:0.25}} className="space-y-4 sm:space-y-6">
               <Card>
                 <SectionTitle title="Session Hydration Calculator" subtitle="Estimate fluid & sodium needs" />
-                <div className="grid md:grid-cols-3 gap-4">
+                <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
                   <InputRow label="Session duration"><NumberInput value={sessionMin} onChange={setSessionMin} min={30} max={180} step={5} suffix="min" /></InputRow>
                   <InputRow label="Ambient temp"><NumberInput value={ambientC} onChange={setAmbientC} min={5} max={35} step={1} suffix="°C" /></InputRow>
                   <InputRow label="Estimated sweat rate"><NumberInput value={sweatRate} onChange={setSweatRate} min={0.4} max={1.6} step={0.1} suffix="L/h" /></InputRow>
                 </div>
               </Card>
-              <div className="grid md:grid-cols-2 gap-6">
+              <div className="grid sm:grid-cols-2 gap-4 sm:gap-6">
                 <Card>
                   <SectionTitle title="Fluid Plan" />
-                  <p className="text-sm">Drink about <b>{fluidPerHour.toFixed(1)} L/h</b>. For this session (~{sessionMin} min), target <b>{fluidNeeded.toFixed(2)} L</b> total.</p>
+                  <p className="text-sm text-slate-700 dark:text-slate-300">Drink about <span className="font-bold text-emerald-700 dark:text-emerald-300">{fluidPerHour.toFixed(1)} L/h</span>. For this session (~{sessionMin} min), target <span className="font-bold text-emerald-700 dark:text-emerald-300">{fluidNeeded.toFixed(2)} L</span> total.</p>
                 </Card>
                 <Card>
                   <SectionTitle title="Sodium Plan" />
-                  <p className="text-sm">Use drinks/chews providing roughly <b>{sodiumMgPerL} mg/L</b>. For this session, total around <b>{sodiumNeeded} mg</b>.</p>
-                  <p className="text-xs text-slate-500 mt-1">Heuristic only; personalise using weigh-in/out testing when possible.</p>
+                  <p className="text-sm text-slate-700 dark:text-slate-300">Use drinks/chews providing roughly <span className="font-bold text-emerald-700 dark:text-emerald-300">{sodiumMgPerL} mg/L</span>. For this session, total around <span className="font-bold text-emerald-700 dark:text-emerald-300">{sodiumNeeded} mg</span>.</p>
+                  <p className="text-xs text-slate-500 dark:text-slate-400 mt-2">Heuristic only; personalise using weigh-in/out testing when possible.</p>
                 </Card>
               </div>
             </motion.div>
@@ -402,9 +484,9 @@ export default function App(){
 
 function KV({ label, value, big }){
   return (
-    <div className={`flex justify-between items-center ${big?"text-xl md:text-2xl font-bold text-emerald-700 dark:text-emerald-300":"text-base md:text-lg"}`}>
-      <span className="text-slate-600 dark:text-slate-300 font-semibold">{label}</span>
-      <span className="font-bold text-emerald-700 dark:text-emerald-300">{value}</span>
+    <div className={`flex justify-between items-center ${big?"text-lg sm:text-xl lg:text-2xl font-bold text-emerald-700 dark:text-emerald-300":"text-sm sm:text-base lg:text-lg"}`}>
+      <span className="text-slate-600 dark:text-slate-300 font-semibold text-left pr-2">{label}</span>
+      <span className="font-bold text-emerald-700 dark:text-emerald-300 text-right whitespace-nowrap">{value}</span>
     </div>
   );
 }
