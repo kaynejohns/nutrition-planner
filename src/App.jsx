@@ -304,7 +304,7 @@ export default function App(){
                 <Card>
                   <SectionTitle title="Training Load" subtitle="Multi-sport training & adjustments" />
                   <div className="space-y-4">
-                    <div className="grid sm:grid-cols-2 gap-4">
+                    <div className="space-y-4">
                       <InputRow label="Running"><NumberInput value={weeklyKm} onChange={setWeeklyKm} min={0} max={200} step={1} suffix="km/week" /></InputRow>
                       <InputRow label="Cycling"><NumberInput value={weeklyBike} onChange={setWeeklyBike} min={0} max={300} step={1} suffix="km/week" /></InputRow>
                       <InputRow label="Swimming"><NumberInput value={weeklySwim} onChange={setWeeklySwim} min={0} max={50} step={0.5} suffix="km/week" /></InputRow>
