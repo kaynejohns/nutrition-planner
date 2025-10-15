@@ -149,18 +149,40 @@ export default function App(){
 
   const targetCalories = clamp(Math.round(nonTraining + totalTrainingKcal + dayAdj + goalAdj + doubleSessionAdj), 1800, 6000);
 
-  const carbRange = [Math.round(carbLow * weightKg), Math.round(carbHigh * weightKg)];
-  const proteinG = Math.round(protein * weightKg);
-  const fatG = Math.round(fat * weightKg);
+  // Dynamic macro scaling based on training load
+  const baseCarbRange = [Math.round(carbLow * weightKg), Math.round(carbHigh * weightKg)];
+  const baseProteinG = Math.round(protein * weightKg);
+  const baseFatG = Math.round(fat * weightKg);
+
+  // Training load multiplier (1.0 for light, up to 1.3 for very heavy)
+  const trainingLoadMultiplier = useMemo(() => {
+    const totalTrainingHours = (weeklyKm + weeklyBike + weeklySwim) / 20 + weeklyStrength; // rough hours estimate
+    const doubleSessionBonus = doubleSessionDays * 0.1;
+    return Math.min(1.3, 1.0 + (totalTrainingHours + doubleSessionBonus) * 0.02);
+  }, [weeklyKm, weeklyBike, weeklySwim, weeklyStrength, doubleSessionDays]);
+
+  // Adjust carb range based on training load
+  const carbRange = [
+    Math.round(baseCarbRange[0] * trainingLoadMultiplier),
+    Math.round(baseCarbRange[1] * trainingLoadMultiplier)
+  ];
+  
+  // Protein increases slightly with training load
+  const proteinG = Math.round(baseProteinG * (1 + (trainingLoadMultiplier - 1) * 0.2));
+  
+  // Fat stays relatively stable but can decrease slightly with very high training
+  const fatG = Math.round(baseFatG * Math.max(0.8, 1.1 - (trainingLoadMultiplier - 1) * 0.3));
 
   const carbKcalMid = Math.round(((carbRange[0] + carbRange[1]) / 2) * 4);
   const proteinKcal = proteinG * 4;
   const fatKcal = fatG * 9;
   const macroTotalKcal = carbKcalMid + proteinKcal + fatKcal;
+  
+  // Final scaling to fit target calories if needed
   const scale = macroTotalKcal > targetCalories ? targetCalories / macroTotalKcal : 1;
 
   const carbGFinal = Math.round(((carbRange[0] + carbRange[1]) / 2) * scale);
-  const proteinGFinal = proteinG;
+  const proteinGFinal = Math.round(proteinG * scale);
   const fatGFinal = Math.round(fatG * scale);
 
   const carbKcal = carbGFinal * 4;
@@ -390,6 +412,15 @@ export default function App(){
                   <Card>
                     <SectionTitle title="Macros (targets)" />
                     <div className="text-sm space-y-1">
+                      <div className="mb-2 p-2 bg-slate-50 dark:bg-slate-800 rounded-lg">
+                        <div className="text-xs text-slate-600 dark:text-slate-400 mb-1">Training Load Multiplier</div>
+                        <div className="text-lg font-bold text-emerald-700 dark:text-emerald-300">
+                          {trainingLoadMultiplier.toFixed(2)}x
+                        </div>
+                        <div className="text-xs text-slate-500">
+                          {trainingLoadMultiplier < 1.1 ? "Light" : trainingLoadMultiplier < 1.2 ? "Moderate" : "Heavy"} training load
+                        </div>
+                      </div>
                       <KV label="Carbohydrate" value={`${carbGFinal} g (${carbKcal} kcal)`} />
                       <KV label="Protein" value={`${proteinGFinal} g (${proteinKcalFinal} kcal)`} />
                       <KV label="Fat" value={`${fatGFinal} g (${fatKcalFinal} kcal)`} />
