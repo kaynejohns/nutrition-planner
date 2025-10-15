@@ -289,29 +289,96 @@ const WeeklySessionDay = ({ day, dayIndex, session, onUpdate, trainingCalories, 
   );
 };
 
-const WeeklyCalorieChart = ({ dailyCalories }) => {
-  const maxCalories = Math.max(...dailyCalories, 100);
+const WeeklyCalorieChart = ({ dailyTotalCalories, dailyTrainingCalories, weeklySessions, nonTraining, weightKg }) => {
+  const maxCalories = Math.max(...dailyTotalCalories, 100);
   const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+  
+  // Session type colors
+  const sessionColors = {
+    run: 'from-red-500 to-red-400',
+    bike: 'from-blue-500 to-blue-400', 
+    swim: 'from-cyan-500 to-cyan-400',
+    hitt: 'from-purple-500 to-purple-400',
+    strength: 'from-orange-500 to-orange-400'
+  };
+
+  const getSessionBreakdown = (dayIndex) => {
+    const day = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'][dayIndex];
+    const session = weeklySessions[day];
+    const sessions = [];
+    
+    // Add first session if it exists
+    if (session.duration > 0) {
+      sessions.push({
+        type: session.type,
+        calories: calculateSessionCalories(weightKg, session.duration, session.type, session.intensity),
+        color: sessionColors[session.type] || 'from-gray-500 to-gray-400'
+      });
+    }
+    
+    // Add second session if it exists
+    if (session.doubleSession && session.secondSession.duration > 0) {
+      sessions.push({
+        type: session.secondSession.type,
+        calories: calculateSessionCalories(weightKg, session.secondSession.duration, session.secondSession.type, session.secondSession.intensity),
+        color: sessionColors[session.secondSession.type] || 'from-gray-500 to-gray-400'
+      });
+    }
+    
+    return sessions;
+  };
 
   return (
     <div className="space-y-4">
-      <div className="flex items-end justify-between h-48 space-x-2">
-        {dailyCalories.map((calories, index) => {
-          const height = (calories / maxCalories) * 100;
+      <div className="flex items-end justify-between h-64 space-x-2">
+        {dailyTotalCalories.map((totalCalories, index) => {
+          const sessions = getSessionBreakdown(index);
+          const restingHeight = (nonTraining / maxCalories) * 100;
+          const sessionHeights = sessions.map(session => (session.calories / maxCalories) * 100);
+          
           return (
             <div key={index} className="flex flex-col items-center flex-1">
-              <div className="text-xs text-slate-600 dark:text-slate-400 mb-1">{calories}</div>
-              <div
-                className="w-full bg-gradient-to-t from-emerald-500 to-emerald-400 rounded-t-lg transition-all duration-300 hover:from-emerald-600 hover:to-emerald-500"
-                style={{ height: `${Math.max(height, 2)}%` }}
-              />
+              <div className="text-xs text-slate-600 dark:text-slate-400 mb-1">{totalCalories}</div>
+              <div className="w-full h-full flex flex-col justify-end">
+                {/* Resting calories (base) */}
+                <div
+                  className="w-full bg-gradient-to-t from-slate-400 to-slate-300 rounded-t-lg"
+                  style={{ height: `${Math.max(restingHeight, 2)}%` }}
+                  title={`Resting: ${nonTraining} kcal`}
+                />
+                
+                {/* Session calories (stacked) */}
+                {sessionHeights.map((height, sessionIndex) => (
+                  <div
+                    key={sessionIndex}
+                    className={`w-full bg-gradient-to-t ${sessions[sessionIndex].color} transition-all duration-300 hover:opacity-80`}
+                    style={{ height: `${Math.max(height, 1)}%` }}
+                    title={`${sessions[sessionIndex].type}: ${sessions[sessionIndex].calories} kcal`}
+                  />
+                ))}
+              </div>
               <div className="text-xs text-slate-600 dark:text-slate-400 mt-2 font-medium">{days[index]}</div>
             </div>
           );
         })}
       </div>
+      
+      {/* Legend */}
+      <div className="flex flex-wrap justify-center gap-4 text-xs">
+        <div className="flex items-center gap-2">
+          <div className="w-3 h-3 bg-gradient-to-r from-slate-400 to-slate-300 rounded"></div>
+          <span className="text-slate-600 dark:text-slate-400">Resting</span>
+        </div>
+        {Object.entries(sessionColors).map(([type, color]) => (
+          <div key={type} className="flex items-center gap-2">
+            <div className={`w-3 h-3 bg-gradient-to-r ${color} rounded`}></div>
+            <span className="text-slate-600 dark:text-slate-400 capitalize">{type}</span>
+          </div>
+        ))}
+      </div>
+      
       <div className="text-center text-sm text-slate-600 dark:text-slate-400">
-        Training calories per day
+        Total calories per day (resting + training)
       </div>
     </div>
   );
@@ -909,7 +976,13 @@ export default function App(){
 
               <Card>
                 <SectionTitle title="Weekly Calorie Chart" subtitle="Visual breakdown of daily total calories" />
-                <WeeklyCalorieChart dailyCalories={dailyTotalCalories} />
+                <WeeklyCalorieChart 
+                  dailyTotalCalories={dailyTotalCalories}
+                  dailyTrainingCalories={dailyTrainingCalories}
+                  weeklySessions={weeklySessions}
+                  nonTraining={nonTraining}
+                  weightKg={weightKg}
+                />
               </Card>
             </motion.div>
           )}
