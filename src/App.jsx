@@ -178,8 +178,9 @@ export default function App(){
   const fatKcal = fatG * 9;
   const macroTotalKcal = carbKcalMid + proteinKcal + fatKcal;
   
-  // Final scaling to fit target calories if needed
-  const scale = macroTotalKcal > targetCalories ? targetCalories / macroTotalKcal : 1;
+  // Final scaling to fit target calories with 5% buffer for micronutrients
+  const targetMacroCalories = Math.round(targetCalories * 0.95); // 95% of total calories for macros
+  const scale = macroTotalKcal > targetMacroCalories ? targetMacroCalories / macroTotalKcal : 1;
 
   const carbGFinal = Math.round(((carbRange[0] + carbRange[1]) / 2) * scale);
   const proteinGFinal = Math.round(proteinG * scale);
@@ -426,6 +427,9 @@ export default function App(){
                       <KV label="Fat" value={`${fatGFinal} g (${fatKcalFinal} kcal)`} />
                       <hr className="my-2" />
                       <KV label="Total macro kcal" value={`${carbKcal + proteinKcalFinal + fatKcalFinal} kcal`} />
+                      <div className="text-xs text-slate-500 mt-2">
+                        Macro calories are 95% of total daily energy, leaving 5% for micronutrients and fiber.
+                      </div>
                     </div>
                   </Card>
                 </motion.div>
