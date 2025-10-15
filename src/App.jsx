@@ -32,7 +32,7 @@ const NumberInput = ({ value, onChange, min = 0, max = 9999, step = 1, suffix = 
       className="flex-1 accent-emerald-600 h-6 sm:h-8 rounded-lg" 
       {...props}
     />
-    <div className="flex items-center gap-2 w-full sm:w-32">
+    <div className="flex items-center gap-2 w-full sm:w-40">
       <input 
         type="number" 
         value={value} 
@@ -281,7 +281,7 @@ export default function App(){
                 <Card>
                   <SectionTitle title="Training Load" subtitle="Running energy & day/goal adjustments" />
                   <div className="space-y-4">
-                    <InputRow label="Weekly Volume"><NumberInput value={weeklyKm} onChange={setWeeklyKm} min={20} max={160} step={1} suffix="km / week" /></InputRow>
+                    <InputRow label="Weekly Volume"><NumberInput value={weeklyKm} onChange={setWeeklyKm} min={20} max={160} step={1} suffix="km/week" /></InputRow>
                     <InputRow label="Activity Factor (non-training)"><NumberInput value={activityFactor} onChange={setActivityFactor} min={1.2} max={1.8} step={0.01} /></InputRow>
                     <div className="text-xs text-slate-500 -mt-2">Sedentary ~1.3, active job ~1.6.</div>
                     <InputRow label="Day Type">
