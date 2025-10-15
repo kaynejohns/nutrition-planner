@@ -71,6 +71,29 @@ function swimmingKcalPerDay(weightKg, weeklyKm) {
 function strengthKcalPerDay(weightKg, weeklyHours) {
   return (weightKg * weeklyHours * 6) / 7; // ~6 kcal per kg per hour
 }
+
+// Performance tab calorie calculations
+function calculateSessionCalories(weightKg, duration, type, intensity) {
+  if (duration === 0) return 0;
+  
+  const intensityMultipliers = {
+    easy: 1.0,
+    hard: 1.4,
+    severe: 1.8
+  };
+  
+  const typeMultipliers = {
+    bike: 0.4,
+    swim: 1.2,
+    run: 1.0,
+    hitt: 1.3,
+    strength: 0.6
+  };
+  
+  const baseKcal = weightKg * (duration / 60) * typeMultipliers[type] * intensityMultipliers[intensity];
+  return Math.round(baseKcal);
+}
+
 function clamp(n, a, b) { return Math.max(a, Math.min(b, n)); }
 
 // ---------- Shareable URL params ----------
@@ -106,6 +129,169 @@ function readState(){
   };
 }
 
+// ---------- Performance Tab Components ----------
+const WeeklySessionDay = ({ day, dayIndex, session, onUpdate, calories }) => {
+  const updateSession = (field, value) => {
+    onUpdate({ ...session, [field]: value });
+  };
+
+  const updateSecondSession = (field, value) => {
+    onUpdate({ 
+      ...session, 
+      secondSession: { ...session.secondSession, [field]: value } 
+    });
+  };
+
+  const toggleDoubleSession = () => {
+    onUpdate({ 
+      ...session, 
+      doubleSession: !session.doubleSession,
+      secondSession: session.doubleSession ? session.secondSession : { duration: 0, type: 'run', intensity: 'easy' }
+    });
+  };
+
+  return (
+    <div className="border border-slate-200 dark:border-slate-700 rounded-xl p-4 bg-slate-50/50 dark:bg-slate-800/50">
+      <div className="flex items-center justify-between mb-3">
+        <h3 className="text-lg font-semibold text-slate-800 dark:text-slate-200 capitalize">{day}</h3>
+        <div className="text-right">
+          <div className="text-sm text-slate-600 dark:text-slate-400">Training Calories</div>
+          <div className="text-xl font-bold text-emerald-700 dark:text-emerald-300">{calories} kcal</div>
+        </div>
+      </div>
+
+      <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-3 mb-3">
+        <div>
+          <Label>Duration (min)</Label>
+          <input
+            type="number"
+            value={session.duration}
+            onChange={(e) => updateSession('duration', Number(e.target.value))}
+            min="0"
+            max="300"
+            className="w-full mt-1 border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 rounded-lg px-3 py-2 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+          />
+        </div>
+
+        <div>
+          <Label>Session Type</Label>
+          <select
+            value={session.type}
+            onChange={(e) => updateSession('type', e.target.value)}
+            className="w-full mt-1 border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 rounded-lg px-3 py-2 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+          >
+            <option value="run">Run</option>
+            <option value="bike">Bike</option>
+            <option value="swim">Swim</option>
+            <option value="hitt">HIIT</option>
+            <option value="strength">Strength</option>
+          </select>
+        </div>
+
+        <div>
+          <Label>Intensity</Label>
+          <select
+            value={session.intensity}
+            onChange={(e) => updateSession('intensity', e.target.value)}
+            className="w-full mt-1 border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 rounded-lg px-3 py-2 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+          >
+            <option value="easy">Easy</option>
+            <option value="hard">Hard</option>
+            <option value="severe">Severe</option>
+          </select>
+        </div>
+
+        <div className="flex items-center">
+          <label className="flex items-center space-x-2 cursor-pointer">
+            <input
+              type="checkbox"
+              checked={session.doubleSession}
+              onChange={toggleDoubleSession}
+              className="w-4 h-4 text-emerald-600 bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 rounded focus:ring-emerald-500"
+            />
+            <span className="text-sm font-medium text-slate-700 dark:text-slate-300">Double Session</span>
+          </label>
+        </div>
+      </div>
+
+      {session.doubleSession && (
+        <div className="border-t border-slate-200 dark:border-slate-700 pt-3 mt-3">
+          <h4 className="text-sm font-semibold text-slate-700 dark:text-slate-300 mb-3">Second Session</h4>
+          <div className="grid sm:grid-cols-3 gap-3">
+            <div>
+              <Label>Duration (min)</Label>
+              <input
+                type="number"
+                value={session.secondSession.duration}
+                onChange={(e) => updateSecondSession('duration', Number(e.target.value))}
+                min="0"
+                max="300"
+                className="w-full mt-1 border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 rounded-lg px-3 py-2 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+              />
+            </div>
+
+            <div>
+              <Label>Session Type</Label>
+              <select
+                value={session.secondSession.type}
+                onChange={(e) => updateSecondSession('type', e.target.value)}
+                className="w-full mt-1 border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 rounded-lg px-3 py-2 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+              >
+                <option value="run">Run</option>
+                <option value="bike">Bike</option>
+                <option value="swim">Swim</option>
+                <option value="hitt">HIIT</option>
+                <option value="strength">Strength</option>
+              </select>
+            </div>
+
+            <div>
+              <Label>Intensity</Label>
+              <select
+                value={session.secondSession.intensity}
+                onChange={(e) => updateSecondSession('intensity', e.target.value)}
+                className="w-full mt-1 border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 rounded-lg px-3 py-2 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+              >
+                <option value="easy">Easy</option>
+                <option value="hard">Hard</option>
+                <option value="severe">Severe</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
+const WeeklyCalorieChart = ({ dailyCalories }) => {
+  const maxCalories = Math.max(...dailyCalories, 100);
+  const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+
+  return (
+    <div className="space-y-4">
+      <div className="flex items-end justify-between h-48 space-x-2">
+        {dailyCalories.map((calories, index) => {
+          const height = (calories / maxCalories) * 100;
+          return (
+            <div key={index} className="flex flex-col items-center flex-1">
+              <div className="text-xs text-slate-600 dark:text-slate-400 mb-1">{calories}</div>
+              <div
+                className="w-full bg-gradient-to-t from-emerald-500 to-emerald-400 rounded-t-lg transition-all duration-300 hover:from-emerald-600 hover:to-emerald-500"
+                style={{ height: `${Math.max(height, 2)}%` }}
+              />
+              <div className="text-xs text-slate-600 dark:text-slate-400 mt-2 font-medium">{days[index]}</div>
+            </div>
+          );
+        })}
+      </div>
+      <div className="text-center text-sm text-slate-600 dark:text-slate-400">
+        Training calories per day
+      </div>
+    </div>
+  );
+};
+
 export default function App(){
   // ---------- State ----------
   const initial = readState();
@@ -126,7 +312,18 @@ export default function App(){
   const [protein, setProtein] = useState(initial.protein);
   const [fat, setFat] = useState(initial.fat);
   const [dark, setDark] = useState(Boolean(initial.dark));
-  const [tab, setTab] = useState("daily"); // daily | race | hydration
+  const [tab, setTab] = useState("daily"); // daily | race | hydration | performance
+  
+  // Performance tab state
+  const [weeklySessions, setWeeklySessions] = useState({
+    monday: { duration: 0, type: 'run', intensity: 'easy', doubleSession: false, secondSession: { duration: 0, type: 'run', intensity: 'easy' } },
+    tuesday: { duration: 0, type: 'run', intensity: 'easy', doubleSession: false, secondSession: { duration: 0, type: 'run', intensity: 'easy' } },
+    wednesday: { duration: 0, type: 'run', intensity: 'easy', doubleSession: false, secondSession: { duration: 0, type: 'run', intensity: 'easy' } },
+    thursday: { duration: 0, type: 'run', intensity: 'easy', doubleSession: false, secondSession: { duration: 0, type: 'run', intensity: 'easy' } },
+    friday: { duration: 0, type: 'run', intensity: 'easy', doubleSession: false, secondSession: { duration: 0, type: 'run', intensity: 'easy' } },
+    saturday: { duration: 0, type: 'run', intensity: 'easy', doubleSession: false, secondSession: { duration: 0, type: 'run', intensity: 'easy' } },
+    sunday: { duration: 0, type: 'run', intensity: 'easy', doubleSession: false, secondSession: { duration: 0, type: 'run', intensity: 'easy' } }
+  });
 
   // Persist dark mode to class on <html>
   useEffect(()=>{
@@ -203,6 +400,24 @@ export default function App(){
   const fluidNeeded = useMemo(()=> (sessionMin/60)*fluidPerHour, [sessionMin, fluidPerHour]);
   const sodiumNeeded = useMemo(()=> Math.round(fluidNeeded * sodiumMgPerL), [fluidNeeded, sodiumMgPerL]);
 
+  // Performance tab calculations
+  const dailyCalories = useMemo(() => {
+    const days = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
+    return days.map(day => {
+      const session = weeklySessions[day];
+      const firstSessionCalories = calculateSessionCalories(weightKg, session.duration, session.type, session.intensity);
+      const secondSessionCalories = session.doubleSession 
+        ? calculateSessionCalories(weightKg, session.secondSession.duration, session.secondSession.type, session.secondSession.intensity)
+        : 0;
+      return firstSessionCalories + secondSessionCalories;
+    });
+  }, [weeklySessions, weightKg]);
+
+  const weeklyTotalCalories = useMemo(() => 
+    dailyCalories.reduce((sum, calories) => sum + calories, 0), 
+    [dailyCalories]
+  );
+
   // ---------- Actions ----------
   const copyShareLink = async () => {
     const url = encodeState({ sex, age, weightKg, heightCm, weeklyKm, weeklyBike, weeklySwim, weeklyStrength, doubleSessionDays, activityFactor, dayType, goal, carbLow, carbHigh, protein, fat, dark });
@@ -274,6 +489,7 @@ export default function App(){
               {id:"daily",label:"Daily"},
               {id:"race",label:"Race Week"},
               {id:"hydration",label:"Hydration"},
+              {id:"performance",label:"Performance"},
             ].map(t => (
               <button 
                 key={t.id} 
@@ -545,6 +761,64 @@ export default function App(){
                   <p className="text-xs text-slate-500 dark:text-slate-400 mt-2">Heuristic only; personalise using weigh-in/out testing when possible.</p>
                 </Card>
               </div>
+            </motion.div>
+          )}
+
+          {tab === "performance" && (
+            <motion.div key="performance" initial={{opacity:0,y:8}} animate={{opacity:1,y:0}} exit={{opacity:0,y:-8}} transition={{duration:0.25}} className="space-y-4 sm:space-y-6">
+              <Card>
+                <SectionTitle title="Weekly Training Schedule" subtitle="Plan your sessions and track daily calories" />
+                <div className="space-y-4">
+                  {['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'].map((day, index) => (
+                    <WeeklySessionDay 
+                      key={day}
+                      day={day}
+                      dayIndex={index}
+                      session={weeklySessions[day]}
+                      onUpdate={(updatedSession) => {
+                        setWeeklySessions(prev => ({
+                          ...prev,
+                          [day]: updatedSession
+                        }));
+                      }}
+                      calories={dailyCalories[index]}
+                    />
+                  ))}
+                </div>
+              </Card>
+
+              <div className="grid lg:grid-cols-2 gap-4 sm:gap-6">
+                <Card>
+                  <SectionTitle title="Daily Calories" subtitle="Training calories per day" />
+                  <div className="space-y-2">
+                    {['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'].map((day, index) => (
+                      <div key={day} className="flex justify-between items-center p-2 bg-slate-50 dark:bg-slate-800 rounded-lg">
+                        <span className="font-medium capitalize">{day}</span>
+                        <span className="font-bold text-emerald-700 dark:text-emerald-300">
+                          {dailyCalories[index]} kcal
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </Card>
+
+                <Card>
+                  <SectionTitle title="Weekly Summary" subtitle="Total training calories" />
+                  <div className="text-center">
+                    <div className="text-3xl font-bold text-emerald-700 dark:text-emerald-300 mb-2">
+                      {weeklyTotalCalories} kcal
+                    </div>
+                    <div className="text-sm text-slate-600 dark:text-slate-400">
+                      Average: {Math.round(weeklyTotalCalories / 7)} kcal/day
+                    </div>
+                  </div>
+                </Card>
+              </div>
+
+              <Card>
+                <SectionTitle title="Weekly Calorie Chart" subtitle="Visual breakdown of daily training calories" />
+                <WeeklyCalorieChart dailyCalories={dailyCalories} />
+              </Card>
             </motion.div>
           )}
         </AnimatePresence>
