@@ -1245,17 +1245,84 @@ export default function App(){
                 </Card>
 
                 <Card>
-                  <SectionTitle title="Weekly Summary" subtitle="Total calories for the week" />
-                  <div className="text-center">
-                    <div className="text-3xl font-bold text-emerald-700 dark:text-emerald-300 mb-2">
-                      {weeklyTotalCalories} kcal
+                  <SectionTitle title="Weekly Summary" subtitle="Compare your weekly calorie targets" />
+                  
+                  {/* Optimal Weekly Total */}
+                  <div className="text-center mb-6 pb-6 border-b border-slate-200 dark:border-slate-700">
+                    <div className="text-sm text-slate-600 dark:text-slate-400 mb-1">Optimal Weekly Target</div>
+                    <div className="text-4xl font-bold text-emerald-700 dark:text-emerald-300 mb-2">
+                      {weeklyTotalCalories.toLocaleString()} kcal
                     </div>
                     <div className="text-sm text-slate-600 dark:text-slate-400">
-                      Average: {Math.round(weeklyTotalCalories / 7)} kcal/day
+                      Average: {Math.round(weeklyTotalCalories / 7).toLocaleString()} kcal/day
                     </div>
-                    <div className="text-xs text-slate-500 mt-2">
-                      Includes resting + training calories
+                  </div>
+
+                  {/* Three Scenarios Comparison */}
+                  <div className="grid grid-cols-3 gap-3">
+                    {/* Underfueling */}
+                    <div className="bg-red-50 dark:bg-red-900/20 border-2 border-red-200 dark:border-red-800 rounded-lg p-4">
+                      <div className="text-center">
+                        <div className="text-xs font-semibold text-red-700 dark:text-red-400 mb-2">Underfueling</div>
+                        <div className="text-2xl font-bold text-red-700 dark:text-red-300 mb-1">
+                          {Math.round(weeklyTotalCalories * 0.85).toLocaleString()}
+                        </div>
+                        <div className="text-xs text-red-600 dark:text-red-500 mb-3">kcal/week</div>
+                        <div className="text-xs text-slate-600 dark:text-slate-400 mb-1">
+                          {Math.round(weeklyTotalCalories * 0.85 / 7).toLocaleString()} kcal/day
+                        </div>
+                        <div className="text-xs font-semibold text-red-700 dark:text-red-400 mt-3 pt-3 border-t border-red-200 dark:border-red-800">
+                          Short: {Math.round(weeklyTotalCalories * 0.15).toLocaleString()} kcal/week
+                        </div>
+                        <div className="text-[10px] text-red-600 dark:text-red-500">
+                          ~{Math.round(weeklyTotalCalories * 0.15 / 7).toLocaleString()} kcal/day deficit
+                        </div>
+                      </div>
                     </div>
+
+                    {/* Optimal */}
+                    <div className="bg-emerald-50 dark:bg-emerald-900/20 border-2 border-emerald-400 dark:border-emerald-600 rounded-lg p-4">
+                      <div className="text-center">
+                        <div className="text-xs font-semibold text-emerald-700 dark:text-emerald-400 mb-2">✓ Optimal</div>
+                        <div className="text-2xl font-bold text-emerald-700 dark:text-emerald-300 mb-1">
+                          {weeklyTotalCalories.toLocaleString()}
+                        </div>
+                        <div className="text-xs text-emerald-600 dark:text-emerald-500 mb-3">kcal/week</div>
+                        <div className="text-xs text-slate-600 dark:text-slate-400 mb-1">
+                          {Math.round(weeklyTotalCalories / 7).toLocaleString()} kcal/day
+                        </div>
+                        <div className="text-xs font-semibold text-emerald-700 dark:text-emerald-400 mt-3 pt-3 border-t border-emerald-200 dark:border-emerald-800">
+                          Target Met ✓
+                        </div>
+                        <div className="text-[10px] text-emerald-600 dark:text-emerald-500">
+                          Perfect balance
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Overfueling */}
+                    <div className="bg-orange-50 dark:bg-orange-900/20 border-2 border-orange-200 dark:border-orange-800 rounded-lg p-4">
+                      <div className="text-center">
+                        <div className="text-xs font-semibold text-orange-700 dark:text-orange-400 mb-2">Overfueling</div>
+                        <div className="text-2xl font-bold text-orange-700 dark:text-orange-300 mb-1">
+                          {Math.round(weeklyTotalCalories * 1.10).toLocaleString()}
+                        </div>
+                        <div className="text-xs text-orange-600 dark:text-orange-500 mb-3">kcal/week</div>
+                        <div className="text-xs text-slate-600 dark:text-slate-400 mb-1">
+                          {Math.round(weeklyTotalCalories * 1.10 / 7).toLocaleString()} kcal/day
+                        </div>
+                        <div className="text-xs font-semibold text-orange-700 dark:text-orange-400 mt-3 pt-3 border-t border-orange-200 dark:border-orange-800">
+                          Surplus: {Math.round(weeklyTotalCalories * 0.10).toLocaleString()} kcal/week
+                        </div>
+                        <div className="text-[10px] text-orange-600 dark:text-orange-500">
+                          ~{Math.round(weeklyTotalCalories * 0.10 / 7).toLocaleString()} kcal/day extra
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="text-xs text-slate-500 dark:text-slate-400 mt-4 text-center">
+                    Track your actual intake to see if you're hitting optimal targets or falling short
                   </div>
                 </Card>
               </div>
