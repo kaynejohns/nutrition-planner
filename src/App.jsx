@@ -333,11 +333,11 @@ const WeeklyCalorieChart = ({ dailyTotalCalories, dailyTrainingCalories, weeklyS
 
   return (
     <div className="space-y-4">
-      <div className="flex items-end justify-between h-64 space-x-2">
+      <div className="flex items-end justify-between h-80 space-x-2">
         {dailyTotalCalories.map((totalCalories, index) => {
           const sessions = getSessionBreakdown(index);
-          const restingHeight = (nonTraining / maxCalories) * 240; // Use 240px as base height
-          const sessionHeights = sessions.map(session => (session.calories / maxCalories) * 240);
+          const restingHeight = (nonTraining / maxCalories) * 280; // Use 280px as base height
+          const sessionHeights = sessions.map(session => (session.calories / maxCalories) * 280);
           
           return (
             <div key={index} className="flex flex-col items-center flex-1">
