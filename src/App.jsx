@@ -277,6 +277,16 @@ const WeeklySessionDay = ({ day, dayIndex, session, onUpdate, trainingCalories, 
             type="number"
             value={session.duration}
             onChange={(e) => updateSession('duration', Number(e.target.value))}
+            onFocus={(e) => {
+              if (e.target.value === '0') {
+                e.target.value = '';
+              }
+            }}
+            onBlur={(e) => {
+              if (e.target.value === '') {
+                updateSession('duration', 0);
+              }
+            }}
             min="0"
             max="300"
             className="w-full mt-1 border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 rounded-lg px-3 py-2 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
@@ -334,6 +344,16 @@ const WeeklySessionDay = ({ day, dayIndex, session, onUpdate, trainingCalories, 
                 type="number"
                 value={session.secondSession.duration}
                 onChange={(e) => updateSecondSession('duration', Number(e.target.value))}
+                onFocus={(e) => {
+                  if (e.target.value === '0') {
+                    e.target.value = '';
+                  }
+                }}
+                onBlur={(e) => {
+                  if (e.target.value === '') {
+                    updateSecondSession('duration', 0);
+                  }
+                }}
                 min="0"
                 max="300"
                 className="w-full mt-1 border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 rounded-lg px-3 py-2 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
