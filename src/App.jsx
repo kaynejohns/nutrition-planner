@@ -94,6 +94,113 @@ function calculateSessionCalories(weightKg, duration, type, intensity) {
   return Math.round(totalCalories);
 }
 
+// Calculate carbohydrate needs based on training volume and type
+function calculateCarbsPerKg(duration, type, intensity) {
+  const durationHours = duration / 60;
+  
+  // Strength/power focused training: 4-7 g/kg/day
+  if (type === 'strength') {
+    if (intensity === 'easy') return 4.5;
+    if (intensity === 'hard') return 5.5;
+    return 6.5; // severe
+  }
+  
+  // Team sports (HIIT as proxy): 5-8 g/kg, up to 8-10 on demanding days
+  if (type === 'hitt') {
+    if (intensity === 'easy') return 5.5;
+    if (intensity === 'hard') return 7.0;
+    return 8.5; // severe
+  }
+  
+  // Endurance training (run, bike, swim) - based on volume
+  // Light training or skill-based: 3-5 g/kg
+  if (durationHours < 0.75 && intensity === 'easy') {
+    return 4.0;
+  }
+  
+  // Moderate training (~1 hour/day): 5-7 g/kg
+  if (durationHours >= 0.75 && durationHours < 1.5) {
+    if (intensity === 'easy') return 5.5;
+    if (intensity === 'hard') return 6.5;
+    return 7.0; // severe
+  }
+  
+  // High-volume endurance (1-3 hours/day): 6-10 g/kg
+  if (durationHours >= 1.5 && durationHours <= 3) {
+    if (intensity === 'easy') return 7.0;
+    if (intensity === 'hard') return 8.5;
+    return 9.5; // severe
+  }
+  
+  // Extreme training load (4-5+ hours): 8-12 g/kg
+  if (durationHours > 3) {
+    if (intensity === 'easy') return 9.0;
+    if (intensity === 'hard') return 10.5;
+    return 11.5; // severe
+  }
+  
+  // Default moderate
+  return 6.0;
+}
+
+// Calculate protein needs based on training type
+function calculateProteinPerKg(type, intensity) {
+  // Strength/power athletes: 1.6-2.0 g/kg
+  if (type === 'strength') {
+    if (intensity === 'severe') return 2.0;
+    if (intensity === 'hard') return 1.8;
+    return 1.6;
+  }
+  
+  // Team sports/mixed training: 1.4-1.8 g/kg
+  if (type === 'hitt') {
+    if (intensity === 'severe') return 1.8;
+    if (intensity === 'hard') return 1.6;
+    return 1.4;
+  }
+  
+  // Endurance athletes (run, bike, swim): 1.2-1.6 g/kg
+  if (intensity === 'severe') return 1.6;
+  if (intensity === 'hard') return 1.4;
+  return 1.2;
+}
+
+// Calculate daily carbs based on all sessions for that day
+function calculateDailyCarbsPerKg(sessions) {
+  if (sessions.length === 0) return 3.0; // Rest day - minimal
+  
+  // For multiple sessions, take the highest carb requirement
+  const carbRequirements = sessions.map(s => calculateCarbsPerKg(s.duration, s.type, s.intensity));
+  return Math.max(...carbRequirements);
+}
+
+// Calculate daily protein based on predominant training type
+function calculateDailyProteinPerKg(sessions) {
+  if (sessions.length === 0) return 1.2; // Rest day - base maintenance
+  
+  // For multiple sessions, prioritize strength, then mixed, then endurance
+  const hasStrength = sessions.some(s => s.type === 'strength');
+  const hasHIIT = sessions.some(s => s.type === 'hitt');
+  
+  if (hasStrength) {
+    const strengthSession = sessions.find(s => s.type === 'strength');
+    return calculateProteinPerKg('strength', strengthSession.intensity);
+  }
+  
+  if (hasHIIT) {
+    const hittSession = sessions.find(s => s.type === 'hitt');
+    return calculateProteinPerKg('hitt', hittSession.intensity);
+  }
+  
+  // Endurance - use the most intense session
+  const maxIntensity = sessions.reduce((max, s) => {
+    const intensityRank = { easy: 1, hard: 2, severe: 3 };
+    return intensityRank[s.intensity] > intensityRank[max] ? s.intensity : max;
+  }, 'easy');
+  
+  return calculateProteinPerKg(sessions[0].type, maxIntensity);
+}
+
 function clamp(n, a, b) { return Math.max(a, Math.min(b, n)); }
 
 // ---------- Shareable URL params ----------
@@ -520,30 +627,66 @@ export default function App(){
     [dailyTotalCalories]
   );
 
-  // Calculate daily macros for each day
+  // Calculate daily macros for each day based on research guidelines
   const dailyMacros = useMemo(() => {
-    return dailyTotalCalories.map(totalCalories => {
-      // Use the same macro calculation logic as the main app
+    const days = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
+    
+    return dailyTotalCalories.map((totalCalories, dayIndex) => {
+      const day = days[dayIndex];
+      const daySession = weeklySessions[day];
+      
+      // Build sessions array for the day
+      const sessions = [];
+      if (daySession.duration > 0) {
+        sessions.push({
+          duration: daySession.duration,
+          type: daySession.type,
+          intensity: daySession.intensity
+        });
+      }
+      if (daySession.doubleSession && daySession.secondSession.duration > 0) {
+        sessions.push({
+          duration: daySession.secondSession.duration,
+          type: daySession.secondSession.type,
+          intensity: daySession.secondSession.intensity
+        });
+      }
+      
       const targetMacroCalories = Math.round(totalCalories * 0.95); // 95% of total calories for macros
       
-      // Calculate carbs based on training load (5-8g/kg range)
-      const carbG = Math.round(weightKg * 6.5); // Middle of 5-8g range
-      const proteinG = Math.round(weightKg * 1.8); // 1.8g/kg as specified
+      // Calculate carbs and protein based on training type and volume
+      const carbsPerKg = calculateDailyCarbsPerKg(sessions);
+      const proteinPerKg = calculateDailyProteinPerKg(sessions);
+      
+      const carbG = Math.round(weightKg * carbsPerKg);
+      const proteinG = Math.round(weightKg * proteinPerKg);
       const carbKcal = carbG * 4;
       const proteinKcal = proteinG * 4;
+      
+      // Calculate fat - ensuring minimum 15-20% of total calories
+      const minFatKcal = Math.round(totalCalories * 0.15); // 15% minimum
       const remainingKcal = targetMacroCalories - carbKcal - proteinKcal;
-      const fatG = Math.round(remainingKcal / 9);
+      const calculatedFatKcal = Math.max(remainingKcal, minFatKcal);
+      const fatG = Math.round(calculatedFatKcal / 9);
       const fatKcal = fatG * 9;
+      
+      // Ensure fat is also at least 1 g/kg (additional safety check)
+      const minFatG = Math.round(weightKg * 1.0);
+      const finalFatG = Math.max(fatG, minFatG);
+      const finalFatKcal = finalFatG * 9;
       
       return {
         carbs: carbG,
         protein: proteinG,
-        fat: fatG,
+        fat: finalFatG,
         totalCalories: totalCalories,
-        macroCalories: carbKcal + proteinKcal + fatKcal
+        macroCalories: carbKcal + proteinKcal + finalFatKcal,
+        carbsPerKg: carbsPerKg,
+        proteinPerKg: proteinPerKg,
+        fatPercent: Math.round((finalFatKcal / totalCalories) * 100)
       };
     });
-  }, [dailyTotalCalories, weightKg]);
+  }, [dailyTotalCalories, weightKg, weeklySessions]);
 
   // ---------- Actions ----------
   const copyShareLink = async () => {
@@ -952,16 +1095,30 @@ export default function App(){
                       // Calculate underfueling macros (<85% of total calories)
                       const underfuelCalories = Math.round(totalCals * 0.85);
                       const underfuelTargetMacroCalories = Math.round(underfuelCalories * 0.95);
-                      const underfuelCarbs = Math.round(weightKg * 5); // Lower end of range
-                      const underfuelProtein = Math.round(weightKg * 1.8);
-                      const underfuelFat = Math.round((underfuelTargetMacroCalories - (underfuelCarbs * 4) - (underfuelProtein * 4)) / 9);
+                      // Use 20% lower carbs than optimal for underfueling
+                      const underfuelCarbs = Math.round(optimalMacros.carbs * 0.8);
+                      const underfuelProtein = optimalMacros.protein; // Maintain protein
+                      const underfuelCarbKcal = underfuelCarbs * 4;
+                      const underfuelProteinKcal = underfuelProtein * 4;
+                      const underfuelRemainingKcal = underfuelTargetMacroCalories - underfuelCarbKcal - underfuelProteinKcal;
+                      // Ensure fat is at least 15% of calories
+                      const underfuelMinFatKcal = Math.round(underfuelCalories * 0.15);
+                      const underfuelFatKcal = Math.max(underfuelRemainingKcal, underfuelMinFatKcal);
+                      const underfuelFat = Math.max(Math.round(underfuelFatKcal / 9), Math.round(weightKg * 1.0));
                       
                       // Calculate overfueling macros (>110% of total calories)
                       const overfuelCalories = Math.round(totalCals * 1.10);
                       const overfuelTargetMacroCalories = Math.round(overfuelCalories * 0.95);
-                      const overfuelCarbs = Math.round(weightKg * 8); // Upper end of range
-                      const overfuelProtein = Math.round(weightKg * 1.8);
-                      const overfuelFat = Math.round((overfuelTargetMacroCalories - (overfuelCarbs * 4) - (overfuelProtein * 4)) / 9);
+                      // Use 20% higher carbs than optimal for overfueling
+                      const overfuelCarbs = Math.round(optimalMacros.carbs * 1.2);
+                      const overfuelProtein = optimalMacros.protein; // Maintain protein
+                      const overfuelCarbKcal = overfuelCarbs * 4;
+                      const overfuelProteinKcal = overfuelProtein * 4;
+                      const overfuelRemainingKcal = overfuelTargetMacroCalories - overfuelCarbKcal - overfuelProteinKcal;
+                      // Ensure fat is at least 15% of calories
+                      const overfuelMinFatKcal = Math.round(overfuelCalories * 0.15);
+                      const overfuelFatKcal = Math.max(overfuelRemainingKcal, overfuelMinFatKcal);
+                      const overfuelFat = Math.max(Math.round(overfuelFatKcal / 9), Math.round(weightKg * 1.0));
                       
                       const daySession = weeklySessions[day];
                       const sessions = [];
