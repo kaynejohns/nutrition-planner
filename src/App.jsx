@@ -341,16 +341,9 @@ const WeeklyCalorieChart = ({ dailyTotalCalories, dailyTrainingCalories, weeklyS
           
           return (
             <div key={index} className="flex flex-col items-center flex-1">
-              <div className="text-xs text-slate-600 dark:text-slate-400 mb-1">{totalCalories}</div>
+              <div className="text-lg font-bold text-slate-700 dark:text-slate-300 mb-2">{totalCalories}</div>
               <div className="w-full h-full flex flex-col justify-end">
-                {/* Resting calories (base) */}
-                <div
-                  className="w-full bg-gradient-to-t from-slate-400 to-slate-300 rounded-t-lg"
-                  style={{ height: `${Math.max(restingHeight, 8)}px` }}
-                  title={`Resting: ${nonTraining} kcal`}
-                />
-                
-                {/* Session calories (stacked) */}
+                {/* Session calories (stacked on top) */}
                 {sessionHeights.map((height, sessionIndex) => (
                   <div
                     key={sessionIndex}
@@ -359,6 +352,13 @@ const WeeklyCalorieChart = ({ dailyTotalCalories, dailyTrainingCalories, weeklyS
                     title={`${sessions[sessionIndex].type}: ${sessions[sessionIndex].calories} kcal`}
                   />
                 ))}
+                
+                {/* Resting calories (always at bottom) */}
+                <div
+                  className="w-full bg-gradient-to-t from-slate-400 to-slate-300 rounded-t-lg"
+                  style={{ height: `${Math.max(restingHeight, 8)}px` }}
+                  title={`Resting: ${nonTraining} kcal`}
+                />
               </div>
               <div className="text-xs text-slate-600 dark:text-slate-400 mt-2 font-medium">{days[index]}</div>
             </div>
