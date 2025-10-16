@@ -944,36 +944,104 @@ export default function App(){
               <div className="grid lg:grid-cols-2 gap-4 sm:gap-6">
                 <Card>
                   <SectionTitle title="Daily Calories" subtitle="Total calories per day (resting + training)" />
-                  <div className="space-y-2">
-                    {['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'].map((day, index) => (
-                      <div key={day} className="p-3 bg-slate-50 dark:bg-slate-800 rounded-lg">
-                        <div className="flex justify-between items-center mb-2">
-                          <span className="font-medium capitalize">{day}</span>
-                          <div className="text-right">
-                            <div className="font-bold text-emerald-700 dark:text-emerald-300">
-                              {dailyTotalCalories[index]} kcal
+                  <div className="space-y-3">
+                    {['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'].map((day, index) => {
+                      const totalCals = dailyTotalCalories[index];
+                      const optimalMacros = dailyMacros[index];
+                      
+                      // Calculate underfueling macros (<85% of total calories)
+                      const underfuelCalories = Math.round(totalCals * 0.85);
+                      const underfuelTargetMacroCalories = Math.round(underfuelCalories * 0.95);
+                      const underfuelCarbs = Math.round(weightKg * 5); // Lower end of range
+                      const underfuelProtein = Math.round(weightKg * 1.8);
+                      const underfuelFat = Math.round((underfuelTargetMacroCalories - (underfuelCarbs * 4) - (underfuelProtein * 4)) / 9);
+                      
+                      // Calculate overfueling macros (>110% of total calories)
+                      const overfuelCalories = Math.round(totalCals * 1.10);
+                      const overfuelTargetMacroCalories = Math.round(overfuelCalories * 0.95);
+                      const overfuelCarbs = Math.round(weightKg * 8); // Upper end of range
+                      const overfuelProtein = Math.round(weightKg * 1.8);
+                      const overfuelFat = Math.round((overfuelTargetMacroCalories - (overfuelCarbs * 4) - (overfuelProtein * 4)) / 9);
+                      
+                      return (
+                        <div key={day} className="p-3 bg-slate-50 dark:bg-slate-800 rounded-lg">
+                          <div className="flex justify-between items-center mb-3">
+                            <span className="font-medium capitalize">{day}</span>
+                            <div className="text-right">
+                              <div className="font-bold text-emerald-700 dark:text-emerald-300">
+                                {totalCals} kcal
+                              </div>
+                              <div className="text-xs text-slate-500">
+                                Training: {dailyTrainingCalories[index]} kcal
+                              </div>
                             </div>
-                            <div className="text-xs text-slate-500">
-                              Training: {dailyTrainingCalories[index]} kcal
+                          </div>
+                          
+                          {/* Three fueling scenarios */}
+                          <div className="grid grid-cols-3 gap-2 text-xs">
+                            {/* Underfueling */}
+                            <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded p-2">
+                              <div className="text-center font-semibold text-red-700 dark:text-red-400 mb-1">Underfueling</div>
+                              <div className="text-center text-[10px] text-red-600 dark:text-red-500 mb-1">&lt;85% ({underfuelCalories} kcal)</div>
+                              <div className="space-y-1">
+                                <div className="flex justify-between">
+                                  <span className="text-slate-600 dark:text-slate-400">C:</span>
+                                  <span className="font-bold text-red-700 dark:text-red-400">{underfuelCarbs}g</span>
+                                </div>
+                                <div className="flex justify-between">
+                                  <span className="text-slate-600 dark:text-slate-400">P:</span>
+                                  <span className="font-bold text-red-700 dark:text-red-400">{underfuelProtein}g</span>
+                                </div>
+                                <div className="flex justify-between">
+                                  <span className="text-slate-600 dark:text-slate-400">F:</span>
+                                  <span className="font-bold text-red-700 dark:text-red-400">{underfuelFat}g</span>
+                                </div>
+                              </div>
+                            </div>
+                            
+                            {/* Optimal */}
+                            <div className="bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-800 rounded p-2">
+                              <div className="text-center font-semibold text-emerald-700 dark:text-emerald-400 mb-1">Optimal</div>
+                              <div className="text-center text-[10px] text-emerald-600 dark:text-emerald-500 mb-1">100% ({totalCals} kcal)</div>
+                              <div className="space-y-1">
+                                <div className="flex justify-between">
+                                  <span className="text-slate-600 dark:text-slate-400">C:</span>
+                                  <span className="font-bold text-emerald-700 dark:text-emerald-400">{optimalMacros.carbs}g</span>
+                                </div>
+                                <div className="flex justify-between">
+                                  <span className="text-slate-600 dark:text-slate-400">P:</span>
+                                  <span className="font-bold text-emerald-700 dark:text-emerald-400">{optimalMacros.protein}g</span>
+                                </div>
+                                <div className="flex justify-between">
+                                  <span className="text-slate-600 dark:text-slate-400">F:</span>
+                                  <span className="font-bold text-emerald-700 dark:text-emerald-400">{optimalMacros.fat}g</span>
+                                </div>
+                              </div>
+                            </div>
+                            
+                            {/* Overfueling */}
+                            <div className="bg-orange-50 dark:bg-orange-900/20 border border-orange-200 dark:border-orange-800 rounded p-2">
+                              <div className="text-center font-semibold text-orange-700 dark:text-orange-400 mb-1">Overfueling</div>
+                              <div className="text-center text-[10px] text-orange-600 dark:text-orange-500 mb-1">&gt;110% ({overfuelCalories} kcal)</div>
+                              <div className="space-y-1">
+                                <div className="flex justify-between">
+                                  <span className="text-slate-600 dark:text-slate-400">C:</span>
+                                  <span className="font-bold text-orange-700 dark:text-orange-400">{overfuelCarbs}g</span>
+                                </div>
+                                <div className="flex justify-between">
+                                  <span className="text-slate-600 dark:text-slate-400">P:</span>
+                                  <span className="font-bold text-orange-700 dark:text-orange-400">{overfuelProtein}g</span>
+                                </div>
+                                <div className="flex justify-between">
+                                  <span className="text-slate-600 dark:text-slate-400">F:</span>
+                                  <span className="font-bold text-orange-700 dark:text-orange-400">{overfuelFat}g</span>
+                                </div>
+                              </div>
                             </div>
                           </div>
                         </div>
-                        <div className="flex justify-end gap-3 text-xs">
-                          <div className="text-center">
-                            <div className="text-slate-600 dark:text-slate-400">Carbs</div>
-                            <div className="font-bold text-emerald-600 dark:text-emerald-400">{dailyMacros[index].carbs}g</div>
-                          </div>
-                          <div className="text-center">
-                            <div className="text-slate-600 dark:text-slate-400">Protein</div>
-                            <div className="font-bold text-blue-600 dark:text-blue-400">{dailyMacros[index].protein}g</div>
-                          </div>
-                          <div className="text-center">
-                            <div className="text-slate-600 dark:text-slate-400">Fat</div>
-                            <div className="font-bold text-orange-600 dark:text-orange-400">{dailyMacros[index].fat}g</div>
-                          </div>
-                        </div>
-                      </div>
-                    ))}
+                      );
+                    })}
                   </div>
                 </Card>
 
