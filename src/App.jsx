@@ -313,11 +313,12 @@ const WeeklySessionDay = ({ day, dayIndex, session, onUpdate, trainingCalories, 
           <select
             value={session.intensity}
             onChange={(e) => updateSession('intensity', e.target.value)}
-            className="w-full mt-1 border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 rounded-lg px-3 py-2 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+            disabled={session.type === 'strength'}
+            className="w-full mt-1 border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 rounded-lg px-3 py-2 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            <option value="easy">Easy</option>
-            <option value="hard">Hard</option>
-            <option value="severe">Severe</option>
+            <option value="easy">{session.type === 'strength' ? 'N/A (Strength)' : 'Aerobic'}</option>
+            <option value="hard">Threshold</option>
+            <option value="severe">VO2max</option>
           </select>
         </div>
 
@@ -380,11 +381,12 @@ const WeeklySessionDay = ({ day, dayIndex, session, onUpdate, trainingCalories, 
               <select
                 value={session.secondSession.intensity}
                 onChange={(e) => updateSecondSession('intensity', e.target.value)}
-                className="w-full mt-1 border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 rounded-lg px-3 py-2 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                disabled={session.secondSession.type === 'strength'}
+                className="w-full mt-1 border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 rounded-lg px-3 py-2 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                <option value="easy">Easy</option>
-                <option value="hard">Hard</option>
-                <option value="severe">Severe</option>
+                <option value="easy">{session.secondSession.type === 'strength' ? 'N/A (Strength)' : 'Aerobic'}</option>
+                <option value="hard">Threshold</option>
+                <option value="severe">VO2max</option>
               </select>
             </div>
           </div>
@@ -1150,12 +1152,22 @@ export default function App(){
                       const overfuelFat = Math.max(Math.round(overfuelFatKcal / 9), Math.round(weightKg * 1.0));
                       
                       const daySession = weeklySessions[day];
+                      
+                      // Helper to format intensity names
+                      const formatIntensity = (intensity, type) => {
+                        if (type === 'strength') return '';
+                        const intensityMap = { easy: 'aerobic', hard: 'threshold', severe: 'VO2max' };
+                        return intensityMap[intensity] || intensity;
+                      };
+                      
                       const sessions = [];
                       if (daySession.duration > 0) {
-                        sessions.push(`${daySession.duration}min ${daySession.intensity} ${daySession.type}`);
+                        const intensityText = formatIntensity(daySession.intensity, daySession.type);
+                        sessions.push(`${daySession.duration}min ${intensityText ? intensityText + ' ' : ''}${daySession.type}`);
                       }
                       if (daySession.doubleSession && daySession.secondSession.duration > 0) {
-                        sessions.push(`${daySession.secondSession.duration}min ${daySession.secondSession.intensity} ${daySession.secondSession.type}`);
+                        const intensityText = formatIntensity(daySession.secondSession.intensity, daySession.secondSession.type);
+                        sessions.push(`${daySession.secondSession.duration}min ${intensityText ? intensityText + ' ' : ''}${daySession.secondSession.type}`);
                       }
                       const sessionText = sessions.length > 0 ? sessions.join(' + ') : 'Rest day';
                       
