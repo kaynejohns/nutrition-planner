@@ -946,14 +946,30 @@ export default function App(){
                   <SectionTitle title="Daily Calories" subtitle="Total calories per day (resting + training)" />
                   <div className="space-y-2">
                     {['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'].map((day, index) => (
-                      <div key={day} className="flex justify-between items-center p-2 bg-slate-50 dark:bg-slate-800 rounded-lg">
-                        <span className="font-medium capitalize">{day}</span>
-                        <div className="text-right">
-                          <div className="font-bold text-emerald-700 dark:text-emerald-300">
-                            {dailyTotalCalories[index]} kcal
+                      <div key={day} className="p-3 bg-slate-50 dark:bg-slate-800 rounded-lg">
+                        <div className="flex justify-between items-center mb-2">
+                          <span className="font-medium capitalize">{day}</span>
+                          <div className="text-right">
+                            <div className="font-bold text-emerald-700 dark:text-emerald-300">
+                              {dailyTotalCalories[index]} kcal
+                            </div>
+                            <div className="text-xs text-slate-500">
+                              Training: {dailyTrainingCalories[index]} kcal
+                            </div>
                           </div>
-                          <div className="text-xs text-slate-500">
-                            Training: {dailyTrainingCalories[index]} kcal
+                        </div>
+                        <div className="flex justify-end gap-3 text-xs">
+                          <div className="text-center">
+                            <div className="text-slate-600 dark:text-slate-400">Carbs</div>
+                            <div className="font-bold text-emerald-600 dark:text-emerald-400">{dailyMacros[index].carbs}g</div>
+                          </div>
+                          <div className="text-center">
+                            <div className="text-slate-600 dark:text-slate-400">Protein</div>
+                            <div className="font-bold text-blue-600 dark:text-blue-400">{dailyMacros[index].protein}g</div>
+                          </div>
+                          <div className="text-center">
+                            <div className="text-slate-600 dark:text-slate-400">Fat</div>
+                            <div className="font-bold text-orange-600 dark:text-orange-400">{dailyMacros[index].fat}g</div>
                           </div>
                         </div>
                       </div>
