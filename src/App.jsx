@@ -293,7 +293,7 @@ const WeeklySessionDay = ({ day, dayIndex, session, onUpdate, trainingCalories, 
             <option value="run">Run</option>
             <option value="bike">Bike</option>
             <option value="swim">Swim</option>
-            <option value="hitt">HIIT</option>
+            <option value="hitt">HIIT/Team Sports</option>
             <option value="strength">Strength</option>
           </select>
         </div>
@@ -350,7 +350,7 @@ const WeeklySessionDay = ({ day, dayIndex, session, onUpdate, trainingCalories, 
                 <option value="run">Run</option>
                 <option value="bike">Bike</option>
                 <option value="swim">Swim</option>
-                <option value="hitt">HIIT</option>
+                <option value="hitt">HIIT/Team Sports</option>
                 <option value="strength">Strength</option>
               </select>
             </div>
@@ -479,12 +479,21 @@ const WeeklyCalorieChart = ({ dailyTotalCalories, dailyTrainingCalories, weeklyS
           <div className="w-3 h-3 bg-gradient-to-r from-slate-400 to-slate-300 rounded"></div>
           <span className="text-slate-600 dark:text-slate-400">Resting</span>
         </div>
-        {Object.entries(sessionColors).map(([type, color]) => (
-          <div key={type} className="flex items-center gap-2">
-            <div className={`w-3 h-3 bg-gradient-to-r ${color} rounded`}></div>
-            <span className="text-slate-600 dark:text-slate-400 capitalize">{type}</span>
-          </div>
-        ))}
+        {Object.entries(sessionColors).map(([type, color]) => {
+          const displayNames = {
+            run: 'Run',
+            bike: 'Bike',
+            swim: 'Swim',
+            hitt: 'HIIT/Team Sports',
+            strength: 'Strength'
+          };
+          return (
+            <div key={type} className="flex items-center gap-2">
+              <div className={`w-3 h-3 bg-gradient-to-r ${color} rounded`}></div>
+              <span className="text-slate-600 dark:text-slate-400">{displayNames[type]}</span>
+            </div>
+          );
+        })}
       </div>
       
       <div className="text-center text-sm text-slate-600 dark:text-slate-400">
