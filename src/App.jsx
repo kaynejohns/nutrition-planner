@@ -963,10 +963,23 @@ export default function App(){
                       const overfuelProtein = Math.round(weightKg * 1.8);
                       const overfuelFat = Math.round((overfuelTargetMacroCalories - (overfuelCarbs * 4) - (overfuelProtein * 4)) / 9);
                       
+                      const daySession = weeklySessions[day];
+                      const sessions = [];
+                      if (daySession.duration > 0) {
+                        sessions.push(`${daySession.duration}min ${daySession.intensity} ${daySession.type}`);
+                      }
+                      if (daySession.doubleSession && daySession.secondSession.duration > 0) {
+                        sessions.push(`${daySession.secondSession.duration}min ${daySession.secondSession.intensity} ${daySession.secondSession.type}`);
+                      }
+                      const sessionText = sessions.length > 0 ? sessions.join(' + ') : 'Rest day';
+                      
                       return (
                         <div key={day} className="p-3 bg-slate-50 dark:bg-slate-800 rounded-lg">
                           <div className="flex justify-between items-center mb-3">
-                            <span className="font-medium capitalize">{day}</span>
+                            <div>
+                              <span className="font-medium capitalize">{day}</span>
+                              <div className="text-xs text-slate-600 dark:text-slate-400 mt-0.5">{sessionText}</div>
+                            </div>
                             <div className="text-right">
                               <div className="font-bold text-emerald-700 dark:text-emerald-300">
                                 {totalCals} kcal
