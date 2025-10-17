@@ -418,12 +418,12 @@ const WeeklySessionDay = ({ day, dayIndex, session, onUpdate, trainingCalories, 
   );
 };
 
-const WeeklyCalorieChart = ({ dailyTotalCalories, dailyTrainingCalories, weeklySessions, nonTraining, weightKg }) => {
+const WeeklyCalorieChart = ({ dailyTotalCalories, dailyTrainingCalories, weeklySessions, nonTraining, weightKg, dailyMacros }) => {
   const maxCalories = Math.max(...dailyTotalCalories, 100);
   const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
   
-  // Debug logging
-  console.log('Chart data:', { dailyTotalCalories, nonTraining, maxCalories, weightKg });
+  // Calculate max carbs for secondary axis
+  const maxCarbs = dailyMacros ? Math.max(...dailyMacros.map(m => m.carbs), 100) : 0;
   
   // Session type colors
   const sessionColors = {
@@ -460,62 +460,149 @@ const WeeklyCalorieChart = ({ dailyTotalCalories, dailyTrainingCalories, weeklyS
     return sessions;
   };
 
+  // Helper to get fueling category
+  const getFuelingCategory = (calories) => {
+    if (calories >= 4000) {
+      return { label: 'High Fuel', emoji: '🟢', color: 'text-emerald-600 dark:text-emerald-400', bg: 'bg-emerald-100 dark:bg-emerald-900/30', border: 'border-emerald-400' };
+    } else if (calories >= 3200) {
+      return { label: 'Moderate', emoji: '🟡', color: 'text-yellow-600 dark:text-yellow-400', bg: 'bg-yellow-100 dark:bg-yellow-900/30', border: 'border-yellow-400' };
+    } else {
+      return { label: 'Low Fuel', emoji: '🔵', color: 'text-blue-600 dark:text-blue-400', bg: 'bg-blue-100 dark:bg-blue-900/30', border: 'border-blue-400' };
+    }
+  };
+
   return (
     <div className="space-y-4">
-      <div className="flex items-end justify-between h-80 space-x-2">
-        {dailyTotalCalories.map((totalCalories, index) => {
-          const sessions = getSessionBreakdown(index);
-          const restingHeight = (nonTraining / maxCalories) * 280; // Use 280px as base height
-          const sessionHeights = sessions.map(session => (session.calories / maxCalories) * 280);
-          
-          return (
-            <div key={index} className="flex flex-col items-center flex-1">
-              <div className="text-lg font-bold text-slate-700 dark:text-slate-300 mb-2">{totalCalories}</div>
-              <div className="w-full h-full flex flex-col justify-end">
-                {/* Session calories (stacked on top) */}
-                {sessionHeights.map((height, sessionIndex) => (
-                  <div
-                    key={sessionIndex}
-                    className={`w-full bg-gradient-to-t ${sessions[sessionIndex].color} transition-all duration-300 hover:opacity-80`}
-                    style={{ height: `${Math.max(height, 4)}px` }}
-                    title={`${sessions[sessionIndex].type}: ${sessions[sessionIndex].calories} kcal`}
-                  />
-                ))}
+      <div className="relative">
+        {/* Carb Target Line (Secondary Axis) */}
+        {dailyMacros && (
+          <div className="absolute top-0 left-0 right-0 h-80 pointer-events-none">
+            <svg className="w-full h-full" style={{ zIndex: 10 }}>
+              <polyline
+                points={dailyTotalCalories.map((_, index) => {
+                  const x = ((index + 0.5) / dailyTotalCalories.length) * 100;
+                  const carbHeight = (dailyMacros[index].carbs / maxCarbs) * 90; // Use 90% of height
+                  const y = 100 - carbHeight;
+                  return `${x}%,${y}%`;
+                }).join(' ')}
+                fill="none"
+                stroke="#10b981"
+                strokeWidth="2"
+                strokeDasharray="4,4"
+                opacity="0.6"
+              />
+              {/* Carb dots */}
+              {dailyTotalCalories.map((_, index) => {
+                const x = ((index + 0.5) / dailyTotalCalories.length) * 100;
+                const carbHeight = (dailyMacros[index].carbs / maxCarbs) * 90;
+                const y = 100 - carbHeight;
+                return (
+                  <g key={index}>
+                    <circle cx={`${x}%`} cy={`${y}%`} r="4" fill="#10b981" />
+                    <text x={`${x}%`} y={`${y - 2}%`} textAnchor="middle" fontSize="9" fill="#10b981" fontWeight="bold">
+                      {dailyMacros[index].carbs}g
+                    </text>
+                  </g>
+                );
+              })}
+            </svg>
+          </div>
+        )}
+
+        {/* Main Chart */}
+        <div className="flex items-end justify-between h-80 space-x-2">
+          {dailyTotalCalories.map((totalCalories, index) => {
+            const sessions = getSessionBreakdown(index);
+            const restingHeight = (nonTraining / maxCalories) * 280; // Use 280px as base height
+            const sessionHeights = sessions.map(session => (session.calories / maxCalories) * 280);
+            const category = getFuelingCategory(totalCalories);
+            
+            return (
+              <div key={index} className="flex flex-col items-center flex-1 relative">
+                {/* Fueling Category Label */}
+                <div className={`text-[9px] font-bold ${category.color} ${category.bg} border ${category.border} rounded-full px-2 py-0.5 mb-1 whitespace-nowrap`}>
+                  {category.emoji} {category.label}
+                </div>
                 
-                {/* Resting calories (always at bottom) */}
-                <div
-                  className="w-full bg-gradient-to-t from-slate-400 to-slate-300 rounded-t-lg"
-                  style={{ height: `${Math.max(restingHeight, 8)}px` }}
-                  title={`Resting: ${nonTraining} kcal`}
-                />
+                {/* Calorie Number */}
+                <div className="text-lg font-bold text-slate-700 dark:text-slate-300 mb-2">{totalCalories}</div>
+                
+                {/* Bar Chart */}
+                <div className="w-full h-full flex flex-col justify-end relative" style={{ zIndex: 5 }}>
+                  {/* Session calories (stacked on top) */}
+                  {sessionHeights.map((height, sessionIndex) => (
+                    <div
+                      key={sessionIndex}
+                      className={`w-full bg-gradient-to-t ${sessions[sessionIndex].color} transition-all duration-300 hover:opacity-80`}
+                      style={{ height: `${Math.max(height, 4)}px` }}
+                      title={`${sessions[sessionIndex].type}: ${sessions[sessionIndex].calories} kcal`}
+                    />
+                  ))}
+                  
+                  {/* Resting calories (always at bottom) */}
+                  <div
+                    className="w-full bg-gradient-to-t from-slate-400 to-slate-300 rounded-t-lg"
+                    style={{ height: `${Math.max(restingHeight, 8)}px` }}
+                    title={`Resting: ${nonTraining} kcal`}
+                  />
+                </div>
+                
+                {/* Day Label */}
+                <div className="text-xs text-slate-600 dark:text-slate-400 mt-2 font-medium">{days[index]}</div>
               </div>
-              <div className="text-xs text-slate-600 dark:text-slate-400 mt-2 font-medium">{days[index]}</div>
-            </div>
-          );
-        })}
+            );
+          })}
+        </div>
       </div>
       
       {/* Legend */}
-      <div className="flex flex-wrap justify-center gap-4 text-xs">
-        <div className="flex items-center gap-2">
-          <div className="w-3 h-3 bg-gradient-to-r from-slate-400 to-slate-300 rounded"></div>
-          <span className="text-slate-600 dark:text-slate-400">Resting</span>
-        </div>
-        {Object.entries(sessionColors).map(([type, color]) => {
-          const displayNames = {
-            run: 'Run',
-            bike: 'Bike',
-            swim: 'Swim',
-            hitt: 'HIIT/Team Sports',
-            strength: 'Strength'
-          };
-          return (
-            <div key={type} className="flex items-center gap-2">
-              <div className={`w-3 h-3 bg-gradient-to-r ${color} rounded`}></div>
-              <span className="text-slate-600 dark:text-slate-400">{displayNames[type]}</span>
+      <div className="space-y-2">
+        <div className="flex flex-wrap justify-center gap-4 text-xs">
+          <div className="flex items-center gap-2">
+            <div className="w-3 h-3 bg-gradient-to-r from-slate-400 to-slate-300 rounded"></div>
+            <span className="text-slate-600 dark:text-slate-400">Resting</span>
+          </div>
+          {Object.entries(sessionColors).map(([type, color]) => {
+            const displayNames = {
+              run: 'Run',
+              bike: 'Bike',
+              swim: 'Swim',
+              hitt: 'HIIT/Team Sports',
+              strength: 'Strength'
+            };
+            return (
+              <div key={type} className="flex items-center gap-2">
+                <div className={`w-3 h-3 bg-gradient-to-r ${color} rounded`}></div>
+                <span className="text-slate-600 dark:text-slate-400">{displayNames[type]}</span>
+              </div>
+            );
+          })}
+          {dailyMacros && (
+            <div className="flex items-center gap-2">
+              <svg width="20" height="12">
+                <line x1="0" y1="6" x2="20" y2="6" stroke="#10b981" strokeWidth="2" strokeDasharray="4,4" />
+                <circle cx="10" cy="6" r="3" fill="#10b981" />
+              </svg>
+              <span className="text-slate-600 dark:text-slate-400">Carb Target (g)</span>
             </div>
-          );
-        })}
+          )}
+        </div>
+        
+        {/* Fueling Categories */}
+        <div className="flex flex-wrap justify-center gap-3 text-[10px] pt-2 border-t border-slate-200 dark:border-slate-700">
+          <div className="flex items-center gap-1">
+            <span>🟢</span>
+            <span className="text-slate-600 dark:text-slate-400">High Fuel (≥4,000 kcal)</span>
+          </div>
+          <div className="flex items-center gap-1">
+            <span>🟡</span>
+            <span className="text-slate-600 dark:text-slate-400">Moderate (3,200-3,999 kcal)</span>
+          </div>
+          <div className="flex items-center gap-1">
+            <span>🔵</span>
+            <span className="text-slate-600 dark:text-slate-400">Low Fuel (&lt;3,200 kcal)</span>
+          </div>
+        </div>
       </div>
       
       <div className="text-center text-sm text-slate-600 dark:text-slate-400">
@@ -1689,6 +1776,7 @@ export default function App(){
                   weeklySessions={weeklySessions}
                   nonTraining={nonTraining}
                   weightKg={weightKg}
+                  dailyMacros={dailyMacros}
                 />
               </Card>
             </motion.div>
