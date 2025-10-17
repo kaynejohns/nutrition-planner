@@ -1353,6 +1353,221 @@ export default function App(){
                     </div>
                   </div>
                   
+                  {/* Derived Load Metrics */}
+                  <div className="mb-6 pb-6 border-b border-slate-200 dark:border-slate-700">
+                    <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-300 mb-3">⚙️ Training Load & Distribution</h3>
+                    
+                    {(() => {
+                      const days = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
+                      
+                      // Calculate TRIMP for each day
+                      const calculateTRIMP = (duration, intensity, type) => {
+                        if (duration === 0) return 0;
+                        if (type === 'strength') return duration * 1.0; // Strength = moderate load
+                        const intensityWeights = { easy: 1.0, hard: 1.5, severe: 2.0 };
+                        return duration * intensityWeights[intensity];
+                      };
+                      
+                      const dailyLoads = days.map(day => {
+                        const session = weeklySessions[day];
+                        let load = calculateTRIMP(session.duration, session.intensity, session.type);
+                        if (session.doubleSession) {
+                          load += calculateTRIMP(session.secondSession.duration, session.secondSession.intensity, session.secondSession.type);
+                        }
+                        return Math.round(load);
+                      });
+                      
+                      const weeklyLoad = dailyLoads.reduce((sum, load) => sum + load, 0);
+                      const avgLoad = Math.round(weeklyLoad / 7);
+                      const maxDailyLoad = Math.max(...dailyLoads);
+                      
+                      // Calculate intensity distribution
+                      let aerobicMins = 0, thresholdMins = 0, vo2maxMins = 0, strengthMins = 0;
+                      days.forEach(day => {
+                        const session = weeklySessions[day];
+                        const addMinutes = (duration, intensity, type) => {
+                          if (duration === 0) return;
+                          if (type === 'strength') {
+                            strengthMins += duration;
+                          } else if (intensity === 'easy') {
+                            aerobicMins += duration;
+                          } else if (intensity === 'hard') {
+                            thresholdMins += duration;
+                          } else if (intensity === 'severe') {
+                            vo2maxMins += duration;
+                          }
+                        };
+                        addMinutes(session.duration, session.intensity, session.type);
+                        if (session.doubleSession) {
+                          addMinutes(session.secondSession.duration, session.secondSession.intensity, session.secondSession.type);
+                        }
+                      });
+                      
+                      const totalMins = aerobicMins + thresholdMins + vo2maxMins + strengthMins;
+                      const aerobicPct = totalMins > 0 ? Math.round((aerobicMins / totalMins) * 100) : 0;
+                      const thresholdPct = totalMins > 0 ? Math.round((thresholdMins / totalMins) * 100) : 0;
+                      const vo2maxPct = totalMins > 0 ? Math.round((vo2maxMins / totalMins) * 100) : 0;
+                      const strengthPct = totalMins > 0 ? Math.round((strengthMins / totalMins) * 100) : 0;
+                      
+                      // Calculate modality distribution
+                      let runMins = 0, bikeMins = 0, swimMins = 0, hittMins = 0, strMins = 0;
+                      days.forEach(day => {
+                        const session = weeklySessions[day];
+                        const addModality = (duration, type) => {
+                          if (duration === 0) return;
+                          if (type === 'run') runMins += duration;
+                          else if (type === 'bike') bikeMins += duration;
+                          else if (type === 'swim') swimMins += duration;
+                          else if (type === 'hitt') hittMins += duration;
+                          else if (type === 'strength') strMins += duration;
+                        };
+                        addModality(session.duration, session.type);
+                        if (session.doubleSession) {
+                          addModality(session.secondSession.duration, session.secondSession.type);
+                        }
+                      });
+                      
+                      const runPct = totalMins > 0 ? Math.round((runMins / totalMins) * 100) : 0;
+                      const bikePct = totalMins > 0 ? Math.round((bikeMins / totalMins) * 100) : 0;
+                      const swimPct = totalMins > 0 ? Math.round((swimMins / totalMins) * 100) : 0;
+                      const hittPct = totalMins > 0 ? Math.round((hittMins / totalMins) * 100) : 0;
+                      const strPct = totalMins > 0 ? Math.round((strMins / totalMins) * 100) : 0;
+                      
+                      return (
+                        <div className="bg-slate-50 dark:bg-slate-800 rounded-lg p-4 space-y-6">
+                          {/* Session Load (TRIMP) */}
+                          <div>
+                            <h4 className="text-xs font-semibold text-slate-700 dark:text-slate-300 mb-3">📊 Session Load (TRIMP-lite)</h4>
+                            
+                            {/* Daily Load Bars */}
+                            <div className="space-y-2 mb-4">
+                              {days.map((day, index) => {
+                                const load = dailyLoads[index];
+                                const dayLabel = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'][index];
+                                const barWidth = maxDailyLoad > 0 ? (load / maxDailyLoad) * 100 : 0;
+                                
+                                return (
+                                  <div key={day} className="flex items-center gap-2">
+                                    <div className="text-[10px] font-medium text-slate-600 dark:text-slate-400 w-8">{dayLabel}</div>
+                                    <div className="flex-1 bg-slate-200 dark:bg-slate-700 rounded-full h-4 overflow-hidden">
+                                      <div 
+                                        className="bg-gradient-to-r from-emerald-500 to-emerald-400 h-full flex items-center justify-end pr-2 transition-all duration-300"
+                                        style={{ width: `${barWidth}%` }}
+                                      >
+                                        {load > 0 && <span className="text-[9px] font-semibold text-white">{load}</span>}
+                                      </div>
+                                    </div>
+                                  </div>
+                                );
+                              })}
+                            </div>
+                            
+                            {/* Weekly Stats */}
+                            <div className="grid grid-cols-3 gap-3 text-center pt-3 border-t border-slate-200 dark:border-slate-700">
+                              <div>
+                                <div className="text-[10px] text-slate-600 dark:text-slate-400">Weekly Total</div>
+                                <div className="text-lg font-bold text-emerald-700 dark:text-emerald-300">{weeklyLoad}</div>
+                                <div className="text-[9px] text-slate-500">Load Units</div>
+                              </div>
+                              <div>
+                                <div className="text-[10px] text-slate-600 dark:text-slate-400">Daily Average</div>
+                                <div className="text-lg font-bold text-emerald-700 dark:text-emerald-300">{avgLoad}</div>
+                                <div className="text-[9px] text-slate-500">Load Units</div>
+                              </div>
+                              <div>
+                                <div className="text-[10px] text-slate-600 dark:text-slate-400">Peak Day</div>
+                                <div className="text-lg font-bold text-emerald-700 dark:text-emerald-300">{maxDailyLoad}</div>
+                                <div className="text-[9px] text-slate-500">Load Units</div>
+                              </div>
+                            </div>
+                          </div>
+                          
+                          {/* Intensity Distribution */}
+                          <div className="pt-4 border-t border-slate-200 dark:border-slate-700">
+                            <h4 className="text-xs font-semibold text-slate-700 dark:text-slate-300 mb-3">🎯 Intensity Distribution (80/20 Model)</h4>
+                            
+                            {/* Stacked Bar */}
+                            <div className="mb-3">
+                              <div className="flex h-8 rounded-lg overflow-hidden">
+                                {aerobicPct > 0 && (
+                                  <div className="bg-emerald-500 flex items-center justify-center text-[9px] font-semibold text-white" style={{ width: `${aerobicPct}%` }}>
+                                    {aerobicPct > 10 && `${aerobicPct}%`}
+                                  </div>
+                                )}
+                                {thresholdPct > 0 && (
+                                  <div className="bg-orange-500 flex items-center justify-center text-[9px] font-semibold text-white" style={{ width: `${thresholdPct}%` }}>
+                                    {thresholdPct > 10 && `${thresholdPct}%`}
+                                  </div>
+                                )}
+                                {vo2maxPct > 0 && (
+                                  <div className="bg-red-500 flex items-center justify-center text-[9px] font-semibold text-white" style={{ width: `${vo2maxPct}%` }}>
+                                    {vo2maxPct > 10 && `${vo2maxPct}%`}
+                                  </div>
+                                )}
+                                {strengthPct > 0 && (
+                                  <div className="bg-purple-500 flex items-center justify-center text-[9px] font-semibold text-white" style={{ width: `${strengthPct}%` }}>
+                                    {strengthPct > 10 && `${strengthPct}%`}
+                                  </div>
+                                )}
+                              </div>
+                            </div>
+                            
+                            {/* Legend */}
+                            <div className="grid grid-cols-2 gap-2 text-[10px]">
+                              <div className="flex items-center gap-2">
+                                <div className="w-3 h-3 bg-emerald-500 rounded"></div>
+                                <span className="text-slate-600 dark:text-slate-400">Aerobic: {aerobicPct}% ({aerobicMins}min)</span>
+                              </div>
+                              <div className="flex items-center gap-2">
+                                <div className="w-3 h-3 bg-orange-500 rounded"></div>
+                                <span className="text-slate-600 dark:text-slate-400">Threshold: {thresholdPct}% ({thresholdMins}min)</span>
+                              </div>
+                              <div className="flex items-center gap-2">
+                                <div className="w-3 h-3 bg-red-500 rounded"></div>
+                                <span className="text-slate-600 dark:text-slate-400">VO₂max: {vo2maxPct}% ({vo2maxMins}min)</span>
+                              </div>
+                              <div className="flex items-center gap-2">
+                                <div className="w-3 h-3 bg-purple-500 rounded"></div>
+                                <span className="text-slate-600 dark:text-slate-400">Strength: {strengthPct}% ({strMins}min)</span>
+                              </div>
+                            </div>
+                          </div>
+                          
+                          {/* Modality Distribution */}
+                          <div className="pt-4 border-t border-slate-200 dark:border-slate-700">
+                            <h4 className="text-xs font-semibold text-slate-700 dark:text-slate-300 mb-3">🏃‍♂️ Modality Distribution</h4>
+                            
+                            {/* Horizontal Bars */}
+                            <div className="space-y-2">
+                              {[
+                                { name: 'Run', mins: runMins, pct: runPct, color: 'from-red-500 to-red-400' },
+                                { name: 'Bike', mins: bikeMins, pct: bikePct, color: 'from-blue-500 to-blue-400' },
+                                { name: 'Swim', mins: swimMins, pct: swimPct, color: 'from-cyan-500 to-cyan-400' },
+                                { name: 'HIIT', mins: hittMins, pct: hittPct, color: 'from-purple-500 to-purple-400' },
+                                { name: 'Strength', mins: strMins, pct: strPct, color: 'from-orange-500 to-orange-400' }
+                              ].map(({ name, mins, pct, color }) => (
+                                mins > 0 && (
+                                  <div key={name} className="flex items-center gap-2">
+                                    <div className="text-[10px] font-medium text-slate-600 dark:text-slate-400 w-16">{name}</div>
+                                    <div className="flex-1 bg-slate-200 dark:bg-slate-700 rounded-full h-6 overflow-hidden">
+                                      <div 
+                                        className={`bg-gradient-to-r ${color} h-full flex items-center justify-between px-2`}
+                                        style={{ width: `${pct}%` }}
+                                      >
+                                        <span className="text-[9px] font-semibold text-white">{pct}%</span>
+                                        <span className="text-[9px] font-semibold text-white">{mins}min</span>
+                                      </div>
+                                    </div>
+                                  </div>
+                                )
+                              ))}
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })()}
+                  </div>
+                  
                   {/* Optimal Weekly Total */}
                   <div className="text-center mb-6 pb-6 border-b border-slate-200 dark:border-slate-700">
                     <div className="text-sm text-slate-600 dark:text-slate-400 mb-1">Optimal Weekly Target</div>
