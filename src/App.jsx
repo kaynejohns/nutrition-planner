@@ -1259,6 +1259,100 @@ export default function App(){
                 <Card>
                   <SectionTitle title="Weekly Summary" subtitle="Compare your weekly calorie targets" />
                   
+                  {/* Training Snapshot */}
+                  <div className="mb-6 pb-6 border-b border-slate-200 dark:border-slate-700">
+                    <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-300 mb-3">📋 Training Snapshot</h3>
+                    <div className="bg-slate-50 dark:bg-slate-800 rounded-lg p-4">
+                      <div className="grid grid-cols-7 gap-2">
+                        {['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'].map((day, index) => {
+                          const daySession = weeklySessions[day];
+                          const dayLabel = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'][index];
+                          
+                          // Helper to format intensity
+                          const formatIntensity = (intensity, type) => {
+                            if (type === 'strength') return '';
+                            const intensityMap = { easy: 'Aer', hard: 'Thr', severe: 'VO2' };
+                            return intensityMap[intensity] || intensity;
+                          };
+                          
+                          // Helper to format type
+                          const formatType = (type) => {
+                            const typeMap = { 
+                              run: 'Run', 
+                              bike: 'Bike', 
+                              swim: 'Swim', 
+                              hitt: 'HIIT', 
+                              strength: 'Str' 
+                            };
+                            return typeMap[type] || type;
+                          };
+                          
+                          const hasSession = daySession.duration > 0;
+                          const isDouble = daySession.doubleSession && daySession.secondSession.duration > 0;
+                          
+                          return (
+                            <div key={day} className={`text-center p-2 rounded ${hasSession ? 'bg-emerald-100 dark:bg-emerald-900/30 border border-emerald-300 dark:border-emerald-700' : 'bg-slate-100 dark:bg-slate-700 border border-slate-200 dark:border-slate-600'}`}>
+                              <div className="text-[10px] font-semibold text-slate-600 dark:text-slate-400 mb-1">{dayLabel}</div>
+                              {hasSession ? (
+                                <div className="space-y-1">
+                                  <div className="text-[9px] text-slate-700 dark:text-slate-300">
+                                    <div className="font-semibold">{daySession.duration}min</div>
+                                    <div>{formatIntensity(daySession.intensity, daySession.type)} {formatType(daySession.type)}</div>
+                                  </div>
+                                  {isDouble && (
+                                    <div className="text-[9px] text-slate-700 dark:text-slate-300 pt-1 border-t border-emerald-300 dark:border-emerald-700">
+                                      <div className="font-semibold">{daySession.secondSession.duration}min</div>
+                                      <div>{formatIntensity(daySession.secondSession.intensity, daySession.secondSession.type)} {formatType(daySession.secondSession.type)}</div>
+                                    </div>
+                                  )}
+                                </div>
+                              ) : (
+                                <div className="text-[9px] text-slate-500 dark:text-slate-400">Rest</div>
+                              )}
+                            </div>
+                          );
+                        })}
+                      </div>
+                      
+                      {/* Weekly Totals */}
+                      <div className="mt-4 pt-4 border-t border-slate-200 dark:border-slate-700 grid grid-cols-3 gap-4 text-center">
+                        <div>
+                          <div className="text-xs text-slate-600 dark:text-slate-400">Total Training Time</div>
+                          <div className="text-lg font-bold text-emerald-700 dark:text-emerald-300">
+                            {(() => {
+                              const days = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
+                              const totalMinutes = days.reduce((sum, day) => {
+                                const session = weeklySessions[day];
+                                let dayTotal = session.duration;
+                                if (session.doubleSession) {
+                                  dayTotal += session.secondSession.duration;
+                                }
+                                return sum + dayTotal;
+                              }, 0);
+                              const hours = Math.floor(totalMinutes / 60);
+                              const mins = totalMinutes % 60;
+                              return `${hours}h ${mins}m`;
+                            })()}
+                          </div>
+                        </div>
+                        <div>
+                          <div className="text-xs text-slate-600 dark:text-slate-400">Training Days</div>
+                          <div className="text-lg font-bold text-emerald-700 dark:text-emerald-300">
+                            {['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday']
+                              .filter(day => weeklySessions[day].duration > 0).length} / 7
+                          </div>
+                        </div>
+                        <div>
+                          <div className="text-xs text-slate-600 dark:text-slate-400">Double Days</div>
+                          <div className="text-lg font-bold text-emerald-700 dark:text-emerald-300">
+                            {['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday']
+                              .filter(day => weeklySessions[day].doubleSession && weeklySessions[day].secondSession.duration > 0).length}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  
                   {/* Optimal Weekly Total */}
                   <div className="text-center mb-6 pb-6 border-b border-slate-200 dark:border-slate-700">
                     <div className="text-sm text-slate-600 dark:text-slate-400 mb-1">Optimal Weekly Target</div>
