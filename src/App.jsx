@@ -1275,7 +1275,7 @@ export default function App(){
                     {/* Underfueling */}
                     <div className="bg-red-50 dark:bg-red-900/20 border-2 border-red-200 dark:border-red-800 rounded-lg p-4">
                       <div className="text-center">
-                        <div className="text-xs font-semibold text-red-700 dark:text-red-400 mb-2">Underfueling</div>
+                        <div className="text-xs font-semibold text-red-700 dark:text-red-400 mb-2">⚠️ Underfueling</div>
                         <div className="text-2xl font-bold text-red-700 dark:text-red-300 mb-1">
                           {Math.round(weeklyTotalCalories * 0.85).toLocaleString()}
                         </div>
@@ -1286,16 +1286,27 @@ export default function App(){
                         <div className="text-xs font-semibold text-red-700 dark:text-red-400 mt-3 pt-3 border-t border-red-200 dark:border-red-800">
                           Short: {Math.round(weeklyTotalCalories * 0.15).toLocaleString()} kcal/week
                         </div>
-                        <div className="text-[10px] text-red-600 dark:text-red-500">
+                        <div className="text-[10px] text-red-600 dark:text-red-500 mb-3">
                           ~{Math.round(weeklyTotalCalories * 0.15 / 7).toLocaleString()} kcal/day deficit
                         </div>
+                      </div>
+                      
+                      {/* Warning Signs */}
+                      <div className="mt-3 pt-3 border-t border-red-200 dark:border-red-800 text-left">
+                        <div className="text-[10px] font-semibold text-red-700 dark:text-red-400 mb-2">Low Energy Availability Signs:</div>
+                        <ul className="text-[9px] text-slate-600 dark:text-slate-400 space-y-1 pl-3">
+                          <li>• Persistent fatigue, poor recovery</li>
+                          <li>• Performance decline, slower times</li>
+                          <li>• Disrupted hormones/cycle</li>
+                          <li>• Poor sleep, frequent illness</li>
+                        </ul>
                       </div>
                     </div>
 
                     {/* Optimal */}
                     <div className="bg-emerald-50 dark:bg-emerald-900/20 border-2 border-emerald-400 dark:border-emerald-600 rounded-lg p-4">
                       <div className="text-center">
-                        <div className="text-xs font-semibold text-emerald-700 dark:text-emerald-400 mb-2">✓ Optimal</div>
+                        <div className="text-xs font-semibold text-emerald-700 dark:text-emerald-400 mb-2">✅ Optimal</div>
                         <div className="text-2xl font-bold text-emerald-700 dark:text-emerald-300 mb-1">
                           {weeklyTotalCalories.toLocaleString()}
                         </div>
@@ -1306,16 +1317,27 @@ export default function App(){
                         <div className="text-xs font-semibold text-emerald-700 dark:text-emerald-400 mt-3 pt-3 border-t border-emerald-200 dark:border-emerald-800">
                           Target Met ✓
                         </div>
-                        <div className="text-[10px] text-emerald-600 dark:text-emerald-500">
+                        <div className="text-[10px] text-emerald-600 dark:text-emerald-500 mb-3">
                           Perfect balance
                         </div>
+                      </div>
+                      
+                      {/* Optimal Signs */}
+                      <div className="mt-3 pt-3 border-t border-emerald-200 dark:border-emerald-800 text-left">
+                        <div className="text-[10px] font-semibold text-emerald-700 dark:text-emerald-400 mb-2">Optimal Fueling Signs:</div>
+                        <ul className="text-[9px] text-slate-600 dark:text-slate-400 space-y-1 pl-3">
+                          <li>• Stable energy across sessions</li>
+                          <li>• Progressive training gains</li>
+                          <li>• Good recovery, restful sleep</li>
+                          <li>• Normal mood and hormones</li>
+                        </ul>
                       </div>
                     </div>
 
                     {/* Overfueling */}
                     <div className="bg-orange-50 dark:bg-orange-900/20 border-2 border-orange-200 dark:border-orange-800 rounded-lg p-4">
                       <div className="text-center">
-                        <div className="text-xs font-semibold text-orange-700 dark:text-orange-400 mb-2">Overfueling</div>
+                        <div className="text-xs font-semibold text-orange-700 dark:text-orange-400 mb-2">⚠️ Overfueling</div>
                         <div className="text-2xl font-bold text-orange-700 dark:text-orange-300 mb-1">
                           {Math.round(weeklyTotalCalories * 1.10).toLocaleString()}
                         </div>
@@ -1326,9 +1348,20 @@ export default function App(){
                         <div className="text-xs font-semibold text-orange-700 dark:text-orange-400 mt-3 pt-3 border-t border-orange-200 dark:border-orange-800">
                           Surplus: {Math.round(weeklyTotalCalories * 0.10).toLocaleString()} kcal/week
                         </div>
-                        <div className="text-[10px] text-orange-600 dark:text-orange-500">
+                        <div className="text-[10px] text-orange-600 dark:text-orange-500 mb-3">
                           ~{Math.round(weeklyTotalCalories * 0.10 / 7).toLocaleString()} kcal/day extra
                         </div>
+                      </div>
+                      
+                      {/* Overfueling Signs */}
+                      <div className="mt-3 pt-3 border-t border-orange-200 dark:border-orange-800 text-left">
+                        <div className="text-[10px] font-semibold text-orange-700 dark:text-orange-400 mb-2">Excess Intake Signs:</div>
+                        <ul className="text-[9px] text-slate-600 dark:text-slate-400 space-y-1 pl-3">
+                          <li>• GI discomfort, bloating, nausea</li>
+                          <li>• Unwanted body comp changes</li>
+                          <li>• Feeling heavy or lethargic</li>
+                          <li>• Reduced training quality</li>
+                        </ul>
                       </div>
                     </div>
                   </div>
