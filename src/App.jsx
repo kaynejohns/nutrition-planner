@@ -1387,7 +1387,7 @@ export default function App(){
                         <>
                           {/* Training Sessions */}
                           {day.sessions.map((session, idx) => (
-                            <div key={idx} className="mb-3 pb-3 border-b border-emerald-200 dark:border-orange-700 last:border-0 last:pb-0 last:mb-0">
+                            <div key={idx} className="mb-3 pb-3 border-b border-orange-200 dark:border-orange-700 last:border-0 last:pb-0 last:mb-0">
                               <div className="flex items-center justify-between mb-2">
                                 <div className="font-semibold text-orange-700 dark:text-orange-300">
                                   {session.timeOfDay} Session • {session.type} • {session.duration} min
@@ -1399,11 +1399,21 @@ export default function App(){
                               <div className="grid grid-cols-2 gap-3 text-sm">
                                 <div>
                                   <div className="text-slate-600 dark:text-slate-400 mb-1">Rate</div>
-                                  <div className="font-semibold">{session.fluidPerHour} ml/h • {session.sodiumPerHour} mg/h</div>
+                                  <div className="font-semibold text-orange-700 dark:text-orange-400">
+                                    <span className="text-slate-700 dark:text-slate-300">Fluid:</span> {session.fluidPerHour} ml/h
+                                  </div>
+                                  <div className="font-semibold text-orange-700 dark:text-orange-400">
+                                    <span className="text-slate-700 dark:text-slate-300">Sodium:</span> {session.sodiumPerHour} mg/h
+                                  </div>
                                 </div>
                                 <div>
                                   <div className="text-slate-600 dark:text-slate-400 mb-1">Session Total</div>
-                                  <div className="font-semibold">{session.totalFluid} ml • {session.totalSodium} mg</div>
+                                  <div className="font-semibold text-orange-700 dark:text-orange-400">
+                                    <span className="text-slate-700 dark:text-slate-300">Fluid:</span> {session.totalFluid} ml
+                                  </div>
+                                  <div className="font-semibold text-orange-700 dark:text-orange-400">
+                                    <span className="text-slate-700 dark:text-slate-300">Sodium:</span> {session.totalSodium} mg
+                                  </div>
                                 </div>
                               </div>
                             </div>
@@ -1414,17 +1424,25 @@ export default function App(){
                             <div className="grid grid-cols-3 gap-3 text-sm">
                               <div>
                                 <div className="text-slate-600 dark:text-slate-400 mb-1">Training Total</div>
-                                <div className="font-bold text-orange-700 dark:text-orange-300">{day.totalTrainingFluid} ml</div>
-                                <div className="text-xs text-slate-500">{day.totalTrainingSodium} mg Na</div>
+                                <div className="font-bold text-orange-700 dark:text-orange-300">
+                                  <span className="text-slate-700 dark:text-slate-300 text-xs font-normal">Fluid:</span> {day.totalTrainingFluid} ml
+                                </div>
+                                <div className="text-xs text-slate-500">
+                                  <span className="font-semibold">Sodium:</span> {day.totalTrainingSodium} mg
+                                </div>
                               </div>
                               <div>
                                 <div className="text-slate-600 dark:text-slate-400 mb-1">Total Fluid Intake (24h)</div>
-                                <div className="font-bold text-orange-700 dark:text-orange-300">{day.dailyResting} ml</div>
+                                <div className="font-bold text-orange-700 dark:text-orange-300">
+                                  <span className="text-slate-700 dark:text-slate-300 text-xs font-normal">Fluid:</span> {day.dailyResting} ml
+                                </div>
                                 <div className="text-xs text-slate-500">Background fluid</div>
                               </div>
                               <div>
                                 <div className="text-slate-600 dark:text-slate-400 mb-1">Daily Total</div>
-                                <div className="font-bold text-xl text-emerald-800 dark:text-emerald-200">{day.totalDaily} ml</div>
+                                <div className="font-bold text-xl text-orange-800 dark:text-orange-200">
+                                  <span className="text-slate-700 dark:text-slate-300 text-sm font-normal">Fluid:</span> {day.totalDaily} ml
+                                </div>
                                 <div className="text-xs text-slate-500">All fluids combined</div>
                               </div>
                             </div>
