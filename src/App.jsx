@@ -1477,6 +1477,68 @@ export default function App(){
                 )}
               </Card>
 
+              {/* Premium Hydration Calculator - Auto-calculates from training log & weather */}
+              <Card>
+                <div className="flex items-center justify-between mb-4">
+                  <div>
+                    <SectionTitle title="🧂 Premium Sodium Calculator" subtitle="Advanced sodium loss estimation (auto-synced with training log & weather)" />
+                  </div>
+                  <span className="px-3 py-1 bg-gradient-to-r from-orange-500 to-orange-600 text-white text-xs font-bold rounded-full">
+                    PREMIUM
+                  </span>
+                </div>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                  <div>
+                    <Label>Saltiness Category</Label>
+                    <select 
+                      className="w-full mt-1 border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 rounded-xl px-3 py-2 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-orange-500"
+                      value={saltinessCategory}
+                      onChange={(e) => setSaltinessCategory(e.target.value)}
+                    >
+                      <option value="Low">Low (500 mg/L)</option>
+                      <option value="Medium">Medium (900 mg/L)</option>
+                      <option value="High">High (1,300 mg/L)</option>
+                      <option value="Very High">Very High (1,800 mg/L)</option>
+                    </select>
+                  </div>
+                  
+                  <div>
+                    <Label>Heat Acclimation Status</Label>
+                    <select 
+                      className="w-full mt-1 border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 rounded-xl px-3 py-2 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-orange-500"
+                      value={heatAcclimation}
+                      onChange={(e) => setHeatAcclimation(e.target.value)}
+                    >
+                      <option value="Not acclimated">Not acclimated (1.00×)</option>
+                      <option value="Partial acclimated">Partial (0.85×)</option>
+                      <option value="Well acclimated">Well acclimated (0.70×)</option>
+                    </select>
+                  </div>
+                </div>
+                
+                <div className="mt-4 p-4 bg-orange-50 dark:bg-orange-900/20 rounded-xl border-2 border-orange-200 dark:border-orange-800">
+                  <div className="text-sm font-semibold text-orange-800 dark:text-orange-200 mb-2">⚙️ Auto-Calculated Settings</div>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
+                    <div>
+                      <div className="text-slate-600 dark:text-slate-400">Intensity Modifier</div>
+                      <div className="font-mono font-semibold text-orange-700 dark:text-orange-300">Sweat: {intensitySweatMultiplier.toFixed(2)}× Na: {intensityNaMultiplier.toFixed(2)}×</div>
+                      <div className="text-slate-500 text-[10px] mt-1">From training log intensity</div>
+                    </div>
+                    <div>
+                      <div className="text-slate-600 dark:text-slate-400">Temperature Modifier</div>
+                      <div className="font-mono font-semibold text-orange-700 dark:text-orange-300">{temperatureMultiplier.toFixed(2)}× @ {ambientC}°C</div>
+                      <div className="text-slate-500 text-[10px] mt-1">From weather API</div>
+                    </div>
+                    <div>
+                      <div className="text-slate-600 dark:text-slate-400">Acclimation Modifier</div>
+                      <div className="font-mono font-semibold text-orange-700 dark:text-orange-300">{acclimationMultiplier.toFixed(2)}× Na</div>
+                      <div className="text-slate-500 text-[10px] mt-1">{heatAcclimation}</div>
+                    </div>
+                  </div>
+                </div>
+              </Card>
+
               {/* Weekly Hydration Schedule */}
                 <Card>
                 <SectionTitle title="Weekly Hydration Schedule" subtitle="Training sessions + resting fluid needs" />
@@ -1565,121 +1627,6 @@ export default function App(){
                 </div>
                 </Card>
 
-              {/* Premium Hydration Calculator */}
-              <Card>
-                <div className="flex items-center justify-between mb-4">
-                  <div>
-                    <SectionTitle title="🧂 Premium Sodium Calculator" subtitle="Advanced sodium loss estimation with heat acclimation" />
-                  </div>
-                  <span className="px-3 py-1 bg-gradient-to-r from-orange-500 to-orange-600 text-white text-xs font-bold rounded-full">
-                    PREMIUM
-                  </span>
-                </div>
-                
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
-                  <div>
-                    <Label>Saltiness Category</Label>
-                    <select 
-                      className="w-full mt-1 border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 rounded-xl px-3 py-2 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-orange-500"
-                      value={saltinessCategory}
-                      onChange={(e) => setSaltinessCategory(e.target.value)}
-                    >
-                      <option value="Low">Low (500 mg/L)</option>
-                      <option value="Medium">Medium (900 mg/L)</option>
-                      <option value="High">High (1,300 mg/L)</option>
-                      <option value="Very High">Very High (1,800 mg/L)</option>
-                    </select>
-                  </div>
-                  
-                  <div>
-                    <Label>Heat Acclimation Status</Label>
-                    <select 
-                      className="w-full mt-1 border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 rounded-xl px-3 py-2 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-orange-500"
-                      value={heatAcclimation}
-                      onChange={(e) => setHeatAcclimation(e.target.value)}
-                    >
-                      <option value="Not acclimated">Not acclimated (1.00×)</option>
-                      <option value="Partial acclimated">Partial (0.85×)</option>
-                      <option value="Well acclimated">Well acclimated (0.70×)</option>
-                    </select>
-                  </div>
-                  
-                  <div>
-                    <Label>Session Duration (hours)</Label>
-                    <input
-                      type="number"
-                      step="0.1"
-                      className="w-full mt-1 border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 rounded-xl px-3 py-2 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-orange-500"
-                      value={sessionDurationHr}
-                      onChange={(e) => setSessionDurationHr(Number(e.target.value))}
-                      min={0.25}
-                      max={6}
-                    />
-                  </div>
-                  
-                  <div>
-                    <Label>Temperature (°C)</Label>
-                    <input
-                      type="number"
-                      className="w-full mt-1 border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 rounded-xl px-3 py-2 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-orange-500"
-                      value={ambientC}
-                      onChange={(e) => setAmbientC(Number(e.target.value))}
-                      min={-10}
-                      max={45}
-                    />
-                  </div>
-                </div>
-                
-                {/* Results */}
-                <div className="mt-6 border-t-2 border-slate-200 dark:border-slate-700 pt-6">
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                    <div className="bg-gradient-to-br from-orange-50 to-orange-100 dark:from-orange-900/30 dark:to-orange-800/30 rounded-xl p-4 border-2 border-orange-300 dark:border-orange-700">
-                      <div className="text-xs text-slate-600 dark:text-slate-400 mb-1">Effective Sweat Rate</div>
-                      <div className="text-2xl font-bold text-orange-700 dark:text-orange-300">{effectiveSweatRate.toFixed(2)} L/h</div>
-                      <div className="text-xs text-slate-500 mt-1">Baseline: {baselineSweatRate} L/h</div>
-                    </div>
-                    
-                    <div className="bg-gradient-to-br from-purple-50 to-purple-100 dark:from-purple-900/30 dark:to-purple-800/30 rounded-xl p-4 border-2 border-purple-300 dark:border-purple-700">
-                      <div className="text-xs text-slate-600 dark:text-slate-400 mb-1">Effective Na⁺ Concentration</div>
-                      <div className="text-2xl font-bold text-purple-700 dark:text-purple-300">{effectiveNaMgPerL.toFixed(0)} mg/L</div>
-                      <div className="text-xs text-slate-500 mt-1">Baseline: {baselineNaMgPerL} mg/L</div>
-                    </div>
-                    
-                    <div className="bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/30 dark:to-blue-800/30 rounded-xl p-4 border-2 border-blue-300 dark:border-blue-700">
-                      <div className="text-xs text-slate-600 dark:text-slate-400 mb-1">Sodium Loss Rate</div>
-                      <div className="text-2xl font-bold text-blue-700 dark:text-blue-300">{Math.round(sodiumLossPerHour)} mg/h</div>
-                      <div className="text-xs text-slate-500 mt-1">{effectiveSweatRate.toFixed(2)} L/h × {effectiveNaMgPerL.toFixed(0)} mg/L</div>
-                    </div>
-                    
-                    <div className="bg-gradient-to-br from-red-50 to-red-100 dark:from-red-900/30 dark:to-red-800/30 rounded-xl p-4 border-2 border-red-300 dark:border-red-700">
-                      <div className="text-xs text-slate-600 dark:text-slate-400 mb-1">Total Session Loss</div>
-                      <div className="text-2xl font-bold text-red-700 dark:text-red-300">{Math.round(sessionSodiumLoss)} mg</div>
-                      <div className="text-xs text-slate-500 mt-1">{sessionDurationHr} hours</div>
-                    </div>
-                  </div>
-                  
-                  <div className="mt-4 p-4 bg-slate-50 dark:bg-slate-800 rounded-xl">
-                    <div className="text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">Calculation Breakdown</div>
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs">
-                      <div>
-                        <div className="text-slate-600 dark:text-slate-400">Sweat Rate</div>
-                        <div className="font-mono">= {baselineSweatRate} × {intensitySweatMultiplier.toFixed(2)} × {temperatureMultiplier.toFixed(2)}</div>
-                        <div className="font-mono">= {effectiveSweatRate.toFixed(2)} L/h</div>
-                      </div>
-                      <div>
-                        <div className="text-slate-600 dark:text-slate-400">Na⁺ Concentration</div>
-                        <div className="font-mono">= {baselineNaMgPerL} × {intensityNaMultiplier.toFixed(2)} × {acclimationMultiplier.toFixed(2)}</div>
-                        <div className="font-mono">= {effectiveNaMgPerL.toFixed(0)} mg/L</div>
-                      </div>
-                      <div>
-                        <div className="text-slate-600 dark:text-slate-400">Total Loss</div>
-                        <div className="font-mono">= {Math.round(sodiumLossPerHour)} × {sessionDurationHr}</div>
-                        <div className="font-mono text-orange-700 dark:text-orange-400 font-bold">= {Math.round(sessionSodiumLoss)} mg</div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </Card>
 
               <div className="grid lg:grid-cols-2 gap-6">
                 {/* Input Section */}
