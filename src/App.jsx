@@ -131,7 +131,7 @@ function readState(){
 }
 
 // ---------- Performance Tab Components ----------
-const WeeklySessionDay = ({ day, dayIndex, session, onUpdate, trainingCalories, totalCalories, macros }) => {
+const WeeklySessionDay = ({ day, dayIndex, session, onUpdate, trainingCalories, totalCalories, macros, weightKg }) => {
   const updateSession = (field, value) => {
     onUpdate({ ...session, [field]: value });
   };
@@ -267,24 +267,35 @@ const WeeklySessionDay = ({ day, dayIndex, session, onUpdate, trainingCalories, 
         </div>
       )}
 
-      {/* Macro Breakdown */}
+      {/* Fueling Scenarios */}
       <div className="border-t border-slate-200 dark:border-slate-700 pt-3 mt-3">
-        <h4 className="text-sm font-semibold text-slate-700 dark:text-slate-300 mb-3">Daily Macros</h4>
-        <div className="grid grid-cols-3 gap-3 text-center">
-          <div className="bg-slate-100 dark:bg-slate-700 rounded-lg p-2">
-            <div className="text-xs text-slate-600 dark:text-slate-400">Carbs</div>
-            <div className="text-lg font-bold text-emerald-700 dark:text-emerald-300">{macros.carbs}g</div>
-            <div className="text-xs text-slate-500">5-8g/kg</div>
+        <h4 className="text-sm font-semibold text-slate-700 dark:text-slate-300 mb-3">Fueling Scenarios</h4>
+        <div className="grid grid-cols-3 gap-2">
+          {/* Underfueling */}
+          <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-2">
+            <div className="text-xs font-semibold text-red-700 dark:text-red-300 mb-1">Underfueling</div>
+            <div className="text-xs text-red-600 dark:text-red-400 mb-2">{Math.round(totalCalories * 0.85)} kcal</div>
+            <div className="text-xs text-slate-600 dark:text-slate-400">C: {Math.round(weightKg * 5.0)}g</div>
+            <div className="text-xs text-slate-600 dark:text-slate-400">P: {macros.protein}g</div>
+            <div className="text-xs text-slate-600 dark:text-slate-400">F: {Math.round(((totalCalories * 0.85) - (Math.round(weightKg * 5.0) * 4) - (macros.protein * 4)) / 9)}g</div>
           </div>
-          <div className="bg-slate-100 dark:bg-slate-700 rounded-lg p-2">
-            <div className="text-xs text-slate-600 dark:text-slate-400">Protein</div>
-            <div className="text-lg font-bold text-blue-700 dark:text-blue-300">{macros.protein}g</div>
-            <div className="text-xs text-slate-500">1.8g/kg</div>
+          
+          {/* Optimal */}
+          <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg p-2">
+            <div className="text-xs font-semibold text-green-700 dark:text-green-300 mb-1">Optimal</div>
+            <div className="text-xs text-green-600 dark:text-green-400 mb-2">{totalCalories} kcal</div>
+            <div className="text-xs text-slate-600 dark:text-slate-400">C: {macros.carbs}g</div>
+            <div className="text-xs text-slate-600 dark:text-slate-400">P: {macros.protein}g</div>
+            <div className="text-xs text-slate-600 dark:text-slate-400">F: {macros.fat}g</div>
           </div>
-          <div className="bg-slate-100 dark:bg-slate-700 rounded-lg p-2">
-            <div className="text-xs text-slate-600 dark:text-slate-400">Fat</div>
-            <div className="text-lg font-bold text-orange-700 dark:text-orange-300">{macros.fat}g</div>
-            <div className="text-xs text-slate-500">Remaining</div>
+          
+          {/* Overfueling */}
+          <div className="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-lg p-2">
+            <div className="text-xs font-semibold text-amber-700 dark:text-amber-300 mb-1">Overfueling</div>
+            <div className="text-xs text-amber-600 dark:text-amber-400 mb-2">{Math.round(totalCalories * 1.10)} kcal</div>
+            <div className="text-xs text-slate-600 dark:text-slate-400">C: {Math.round(weightKg * 8.0)}g</div>
+            <div className="text-xs text-slate-600 dark:text-slate-400">P: {macros.protein}g</div>
+            <div className="text-xs text-slate-600 dark:text-slate-400">F: {Math.round(((totalCalories * 1.10) - (Math.round(weightKg * 8.0) * 4) - (macros.protein * 4)) / 9)}g</div>
           </div>
         </div>
       </div>
@@ -939,6 +950,7 @@ export default function App(){
                       trainingCalories={dailyTrainingCalories[index]}
                       totalCalories={dailyTotalCalories[index]}
                       macros={dailyMacros[index]}
+                      weightKg={weightKg}
                     />
                   ))}
                 </div>
