@@ -16,8 +16,8 @@ const Card = ({ children, className = "" }) => (
 
 const SectionTitle = ({ title, subtitle }) => (
   <div className="mb-4 sm:mb-6">
-    <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold tracking-tight text-emerald-700 dark:text-emerald-300 drop-shadow-sm">{title}</h2>
-    {subtitle && <p className="text-sm sm:text-base lg:text-lg text-sky-700 dark:text-sky-300 mt-1">{subtitle}</p>}
+    <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold tracking-tight text-orange-700 dark:text-orange-300 drop-shadow-sm">{title}</h2>
+    {subtitle && <p className="text-sm sm:text-base lg:text-lg text-slate-700 dark:text-slate-300 mt-1">{subtitle}</p>}
   </div>
 );
 
@@ -34,7 +34,7 @@ const NumberInput = ({ value, onChange, min = 0, max = 9999, step = 1, suffix = 
       max={max} 
       step={step} 
       onChange={(e)=>onChange(Number(e.target.value))} 
-      className="flex-1 accent-emerald-600 h-6 sm:h-8 rounded-lg" 
+      className="flex-1 accent-orange-600 h-6 sm:h-8 rounded-lg" 
       {...props}
     />
     <div className="flex items-center gap-2 w-full sm:w-40">
@@ -42,12 +42,12 @@ const NumberInput = ({ value, onChange, min = 0, max = 9999, step = 1, suffix = 
         type="number" 
         value={value} 
         onChange={(e)=>onChange(Number(e.target.value))} 
-        className="flex-1 sm:w-full border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 rounded-xl px-3 py-2.5 text-base sm:text-lg text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all"
+        className="flex-1 sm:w-full border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 rounded-xl px-3 py-2.5 text-base sm:text-lg text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-all"
         min={min}
         max={max}
         step={step}
       />
-      {suffix && <span className="text-sm sm:text-base text-emerald-700 dark:text-emerald-300 font-semibold whitespace-nowrap">{suffix}</span>}
+      {suffix && <span className="text-sm sm:text-base text-orange-700 dark:text-orange-300 font-semibold whitespace-nowrap">{suffix}</span>}
     </div>
   </div>
 );
@@ -206,7 +206,7 @@ const WeeklySessionDay = ({ day, dayIndex, session, onUpdate, trainingCalories, 
         <h3 className="text-lg font-semibold text-slate-800 dark:text-slate-200 capitalize">{day}</h3>
         <div className="text-right">
           <div className="text-sm text-slate-600 dark:text-slate-400">Total Daily Calories</div>
-          <div className="text-xl font-bold text-emerald-700 dark:text-emerald-300">{totalCalories} kcal</div>
+          <div className="text-xl font-bold text-orange-700 dark:text-orange-300">{totalCalories} kcal</div>
           <div className="text-xs text-slate-500 dark:text-slate-400">
             Training: {trainingCalories} kcal
           </div>
@@ -223,7 +223,7 @@ const WeeklySessionDay = ({ day, dayIndex, session, onUpdate, trainingCalories, 
             onFocus={(e) => { if (session.duration === 0) { e.target.select(); } }}
             min="0"
             max="300"
-            className="w-full mt-1 border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 rounded-lg px-3 py-2 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+            className="w-full mt-1 border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 rounded-lg px-3 py-2 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
           />
         </div>
 
@@ -232,7 +232,7 @@ const WeeklySessionDay = ({ day, dayIndex, session, onUpdate, trainingCalories, 
           <select
             value={session.type}
             onChange={(e) => updateSession('type', e.target.value)}
-            className="w-full mt-1 border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 rounded-lg px-3 py-2 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+            className="w-full mt-1 border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 rounded-lg px-3 py-2 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
           >
             <option value="run">Run</option>
             <option value="bike">Bike</option>
@@ -247,7 +247,7 @@ const WeeklySessionDay = ({ day, dayIndex, session, onUpdate, trainingCalories, 
           <select
             value={session.intensity}
             onChange={(e) => updateSession('intensity', e.target.value)}
-            className="w-full mt-1 border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 rounded-lg px-3 py-2 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+            className="w-full mt-1 border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 rounded-lg px-3 py-2 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
           >
             <option value="aerobic">Aerobic</option>
             <option value="threshold">Threshold</option>
@@ -261,7 +261,7 @@ const WeeklySessionDay = ({ day, dayIndex, session, onUpdate, trainingCalories, 
               type="checkbox"
               checked={session.doubleSession}
               onChange={toggleDoubleSession}
-              className="w-4 h-4 text-emerald-600 bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 rounded focus:ring-emerald-500"
+              className="w-4 h-4 text-emerald-600 bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 rounded focus:ring-orange-500"
             />
             <span className="text-sm font-medium text-slate-700 dark:text-slate-300">Double Session</span>
           </label>
@@ -281,7 +281,7 @@ const WeeklySessionDay = ({ day, dayIndex, session, onUpdate, trainingCalories, 
                 onFocus={(e) => { if (session.secondSession.duration === 0) { e.target.select(); } }}
                 min="0"
                 max="300"
-                className="w-full mt-1 border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 rounded-lg px-3 py-2 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                className="w-full mt-1 border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 rounded-lg px-3 py-2 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
               />
             </div>
 
@@ -290,7 +290,7 @@ const WeeklySessionDay = ({ day, dayIndex, session, onUpdate, trainingCalories, 
               <select
                 value={session.secondSession.type}
                 onChange={(e) => updateSecondSession('type', e.target.value)}
-                className="w-full mt-1 border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 rounded-lg px-3 py-2 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                className="w-full mt-1 border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 rounded-lg px-3 py-2 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
               >
                 <option value="run">Run</option>
                 <option value="bike">Bike</option>
@@ -305,7 +305,7 @@ const WeeklySessionDay = ({ day, dayIndex, session, onUpdate, trainingCalories, 
               <select
                 value={session.secondSession.intensity}
                 onChange={(e) => updateSecondSession('intensity', e.target.value)}
-                className="w-full mt-1 border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 rounded-lg px-3 py-2 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                className="w-full mt-1 border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 rounded-lg px-3 py-2 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
               >
                 <option value="aerobic">Aerobic</option>
                 <option value="threshold">Threshold</option>
@@ -416,7 +416,7 @@ const WeeklyCalorieChart = ({ dailyTotalCalories, dailyTrainingCalories, weeklyS
                   />
                 ))}
                 
-                {/* Resting calories (always at bottom) */}
+                {/* Total fluid calories (always at bottom) */}
                 <div
                   className="w-full bg-gradient-to-t from-slate-400 to-slate-300 rounded-t-lg"
                   style={{ height: `${Math.max(restingHeight, 8)}px` }}
@@ -898,7 +898,7 @@ export default function App(){
 
   // ---------- UI ----------
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-emerald-50/30 to-slate-100 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 text-slate-900 dark:text-slate-100">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-orange-50/30 to-slate-100 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 text-slate-900 dark:text-slate-100">
       {/* Header */}
       <header className="sticky top-0 z-20 backdrop-blur-md bg-white/80 dark:bg-slate-950/80 border-b border-slate-200/50 dark:border-slate-700/50 print:hidden shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 sm:py-4">
@@ -910,7 +910,7 @@ export default function App(){
                 className="h-10 w-10 sm:h-12 sm:w-12 rounded-xl shadow-lg object-contain bg-white dark:bg-slate-800 p-1"
               />
               <div>
-                <div className="text-lg sm:text-xl font-bold leading-tight text-emerald-700 dark:text-emerald-400">Nutrition Planner</div>
+                <div className="text-lg sm:text-xl font-bold leading-tight text-orange-700 dark:text-orange-400">Nutrition Planner</div>
                 <div className="text-xs sm:text-sm text-slate-600 dark:text-slate-400">Running fuel calculator</div>
               </div>
             </div>
@@ -924,7 +924,7 @@ export default function App(){
               </button>
               <button 
                 onClick={copyShareLink} 
-                className="px-3 sm:px-4 py-2 sm:py-2.5 rounded-xl bg-gradient-to-r from-emerald-500 to-emerald-600 text-white text-xs sm:text-sm font-medium hover:from-emerald-600 hover:to-emerald-700 transition-all shadow-sm min-h-[44px] active:scale-95"
+                className="px-3 sm:px-4 py-2 sm:py-2.5 rounded-xl bg-gradient-to-r from-orange-500 to-orange-600 text-white text-xs sm:text-sm font-medium hover:from-orange-600 hover:to-orange-700 transition-all shadow-sm min-h-[44px] active:scale-95"
               >
                 <span className="hidden sm:inline">📋 Share</span>
                 <span className="sm:hidden">📋</span>
@@ -962,7 +962,7 @@ export default function App(){
                   onClick={()=>setTab(t.id)} 
                   className={`px-3 sm:px-4 py-2 text-xs sm:text-sm font-medium transition-all whitespace-nowrap ${
                     tab===t.id
-                      ? "bg-gradient-to-r from-emerald-500 to-emerald-600 text-white shadow-sm" 
+                      ? "bg-gradient-to-r from-orange-500 to-orange-600 text-white shadow-sm" 
                       : "bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700"
                   }`}
                 >
@@ -1027,7 +1027,7 @@ export default function App(){
                             onClick={()=>setDayType(d.id)} 
                             className={`px-4 py-2 rounded-xl border text-sm font-medium transition-all ${
                               dayType===d.id
-                                ? "bg-gradient-to-r from-emerald-500 to-emerald-600 text-white shadow-sm" 
+                                ? "bg-gradient-to-r from-orange-500 to-orange-600 text-white shadow-sm" 
                                 : "bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-300 dark:border-slate-600 hover:bg-slate-50 dark:hover:bg-slate-700"
                             }`}
                           >
@@ -1098,7 +1098,7 @@ export default function App(){
                     <div className="text-sm space-y-1">
                       <div className="mb-2 p-2 bg-slate-50 dark:bg-slate-800 rounded-lg">
                         <div className="text-xs text-slate-600 dark:text-slate-400 mb-1">Training Load Multiplier</div>
-                        <div className="text-lg font-bold text-emerald-700 dark:text-emerald-300">
+                        <div className="text-lg font-bold text-orange-700 dark:text-orange-300">
                           {trainingLoadMultiplier.toFixed(2)}x
                         </div>
                         <div className="text-xs text-slate-500">
@@ -1296,7 +1296,7 @@ export default function App(){
                 <SectionTitle title="Fiber Caution Foods" subtitle="Smart food choices for race week" />
                 <div className="grid sm:grid-cols-2 gap-4">
                   <div>
-                    <h4 className="text-sm font-semibold mb-2 text-emerald-700 dark:text-emerald-300">✅ Best Options (Low Fiber)</h4>
+                    <h4 className="text-sm font-semibold mb-2 text-orange-700 dark:text-orange-300">✅ Best Options (Low Fiber)</h4>
                     <div className="space-y-2 text-sm">
                       <div>🍚 White rice (cooked): 55g/cup</div>
                       <div>🍝 White pasta (cooked): 45g/cup</div>
@@ -1329,7 +1329,7 @@ export default function App(){
                     <Label>Week Start Date</Label>
                     <input
                       type="date"
-                      className="w-full mt-1 border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 rounded-xl px-4 py-2 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-emerald-500"
+                      className="w-full mt-1 border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 rounded-xl px-4 py-2 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-orange-500"
                       value={weekStartDate}
                       onChange={(e) => setWeekStartDate(e.target.value)}
                     />
@@ -1340,7 +1340,7 @@ export default function App(){
                       <input
                         type="text"
                         placeholder="Enter city name (e.g., London, New York)"
-                        className="flex-1 border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 rounded-xl px-4 py-2 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-emerald-500"
+                        className="flex-1 border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 rounded-xl px-4 py-2 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-orange-500"
                         value={location}
                         onChange={(e) => setLocation(e.target.value)}
                         onKeyPress={(e) => e.key === 'Enter' && fetchWeather(location)}
@@ -1348,7 +1348,7 @@ export default function App(){
                       <button
                         onClick={() => fetchWeather(location)}
                         disabled={loadingWeather || !location}
-                        className="px-6 py-2 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white rounded-xl font-medium hover:from-emerald-600 hover:to-emerald-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="px-6 py-2 bg-gradient-to-r from-orange-500 to-orange-600 text-white rounded-xl font-medium hover:from-orange-600 hover:to-orange-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                       >
                         {loadingWeather ? 'Loading...' : 'Get Weather'}
                       </button>
@@ -1387,9 +1387,9 @@ export default function App(){
                         <>
                           {/* Training Sessions */}
                           {day.sessions.map((session, idx) => (
-                            <div key={idx} className="mb-3 pb-3 border-b border-emerald-200 dark:border-emerald-700 last:border-0 last:pb-0 last:mb-0">
+                            <div key={idx} className="mb-3 pb-3 border-b border-emerald-200 dark:border-orange-700 last:border-0 last:pb-0 last:mb-0">
                               <div className="flex items-center justify-between mb-2">
-                                <div className="font-semibold text-emerald-700 dark:text-emerald-300">
+                                <div className="font-semibold text-orange-700 dark:text-orange-300">
                                   {session.timeOfDay} Session • {session.type} • {session.duration} min
                                 </div>
                                 <div className="text-xs text-slate-500">
@@ -1414,12 +1414,12 @@ export default function App(){
                             <div className="grid grid-cols-3 gap-3 text-sm">
                               <div>
                                 <div className="text-slate-600 dark:text-slate-400 mb-1">Training Total</div>
-                                <div className="font-bold text-emerald-700 dark:text-emerald-300">{day.totalTrainingFluid} ml</div>
+                                <div className="font-bold text-orange-700 dark:text-orange-300">{day.totalTrainingFluid} ml</div>
                                 <div className="text-xs text-slate-500">{day.totalTrainingSodium} mg Na</div>
                               </div>
                               <div>
-                                <div className="text-slate-600 dark:text-slate-400 mb-1">Resting (24h)</div>
-                                <div className="font-bold text-blue-700 dark:text-blue-300">{day.dailyResting} ml</div>
+                                <div className="text-slate-600 dark:text-slate-400 mb-1">Total Fluid Intake (24h)</div>
+                                <div className="font-bold text-orange-700 dark:text-orange-300">{day.dailyResting} ml</div>
                                 <div className="text-xs text-slate-500">Background fluid</div>
                               </div>
                               <div>
@@ -1432,7 +1432,7 @@ export default function App(){
                         </>
                       ) : (
                         <div className="text-sm text-slate-500 dark:text-slate-400">
-                          Rest day • {day.baseTemp}°C forecasted • {day.dailyResting} ml resting fluid recommended
+                          Rest day • {day.baseTemp}°C forecasted • {day.dailyResting} ml total fluid recommended
                         </div>
                       )}
                     </div>
@@ -1449,7 +1449,7 @@ export default function App(){
                       <Label>Body mass (kg)</Label>
                       <input 
                         type="number" 
-                        className="w-full mt-1 border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 rounded-xl px-3 py-2 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-emerald-500" 
+                        className="w-full mt-1 border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 rounded-xl px-3 py-2 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-orange-500" 
                         value={weightKg} 
                         onChange={e => setWeightKg(Number(e.target.value))}
                         min={35}
@@ -1461,7 +1461,7 @@ export default function App(){
                       <Label>Session duration (min)</Label>
                       <input 
                         type="number" 
-                        className="w-full mt-1 border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 rounded-xl px-3 py-2 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-emerald-500" 
+                        className="w-full mt-1 border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 rounded-xl px-3 py-2 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-orange-500" 
                         value={sessionMin} 
                         onChange={e => setSessionMin(Number(e.target.value))}
                         min={15}
@@ -1472,7 +1472,7 @@ export default function App(){
                     <div>
                       <Label>Intensity</Label>
                       <select 
-                        className="w-full mt-1 border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 rounded-xl px-3 py-2 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-emerald-500"
+                        className="w-full mt-1 border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 rounded-xl px-3 py-2 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-orange-500"
                         value={"easy"}
                       >
                         <option value="easy">Aerobic / Easy</option>
@@ -1486,7 +1486,7 @@ export default function App(){
                       <Label>Ambient temperature (°C)</Label>
                       <input 
                         type="number" 
-                        className="w-full mt-1 border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 rounded-xl px-3 py-2 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-emerald-500" 
+                        className="w-full mt-1 border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 rounded-xl px-3 py-2 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-orange-500" 
                         value={ambientC} 
                         onChange={e => setAmbientC(Number(e.target.value))}
                         min={-10}
@@ -1499,7 +1499,7 @@ export default function App(){
                       <input 
                         type="number" 
                         step="0.1"
-                        className="w-full mt-1 border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 rounded-xl px-3 py-2 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-emerald-500" 
+                        className="w-full mt-1 border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 rounded-xl px-3 py-2 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-orange-500" 
                         value={sweatRate} 
                         onChange={e => setSweatRate(Number(e.target.value))}
                         min={0.3}
@@ -1512,7 +1512,7 @@ export default function App(){
                       <Label>Estimated sweat sodium (mg/L)</Label>
                       <input 
                         type="number" 
-                        className="w-full mt-1 border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 rounded-xl px-3 py-2 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-emerald-500" 
+                        className="w-full mt-1 border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 rounded-xl px-3 py-2 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-orange-500" 
                         value={Math.round(sweatNaMgPerL)} 
                         onChange={e => {}}
                         readOnly
@@ -1525,7 +1525,7 @@ export default function App(){
 
                   <div className="mt-4 flex flex-wrap gap-2">
                     <span className="px-3 py-1 text-xs font-semibold bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-lg">Env index: {Math.round(envIndex)}</span>
-                    <span className="px-3 py-1 text-xs font-semibold bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300 rounded-lg">Fluid rate: {fluidPerHour} ml/h</span>
+                    <span className="px-3 py-1 text-xs font-semibold bg-emerald-100 dark:bg-emerald-900/30 text-orange-700 dark:text-orange-300 rounded-lg">Fluid rate: {fluidPerHour} ml/h</span>
                     <span className="px-3 py-1 text-xs font-semibold bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-300 rounded-lg">Sodium: {recSodiumPerHr} mg/h</span>
                   </div>
                 </Card>
@@ -1537,20 +1537,20 @@ export default function App(){
                     <div className="grid grid-cols-2 gap-3 mb-4">
                       <div className="rounded-xl border border-slate-200 dark:border-slate-700 p-4">
                         <div className="text-xs text-slate-500 dark:text-slate-400 mb-1">Per hour</div>
-                        <div className="text-2xl font-bold text-emerald-700 dark:text-emerald-300">{fluidPerHour} ml</div>
+                        <div className="text-2xl font-bold text-orange-700 dark:text-orange-300">{fluidPerHour} ml</div>
                         <div className="text-sm text-slate-600 dark:text-slate-400 mt-1">Sodium: {recSodiumPerHr} mg</div>
                       </div>
                       <div className="rounded-xl border border-slate-200 dark:border-slate-700 p-4">
                         <div className="text-xs text-slate-500 dark:text-slate-400 mb-1">Total this session</div>
-                        <div className="text-2xl font-bold text-emerald-700 dark:text-emerald-300">{totalFluidMl} ml</div>
+                        <div className="text-2xl font-bold text-orange-700 dark:text-orange-300">{totalFluidMl} ml</div>
                         <div className="text-sm text-slate-600 dark:text-slate-400 mt-1">Sodium: {totalSodiumMg} mg</div>
                       </div>
                     </div>
 
                     <div className="rounded-xl border border-slate-200 dark:border-slate-700 p-4 bg-emerald-50 dark:bg-emerald-900/20">
-                      <div className="text-sm font-semibold text-emerald-700 dark:text-emerald-300 mb-2">Drink Sodium Concentration</div>
+                      <div className="text-sm font-semibold text-orange-700 dark:text-orange-300 mb-2">Drink Sodium Concentration</div>
                       <div className="text-sm text-slate-700 dark:text-slate-300">
-                        Your drink should contain approximately <span className="font-bold text-emerald-700 dark:text-emerald-300">{drinkNaMgPerL} mg/L</span> sodium to meet your needs.
+                        Your drink should contain approximately <span className="font-bold text-orange-700 dark:text-orange-300">{drinkNaMgPerL} mg/L</span> sodium to meet your needs.
                       </div>
                     </div>
                   </Card>
@@ -1575,19 +1575,19 @@ export default function App(){
                 <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
                   <div className="text-center p-3 bg-slate-50 dark:bg-slate-800 rounded-lg">
                     <div className="text-xs text-slate-600 dark:text-slate-400">Weight</div>
-                    <div className="text-lg font-bold text-emerald-700 dark:text-emerald-300">{weightKg} kg</div>
+                    <div className="text-lg font-bold text-orange-700 dark:text-orange-300">{weightKg} kg</div>
                   </div>
                   <div className="text-center p-3 bg-slate-50 dark:bg-slate-800 rounded-lg">
                     <div className="text-xs text-slate-600 dark:text-slate-400">Height</div>
-                    <div className="text-lg font-bold text-emerald-700 dark:text-emerald-300">{heightCm} cm</div>
+                    <div className="text-lg font-bold text-orange-700 dark:text-orange-300">{heightCm} cm</div>
                   </div>
                   <div className="text-center p-3 bg-slate-50 dark:bg-slate-800 rounded-lg">
                     <div className="text-xs text-slate-600 dark:text-slate-400">BMR</div>
-                    <div className="text-lg font-bold text-emerald-700 dark:text-emerald-300">{bmr} kcal</div>
+                    <div className="text-lg font-bold text-orange-700 dark:text-orange-300">{bmr} kcal</div>
                   </div>
                   <div className="text-center p-3 bg-slate-50 dark:bg-slate-800 rounded-lg">
                     <div className="text-xs text-slate-600 dark:text-slate-400">Base Activity</div>
-                    <div className="text-lg font-bold text-emerald-700 dark:text-emerald-300">{nonTraining} kcal</div>
+                    <div className="text-lg font-bold text-orange-700 dark:text-orange-300">{nonTraining} kcal</div>
                   </div>
                 </div>
                 <p className="text-xs text-slate-500 dark:text-slate-400">
@@ -1627,7 +1627,7 @@ export default function App(){
                       <div key={day} className="flex justify-between items-center p-2 bg-slate-50 dark:bg-slate-800 rounded-lg">
                         <span className="font-medium capitalize">{day}</span>
                         <div className="text-right">
-                          <div className="font-bold text-emerald-700 dark:text-emerald-300">
+                          <div className="font-bold text-orange-700 dark:text-orange-300">
                             {dailyTotalCalories[index]} kcal
                           </div>
                           <div className="text-xs text-slate-500">
@@ -1642,7 +1642,7 @@ export default function App(){
                 <Card>
                   <SectionTitle title="Weekly Summary" subtitle="Total calories for the week" />
                   <div className="text-center">
-                    <div className="text-3xl font-bold text-emerald-700 dark:text-emerald-300 mb-2">
+                    <div className="text-3xl font-bold text-orange-700 dark:text-orange-300 mb-2">
                       {weeklyTotalCalories} kcal
                     </div>
                     <div className="text-sm text-slate-600 dark:text-slate-400">
@@ -1710,7 +1710,7 @@ export default function App(){
                 <div className="space-y-4">
                   <div className="flex justify-between items-center">
                     <h3 className="text-lg font-semibold">Athletes (0/5)</h3>
-                    <button className="px-4 py-2 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white rounded-lg hover:from-emerald-600 hover:to-emerald-700">
+                    <button className="px-4 py-2 bg-gradient-to-r from-orange-500 to-orange-600 text-white rounded-lg hover:from-orange-600 hover:to-orange-700">
                       + Add Athlete
                     </button>
                   </div>
@@ -1753,9 +1753,9 @@ export default function App(){
 
 function KV({ label, value, big }){
   return (
-    <div className={`flex justify-between items-center ${big?"text-lg sm:text-xl lg:text-2xl font-bold text-emerald-700 dark:text-emerald-300":"text-sm sm:text-base lg:text-lg"}`}>
+    <div className={`flex justify-between items-center ${big?"text-lg sm:text-xl lg:text-2xl font-bold text-orange-700 dark:text-orange-300":"text-sm sm:text-base lg:text-lg"}`}>
       <span className="text-slate-600 dark:text-slate-300 font-semibold text-left pr-2">{label}</span>
-      <span className="font-bold text-emerald-700 dark:text-emerald-300 text-right whitespace-nowrap">{value}</span>
+      <span className="font-bold text-orange-700 dark:text-orange-300 text-right whitespace-nowrap">{value}</span>
     </div>
   );
 }

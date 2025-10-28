@@ -62,7 +62,7 @@ body {
 /* Focus styles */
 button:focus-visible,
 input:focus-visible {
-  outline: 2px solid #10b981;
+  outline: 2px solid #f97316;
   outline-offset: 2px;
 }
 
@@ -92,7 +92,7 @@ input:focus-visible {
     appearance: none;
     width: 20px;
     height: 20px;
-    background: #10b981;
+    background: #f97316;
     border-radius: 50%;
     cursor: pointer;
   }
@@ -100,7 +100,7 @@ input:focus-visible {
   input[type="range"]::-moz-range-thumb {
     width: 20px;
     height: 20px;
-    background: #10b981;
+    background: #f97316;
     border-radius: 50%;
     cursor: pointer;
     border: none;
