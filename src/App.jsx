@@ -862,23 +862,121 @@ export default function App(){
           {tab === "race" && (
             <motion.div key="race" initial={{opacity:0,y:8}} animate={{opacity:1,y:0}} exit={{opacity:0,y:-8}} transition={{duration:0.25}} className="space-y-4 sm:space-y-6">
               <Card>
-                <SectionTitle title="Race Week Checklist" subtitle="Taper fuelling and day-by-day plan" />
-                <ul className="list-disc pl-4 text-sm space-y-3 text-slate-700 dark:text-slate-300">
-                  <li><span className="font-semibold text-emerald-700 dark:text-emerald-300">Mon–Wed:</span> Maintain calories; carbs ~6–7 g/kg; normal protein/fat. Hydrate to pale yellow urine.</li>
-                  <li><span className="font-semibold text-emerald-700 dark:text-emerald-300">Thu–Fri:</span> Carbs ~7–9 g/kg; reduce fibre; spread across 4–6 meals; sip electrolytes.</li>
-                  <li><span className="font-semibold text-emerald-700 dark:text-emerald-300">Race-eve dinner:</span> Simple carbs + lean protein; avoid heavy fats/fibre; 500–750 ml fluids.</li>
-                  <li><span className="font-semibold text-emerald-700 dark:text-emerald-300">Race morning:</span> 2–3 h pre: 1–3 g/kg carbs + 20–25 g protein; 15–20 min pre: small sip (100–200 ml).</li>
-                  <li><span className="font-semibold text-emerald-700 dark:text-emerald-300">Post-race:</span> 1.0–1.2 g/kg carbs in 1–2 h; 25–30 g protein; 1000–1500 mg sodium over the afternoon.</li>
-                </ul>
-              </Card>
-              <Card>
-                <SectionTitle title="Pre-Race Meal Builder" />
-                <div className="grid sm:grid-cols-3 gap-3 text-sm">
-                  <div className="border border-slate-200 dark:border-slate-700 rounded-xl p-3 bg-slate-50/50 dark:bg-slate-800/50 text-slate-700 dark:text-slate-300">Bagel + honey</div>
-                  <div className="border border-slate-200 dark:border-slate-700 rounded-xl p-3 bg-slate-50/50 dark:bg-slate-800/50 text-slate-700 dark:text-slate-300">Rice bowl + eggs</div>
-                  <div className="border border-slate-200 dark:border-slate-700 rounded-xl p-3 bg-slate-50/50 dark:bg-slate-800/50 text-slate-700 dark:text-slate-300">Oats + banana + whey</div>
+                <SectionTitle title="Race Event Planning" subtitle="Set your race details and goal time" />
+                <div className="grid sm:grid-cols-3 gap-4">
+                  <div>
+                    <Label>Race Event</Label>
+                    <select className="w-full mt-1 border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 rounded-lg px-3 py-2 text-slate-800 dark:text-slate-100">
+                      <option>5km</option>
+                      <option>10km</option>
+                      <option>Half Marathon</option>
+                      <option selected>Marathon</option>
+                      <option>Ironman 70.3</option>
+                      <option>Ironman</option>
+                    </select>
+                  </div>
+                  <div>
+                    <Label>Goal Time (hours)</Label>
+                    <input type="number" min="0" max="24" defaultValue="3" className="w-full mt-1 border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 rounded-lg px-3 py-2" />
+                  </div>
+                  <div>
+                    <Label>Goal Time (minutes)</Label>
+                    <input type="number" min="0" max="59" defaultValue="30" className="w-full mt-1 border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 rounded-lg px-3 py-2" />
+                  </div>
                 </div>
-                <p className="text-xs text-slate-500 dark:text-slate-400 mt-3">Aim 1–3 g/kg carbs 2–3 h pre-race; keep fat/fibre low.</p>
+              </Card>
+              
+              <Card>
+                <SectionTitle title="7-Day Race Week Breakdown" />
+                <div className="space-y-4">
+                  {[
+                    {day:7,phase:"Normal Training",carbs:696,calories:2732},
+                    {day:6,phase:"Normal Training",carbs:696,calories:2732},
+                    {day:5,phase:"Normal Training",carbs:696,calories:2732},
+                    {day:4,phase:"🔥 Carb Loading",carbs:696,calories:3428},
+                    {day:3,phase:"🔥 Carb Loading",carbs:696,calories:3428},
+                    {day:2,phase:"⚠️ Fiber Caution + Carb Load",carbs:870,calories:2732},
+                    {day:1,phase:"⚠️ Fiber Caution + Carb Load",carbs:870,calories:2732}
+                  ].map(d => (
+                    <div key={d.day} className="border border-slate-200 dark:border-slate-700 rounded-lg p-4">
+                      <div className="flex justify-between items-center mb-3">
+                        <div>
+                          <div className="font-bold">Day {d.day}</div>
+                          <div className={d.phase.includes("🔥") ? "text-orange-600" : d.phase.includes("⚠️") ? "text-amber-600" : "text-emerald-600"}>
+                            {d.phase}
+                          </div>
+                        </div>
+                        <div className="text-right">
+                          <div className="font-bold">{d.calories} kcal</div>
+                          <div className="text-sm text-slate-500">Rest: 2732 | Training: 0</div>
+                        </div>
+                      </div>
+                      <div className="grid grid-cols-4 gap-3">
+                        <div>
+                          <Label>Min</Label>
+                          <input type="number" min="0" max="300" defaultValue="0" className="w-full mt-1 border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 rounded-lg px-2 py-1" />
+                        </div>
+                        <div>
+                          <Label>Type</Label>
+                          <select className="w-full mt-1 border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 rounded-lg px-2 py-1">
+                            <option>Run</option>
+                            <option>Bike</option>
+                            <option>Swim</option>
+                            <option>Strength</option>
+                          </select>
+                        </div>
+                        <div>
+                          <Label>Intensity</Label>
+                          <select className="w-full mt-1 border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 rounded-lg px-2 py-1">
+                            <option selected>Aerobic</option>
+                            <option>Threshold</option>
+                            <option>VO2max</option>
+                          </select>
+                        </div>
+                        <div className="text-sm">
+                          <div>C: {d.carbs}g</div>
+                          <div>P: {Math.round(weightKg * 1.6)}g</div>
+                          <div>F: 87g</div>
+                        </div>
+                      </div>
+                      {d.phase.includes("🔥") && (
+                        <div className="mt-3 p-3 bg-orange-50 dark:bg-orange-900/20 border border-orange-200 dark:border-orange-800 rounded-lg text-sm">
+                          🔥 <strong>Carb Loading:</strong> Eat 5-6 small meals. Focus on simple carbs. Stay hydrated.
+                        </div>
+                      )}
+                      {d.phase.includes("⚠️") && (
+                        <div className="mt-3 p-3 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-lg text-sm">
+                          ⚠️ <strong>Fiber Caution:</strong> Avoid beans, lentils, bran, cruciferous veg. Choose white rice, pasta, bread.
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </Card>
+
+              <Card>
+                <SectionTitle title="Fiber Caution Foods" subtitle="Smart food choices for race week" />
+                <div className="grid sm:grid-cols-2 gap-4">
+                  <div>
+                    <h4 className="text-sm font-semibold mb-2 text-emerald-700 dark:text-emerald-300">✅ Best Options (Low Fiber)</h4>
+                    <div className="space-y-2 text-sm">
+                      <div>🍚 White rice (cooked): 55g/cup</div>
+                      <div>🍝 White pasta (cooked): 45g/cup</div>
+                      <div>🍞 White bread (2 slices): 30g</div>
+                      <div>🍌 Banana: 25g each</div>
+                      <div>🧃 Sports drink: 35g/500ml</div>
+                    </div>
+                  </div>
+                  <div>
+                    <h4 className="text-sm font-semibold mb-2 text-red-700 dark:text-red-300">❌ Foods to Avoid</h4>
+                    <div className="space-y-2 text-sm">
+                      <div>• High-fiber foods (beans, lentils, bran)</div>
+                      <div>• Cruciferous vegetables</div>
+                      <div>• High-fat meals</div>
+                      <div>• New/untested foods</div>
+                    </div>
+                  </div>
+                </div>
               </Card>
             </motion.div>
           )}
@@ -907,7 +1005,7 @@ export default function App(){
             </motion.div>
           )}
 
-          {tab === "performance" && (
+          {tab === "performance-old" && (
             <motion.div key="performance" initial={{opacity:0,y:8}} animate={{opacity:1,y:0}} exit={{opacity:0,y:-8}} transition={{duration:0.25}} className="space-y-4 sm:space-y-6">
               <Card>
                 <SectionTitle title="Athlete Profile" subtitle="Basic info for calorie and macro calculations" />
@@ -1010,10 +1108,41 @@ export default function App(){
           {tab === "traininglog" && (
             <motion.div key="traininglog" initial={{opacity:0,y:8}} animate={{opacity:1,y:0}} exit={{opacity:0,y:-8}} transition={{duration:0.25}} className="space-y-4 sm:space-y-6">
               <Card>
-                <SectionTitle title="Training Log" subtitle="Track your daily training and nutrition" />
-                <p className="text-center text-slate-600 dark:text-slate-300 py-8">
-                  Training log feature coming soon. Track your daily workouts and nutrition in one place.
-                </p>
+                <SectionTitle title="Daily Training Log" subtitle="Track your sessions and nutrition" />
+                <div className="space-y-4">
+                  {['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'].map((day, index) => (
+                    <div key={day} className="border border-slate-200 dark:border-slate-700 rounded-lg p-4">
+                      <div className="font-bold capitalize mb-3">{day}</div>
+                      <div className="grid sm:grid-cols-4 gap-3">
+                        <div>
+                          <Label>Duration (min)</Label>
+                          <input type="number" min="0" max="300" defaultValue="0" className="w-full mt-1 border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 rounded-lg px-2 py-1" />
+                        </div>
+                        <div>
+                          <Label>Type</Label>
+                          <select className="w-full mt-1 border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 rounded-lg px-2 py-1">
+                            <option selected>Run</option>
+                            <option>Bike</option>
+                            <option>Swim</option>
+                            <option>Strength</option>
+                          </select>
+                        </div>
+                        <div>
+                          <Label>Intensity</Label>
+                          <select className="w-full mt-1 border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 rounded-lg px-2 py-1">
+                            <option selected>Aerobic</option>
+                            <option>Threshold</option>
+                            <option>VO2max</option>
+                          </select>
+                        </div>
+                        <div className="text-sm">
+                          <div className="font-semibold text-emerald-700 dark:text-emerald-300">Training: 0 kcal</div>
+                          <div className="text-slate-500">Total: 2732 kcal</div>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
               </Card>
             </motion.div>
           )}
@@ -1022,9 +1151,19 @@ export default function App(){
             <motion.div key="coach" initial={{opacity:0,y:8}} animate={{opacity:1,y:0}} exit={{opacity:0,y:-8}} transition={{duration:0.25}} className="space-y-4 sm:space-y-6">
               <Card>
                 <SectionTitle title="Coach Dashboard" subtitle="Manage athletes and training programs" />
-                <p className="text-center text-slate-600 dark:text-slate-300 py-8">
-                  Coach dashboard coming soon. Manage up to 5 athletes with individual profiles and plans.
-                </p>
+                <div className="space-y-4">
+                  <div className="flex justify-between items-center">
+                    <h3 className="text-lg font-semibold">Athletes (0/5)</h3>
+                    <button className="px-4 py-2 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white rounded-lg hover:from-emerald-600 hover:to-emerald-700">
+                      + Add Athlete
+                    </button>
+                  </div>
+                  <div className="border-2 border-dashed border-slate-300 dark:border-slate-700 rounded-lg p-8 text-center">
+                    <div className="text-4xl mb-3">🏋️</div>
+                    <h4 className="font-semibold text-slate-700 dark:text-slate-300 mb-2">No athletes yet</h4>
+                    <p className="text-sm text-slate-500 dark:text-slate-400">Add up to 5 athletes to track their nutrition and training</p>
+                  </div>
+                </div>
               </Card>
             </motion.div>
           )}
@@ -1032,10 +1171,25 @@ export default function App(){
           {tab === "reports" && (
             <motion.div key="reports" initial={{opacity:0,y:8}} animate={{opacity:1,y:0}} exit={{opacity:0,y:-8}} transition={{duration:0.25}} className="space-y-4 sm:space-y-6">
               <Card>
-                <SectionTitle title="Reports" subtitle="Analysis and insights" />
-                <p className="text-center text-slate-600 dark:text-slate-300 py-8">
-                  Reports feature coming soon. Generate detailed nutrition and training analysis.
-                </p>
+                <SectionTitle title="Reports & Analysis" subtitle="Nutrition insights and trends" />
+                <div className="grid sm:grid-cols-2 gap-4">
+                  <div className="border border-slate-200 dark:border-slate-700 rounded-lg p-4">
+                    <h4 className="font-semibold mb-2 text-emerald-700 dark:text-emerald-300">📊 Weekly Summary</h4>
+                    <div className="space-y-2 text-sm">
+                      <div>Total Calories: {weeklyTotalCalories} kcal</div>
+                      <div>Avg Daily: {Math.round(weeklyTotalCalories/7)} kcal</div>
+                      <div>Training Load: {dailyTrainingCalories.reduce((a,b)=>a+b,0)} kcal</div>
+                    </div>
+                  </div>
+                  <div className="border border-slate-200 dark:border-slate-700 rounded-lg p-4">
+                    <h4 className="font-semibold mb-2 text-blue-700 dark:text-blue-300">🎯 Targets</h4>
+                    <div className="space-y-2 text-sm">
+                      <div>Carbs: {Math.round(weightKg * (carbLow + carbHigh) / 2)}g avg</div>
+                      <div>Protein: {Math.round(weightKg * protein)}g avg</div>
+                      <div>Fat: {Math.round(weightKg * fat)}g avg</div>
+                    </div>
+                  </div>
+                </div>
               </Card>
             </motion.div>
           )}
