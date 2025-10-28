@@ -904,62 +904,72 @@ export default function App(){
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 sm:py-4">
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4">
             <div className="flex items-center gap-3">
-              <div className="h-8 w-8 sm:h-10 sm:w-10 rounded-xl bg-gradient-to-br from-emerald-500 to-emerald-600 shadow-lg" />
+              <img 
+                src="/logo.png" 
+                alt="Nutrition Planner Logo" 
+                className="h-10 w-10 sm:h-12 sm:w-12 rounded-xl shadow-lg object-contain bg-white dark:bg-slate-800 p-1"
+              />
               <div>
-                <div className="text-lg sm:text-xl font-bold leading-tight text-slate-900 dark:text-slate-100">Nutrition Planner</div>
+                <div className="text-lg sm:text-xl font-bold leading-tight text-emerald-700 dark:text-emerald-400">Nutrition Planner</div>
                 <div className="text-xs sm:text-sm text-slate-600 dark:text-slate-400">Running fuel calculator</div>
               </div>
             </div>
             <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
               <button 
                 onClick={()=>setDark(v=>!v)} 
-                className="px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-sm font-medium hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors"
+                className="px-3 sm:px-4 py-2 sm:py-2.5 rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-xs sm:text-sm font-medium hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors min-h-[44px] active:scale-95"
               >
-                {dark ? "☀️ Light" : "🌙 Dark"}
+                <span className="hidden sm:inline">{dark ? "☀️ Light" : "🌙 Dark"}</span>
+                <span className="sm:hidden">{dark ? "☀️" : "🌙"}</span>
               </button>
               <button 
                 onClick={copyShareLink} 
-                className="px-3 py-2 rounded-xl bg-gradient-to-r from-emerald-500 to-emerald-600 text-white text-sm font-medium hover:from-emerald-600 hover:to-emerald-700 transition-all shadow-sm"
+                className="px-3 sm:px-4 py-2 sm:py-2.5 rounded-xl bg-gradient-to-r from-emerald-500 to-emerald-600 text-white text-xs sm:text-sm font-medium hover:from-emerald-600 hover:to-emerald-700 transition-all shadow-sm min-h-[44px] active:scale-95"
               >
-                📋 Share
+                <span className="hidden sm:inline">📋 Share</span>
+                <span className="sm:hidden">📋</span>
               </button>
               <button 
                 onClick={downloadCSV} 
-                className="px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-sm font-medium hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors"
+                className="px-3 sm:px-4 py-2 sm:py-2.5 rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-xs sm:text-sm font-medium hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors min-h-[44px] active:scale-95"
               >
-                📊 CSV
+                <span className="hidden sm:inline">📊 CSV</span>
+                <span className="sm:hidden">📊</span>
               </button>
               <button 
                 onClick={exportPDF} 
-                className="px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-sm font-medium hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors"
+                className="px-3 sm:px-4 py-2 sm:py-2.5 rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-xs sm:text-sm font-medium hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors min-h-[44px] active:scale-95"
               >
-                📄 PDF
+                <span className="hidden sm:inline">📄 PDF</span>
+                <span className="sm:hidden">📄</span>
               </button>
             </div>
           </div>
         </div>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 pb-3 sm:pb-4">
-          <div className="inline-flex rounded-2xl border border-slate-200 dark:border-slate-700 overflow-hidden shadow-sm">
-            {[
-              {id:"daily",label:"Daily"},
-              {id:"traininglog",label:"Training Log"},
-              {id:"race",label:"Race Week"},
-              {id:"hydration",label:"Hydration"},
-              {id:"coach",label:"Coach"},
-              {id:"reports",label:"Reports"},
-            ].map(t => (
-              <button 
-                key={t.id} 
-                onClick={()=>setTab(t.id)} 
-                className={`px-3 sm:px-4 py-2 text-sm font-medium transition-all ${
-                  tab===t.id
-                    ? "bg-gradient-to-r from-emerald-500 to-emerald-600 text-white shadow-sm" 
-                    : "bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700"
-                }`}
-              >
-                {t.label}
-              </button>
-            ))}
+          <div className="overflow-x-auto scrollbar-hide">
+            <div className="inline-flex min-w-max rounded-2xl border border-slate-200 dark:border-slate-700 overflow-hidden shadow-sm">
+              {[
+                {id:"daily",label:"Daily", icon:"📊"},
+                {id:"traininglog",label:"Training", icon:"🏃"},
+                {id:"race",label:"Race Week", icon:"🏁"},
+                {id:"hydration",label:"Hydration", icon:"💧"},
+                {id:"coach",label:"Coach", icon:"💡"},
+                {id:"reports",label:"Reports", icon:"📈"},
+              ].map(t => (
+                <button 
+                  key={t.id} 
+                  onClick={()=>setTab(t.id)} 
+                  className={`px-3 sm:px-4 py-2 text-xs sm:text-sm font-medium transition-all whitespace-nowrap ${
+                    tab===t.id
+                      ? "bg-gradient-to-r from-emerald-500 to-emerald-600 text-white shadow-sm" 
+                      : "bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700"
+                  }`}
+                >
+                  <span className="hidden sm:inline">{t.icon} </span>{t.label}
+                </button>
+              ))}
+            </div>
           </div>
         </div>
       </header>
