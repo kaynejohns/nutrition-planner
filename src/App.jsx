@@ -818,7 +818,7 @@ export default function App(){
           sessionEffectiveRate,
           {
             baselineSweatRate,
-            baselineNaPerL: baselineNaMgPerL / 1000, // Convert to g/L
+            baselineNaPerL: baselineNaMgPerL, // mg/L
             intensitySweatMult,
             intensityNaMult,
             heatAcclimationMult: acclimationMultiplier
@@ -859,7 +859,7 @@ export default function App(){
           sessionEffectiveRate,
           {
             baselineSweatRate,
-            baselineNaPerL: baselineNaMgPerL / 1000, // Convert to g/L  
+            baselineNaPerL: baselineNaMgPerL, // mg/L
             intensitySweatMult,
             intensityNaMult,
             heatAcclimationMult: acclimationMultiplier
