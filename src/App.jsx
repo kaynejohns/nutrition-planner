@@ -628,10 +628,9 @@ export default function App(){
           <div className="inline-flex rounded-2xl border border-slate-200 dark:border-slate-700 overflow-hidden shadow-sm">
             {[
               {id:"daily",label:"Daily"},
+              {id:"traininglog",label:"Training Log"},
               {id:"race",label:"Race Week"},
               {id:"hydration",label:"Hydration"},
-              {id:"performance",label:"Performance"},
-              {id:"traininglog",label:"Training Log"},
               {id:"coach",label:"Coach"},
               {id:"reports",label:"Reports"},
             ].map(t => (
