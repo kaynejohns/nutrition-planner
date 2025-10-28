@@ -77,12 +77,13 @@ function calculateSessionCalories(weightKg, duration, type, intensity) {
   if (duration === 0) return 0;
   
   // MET values for different activities and intensities
+  // Aerobic = Zone 1-2 (65-80% VO2max), Threshold = Zone 3-4 (80-95% VO2max), VO2max = Zone 4-5 (95-100% VO2max)
   const metValues = {
-    run: { easy: 6.0, hard: 10.0, severe: 12.0 },
-    bike: { easy: 6.0, hard: 10.0, severe: 12.0 },
-    swim: { easy: 5.8, hard: 9.8, severe: 11.0 },
-    hitt: { easy: 6.0, hard: 10.0, severe: 12.0 },
-    strength: { easy: 3.0, hard: 5.0, severe: 6.0 }
+    run: { aerobic: 7.5, threshold: 10.5, vo2max: 14.0 },
+    bike: { aerobic: 6.5, threshold: 9.5, vo2max: 12.5 },
+    swim: { aerobic: 6.0, threshold: 9.0, vo2max: 11.5 },
+    hitt: { aerobic: 7.5, threshold: 10.5, vo2max: 14.0 },
+    strength: { aerobic: 3.5, threshold: 5.0, vo2max: 6.5 }
   };
   
   const met = metValues[type][intensity];
@@ -146,7 +147,7 @@ const WeeklySessionDay = ({ day, dayIndex, session, onUpdate, trainingCalories, 
     onUpdate({ 
       ...session, 
       doubleSession: !session.doubleSession,
-      secondSession: session.doubleSession ? session.secondSession : { duration: 0, type: 'run', intensity: 'easy' }
+      secondSession: session.doubleSession ? session.secondSession : { duration: 0, type: 'run', intensity: 'aerobic' }
     });
   };
 
@@ -170,6 +171,7 @@ const WeeklySessionDay = ({ day, dayIndex, session, onUpdate, trainingCalories, 
             type="number"
             value={session.duration}
             onChange={(e) => updateSession('duration', Number(e.target.value))}
+            onFocus={(e) => { if (session.duration === 0) { e.target.select(); } }}
             min="0"
             max="300"
             className="w-full mt-1 border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 rounded-lg px-3 py-2 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
@@ -198,9 +200,9 @@ const WeeklySessionDay = ({ day, dayIndex, session, onUpdate, trainingCalories, 
             onChange={(e) => updateSession('intensity', e.target.value)}
             className="w-full mt-1 border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 rounded-lg px-3 py-2 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
           >
-            <option value="easy">Easy</option>
-            <option value="hard">Hard</option>
-            <option value="severe">Severe</option>
+            <option value="aerobic">Aerobic</option>
+            <option value="threshold">Threshold</option>
+            <option value="vo2max">VO2max</option>
           </select>
         </div>
 
@@ -227,6 +229,7 @@ const WeeklySessionDay = ({ day, dayIndex, session, onUpdate, trainingCalories, 
                 type="number"
                 value={session.secondSession.duration}
                 onChange={(e) => updateSecondSession('duration', Number(e.target.value))}
+                onFocus={(e) => { if (session.secondSession.duration === 0) { e.target.select(); } }}
                 min="0"
                 max="300"
                 className="w-full mt-1 border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 rounded-lg px-3 py-2 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
@@ -255,9 +258,9 @@ const WeeklySessionDay = ({ day, dayIndex, session, onUpdate, trainingCalories, 
                 onChange={(e) => updateSecondSession('intensity', e.target.value)}
                 className="w-full mt-1 border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 rounded-lg px-3 py-2 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
               >
-                <option value="easy">Easy</option>
-                <option value="hard">Hard</option>
-                <option value="severe">Severe</option>
+                <option value="aerobic">Aerobic</option>
+                <option value="threshold">Threshold</option>
+                <option value="vo2max">VO2max</option>
               </select>
             </div>
           </div>
@@ -411,13 +414,13 @@ export default function App(){
   
   // Performance tab state
   const [weeklySessions, setWeeklySessions] = useState({
-    monday: { duration: 0, type: 'run', intensity: 'easy', doubleSession: false, secondSession: { duration: 0, type: 'run', intensity: 'easy' } },
-    tuesday: { duration: 0, type: 'run', intensity: 'easy', doubleSession: false, secondSession: { duration: 0, type: 'run', intensity: 'easy' } },
-    wednesday: { duration: 0, type: 'run', intensity: 'easy', doubleSession: false, secondSession: { duration: 0, type: 'run', intensity: 'easy' } },
-    thursday: { duration: 0, type: 'run', intensity: 'easy', doubleSession: false, secondSession: { duration: 0, type: 'run', intensity: 'easy' } },
-    friday: { duration: 0, type: 'run', intensity: 'easy', doubleSession: false, secondSession: { duration: 0, type: 'run', intensity: 'easy' } },
-    saturday: { duration: 0, type: 'run', intensity: 'easy', doubleSession: false, secondSession: { duration: 0, type: 'run', intensity: 'easy' } },
-    sunday: { duration: 0, type: 'run', intensity: 'easy', doubleSession: false, secondSession: { duration: 0, type: 'run', intensity: 'easy' } }
+    monday: { duration: 0, type: 'run', intensity: 'aerobic', doubleSession: false, secondSession: { duration: 0, type: 'run', intensity: 'aerobic' } },
+    tuesday: { duration: 0, type: 'run', intensity: 'aerobic', doubleSession: false, secondSession: { duration: 0, type: 'run', intensity: 'aerobic' } },
+    wednesday: { duration: 0, type: 'run', intensity: 'aerobic', doubleSession: false, secondSession: { duration: 0, type: 'run', intensity: 'aerobic' } },
+    thursday: { duration: 0, type: 'run', intensity: 'aerobic', doubleSession: false, secondSession: { duration: 0, type: 'run', intensity: 'aerobic' } },
+    friday: { duration: 0, type: 'run', intensity: 'aerobic', doubleSession: false, secondSession: { duration: 0, type: 'run', intensity: 'aerobic' } },
+    saturday: { duration: 0, type: 'run', intensity: 'aerobic', doubleSession: false, secondSession: { duration: 0, type: 'run', intensity: 'aerobic' } },
+    sunday: { duration: 0, type: 'run', intensity: 'aerobic', doubleSession: false, secondSession: { duration: 0, type: 'run', intensity: 'aerobic' } }
   });
 
   // Persist dark mode to class on <html>
