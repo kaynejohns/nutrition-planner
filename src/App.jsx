@@ -631,6 +631,9 @@ export default function App(){
               {id:"race",label:"Race Week"},
               {id:"hydration",label:"Hydration"},
               {id:"performance",label:"Performance"},
+              {id:"traininglog",label:"Training Log"},
+              {id:"coach",label:"Coach"},
+              {id:"reports",label:"Reports"},
             ].map(t => (
               <button 
                 key={t.id} 
@@ -1001,6 +1004,39 @@ export default function App(){
                   nonTraining={nonTraining}
                   weightKg={weightKg}
                 />
+              </Card>
+            </motion.div>
+          )}
+
+          {tab === "traininglog" && (
+            <motion.div key="traininglog" initial={{opacity:0,y:8}} animate={{opacity:1,y:0}} exit={{opacity:0,y:-8}} transition={{duration:0.25}} className="space-y-4 sm:space-y-6">
+              <Card>
+                <SectionTitle title="Training Log" subtitle="Track your daily training and nutrition" />
+                <p className="text-center text-slate-600 dark:text-slate-300 py-8">
+                  Training log feature coming soon. Track your daily workouts and nutrition in one place.
+                </p>
+              </Card>
+            </motion.div>
+          )}
+
+          {tab === "coach" && (
+            <motion.div key="coach" initial={{opacity:0,y:8}} animate={{opacity:1,y:0}} exit={{opacity:0,y:-8}} transition={{duration:0.25}} className="space-y-4 sm:space-y-6">
+              <Card>
+                <SectionTitle title="Coach Dashboard" subtitle="Manage athletes and training programs" />
+                <p className="text-center text-slate-600 dark:text-slate-300 py-8">
+                  Coach dashboard coming soon. Manage up to 5 athletes with individual profiles and plans.
+                </p>
+              </Card>
+            </motion.div>
+          )}
+
+          {tab === "reports" && (
+            <motion.div key="reports" initial={{opacity:0,y:8}} animate={{opacity:1,y:0}} exit={{opacity:0,y:-8}} transition={{duration:0.25}} className="space-y-4 sm:space-y-6">
+              <Card>
+                <SectionTitle title="Reports" subtitle="Analysis and insights" />
+                <p className="text-center text-slate-600 dark:text-slate-300 py-8">
+                  Reports feature coming soon. Generate detailed nutrition and training analysis.
+                </p>
               </Card>
             </motion.div>
           )}
