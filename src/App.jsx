@@ -552,7 +552,25 @@ export default function App(){
   // Hydration helpers
   const [sessionMin, setSessionMin] = useState(75);
   const [ambientC, setAmbientC] = useState(18);
-  const [sweatRate, setSweatRate] = useState(0.8); // L/h typical; editable
+  const [sweatCategory, setSweatCategory] = useState('Medium'); // Low / Medium / High / Very High
+  const [intensityLevel, setIntensityLevel] = useState('Moderate'); // Low / Moderate / High / Very High
+  
+  // Sweat rate calculation: Baseline × Intensity Multiplier
+  const effectiveSweatRate = useMemo(() => {
+    const baselineRates = {
+      'Low': 0.7,
+      'Medium': 1.2,
+      'High': 1.7,
+      'Very High': 2.3
+    };
+    const intensityMultipliers = {
+      'Low': 0.9,
+      'Moderate': 1.0,
+      'High': 1.15,
+      'Very High': 1.25
+    };
+    return (baselineRates[sweatCategory] || 1.2) * (intensityMultipliers[intensityLevel] || 1.0);
+  }, [sweatCategory, intensityLevel]);
   
   // Weather integration
   const [location, setLocation] = useState('');
@@ -608,7 +626,7 @@ export default function App(){
   }, [envIndex]);
   
   // Sweat rate in ml/h and recommended fluid per hour
-  const sweatMlPerHr = useMemo(() => sweatRate * 1000, [sweatRate]);
+  const sweatMlPerHr = useMemo(() => effectiveSweatRate * 1000, [effectiveSweatRate]);
   const fluidPerHour = useMemo(() => {
     const recFluid = Math.max(300, Math.min(1200, sweatMlPerHr * replacementFraction));
     return Math.round(recFluid);
@@ -622,7 +640,7 @@ export default function App(){
   
   // Sodium calculations
   const sweatNaMgPerL = useMemo(() => 500 + Math.max(0, ambientC - 15) * 20, [ambientC]); // Rough estimate based on temp
-  const sweatNaLossPerHr = useMemo(() => sweatRate * sweatNaMgPerL, [sweatRate, sweatNaMgPerL]);
+  const sweatNaLossPerHr = useMemo(() => effectiveSweatRate * sweatNaMgPerL, [effectiveSweatRate, sweatNaMgPerL]);
   const recSodiumPerHr = useMemo(() => Math.round(sweatNaLossPerHr * 0.7), [sweatNaLossPerHr]); // 70% replacement
   const totalSodiumMg = useMemo(() => {
     const hours = sessionMin / 60;
@@ -719,7 +737,7 @@ export default function App(){
           weatherTemp,
           weatherHumidity,
           trainingHours,
-          sweatRate
+          effectiveSweatRate
         );
         
         
@@ -747,7 +765,7 @@ export default function App(){
           weatherTemp,
           weatherHumidity,
           trainingHours,
-          sweatRate
+          effectiveSweatRate
         );
         
         sessions.push({
@@ -787,7 +805,7 @@ export default function App(){
         rawForecast: forecastForDate
       };
     });
-  }, [weeklySessions, currentWeather, weeklyWeather, ambientC, sweatRate, getTempForTimeOfDay, restingFluidNeeds, weekDates]);
+  }, [weeklySessions, currentWeather, weeklyWeather, ambientC, effectiveSweatRate, getTempForTimeOfDay, restingFluidNeeds, weekDates]);
 
   // Performance tab calculations
   const dailyTrainingCalories = useMemo(() => {
@@ -1510,17 +1528,39 @@ export default function App(){
                     </div>
 
                     <div>
-                      <Label>Sweat rate (L/h)</Label>
-                      <input 
-                        type="number" 
-                        step="0.1"
+                      <Label>Sweat Rate Category</Label>
+                      <select 
                         className="w-full mt-1 border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 rounded-xl px-3 py-2 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-orange-500" 
-                        value={sweatRate} 
-                        onChange={e => setSweatRate(Number(e.target.value))}
-                        min={0.3}
-                        max={2.0}
-                      />
-                      <p className="text-xs text-slate-500 mt-1">Estimate, or measure via before/after body mass in similar conditions.</p>
+                        value={sweatCategory}
+                        onChange={(e) => setSweatCategory(e.target.value)}
+                      >
+                        <option value="Low">Low (0.7 L/hr)</option>
+                        <option value="Medium">Medium (1.2 L/hr)</option>
+                        <option value="High">High (1.7 L/hr)</option>
+                        <option value="Very High">Very High (2.3 L/hr)</option>
+                      </select>
+                    </div>
+
+                    <div>
+                      <Label>Intensity Level</Label>
+                      <select 
+                        className="w-full mt-1 border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 rounded-xl px-3 py-2 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-orange-500" 
+                        value={intensityLevel}
+                        onChange={(e) => setIntensityLevel(e.target.value)}
+                      >
+                        <option value="Low">Low (Z1–Z2) - Easy, conversational (×0.9)</option>
+                        <option value="Moderate">Moderate (Z3) - Tempo, steady (×1.0)</option>
+                        <option value="High">High (Z4–Z5) - Threshold, VO₂ (×1.15)</option>
+                        <option value="Very High">Very High - Competition pace (×1.25)</option>
+                      </select>
+                    </div>
+
+                    <div>
+                      <Label>Effective Sweat Rate</Label>
+                      <div className="w-full mt-1 border border-slate-300 dark:border-slate-600 bg-slate-100 dark:bg-slate-800 rounded-xl px-3 py-2 text-slate-800 dark:text-slate-100 font-semibold">
+                        {effectiveSweatRate.toFixed(2)} L/hr
+                      </div>
+                      <p className="text-xs text-slate-500 mt-1">Calculated: Category × Intensity multiplier</p>
                     </div>
 
                     <div>
