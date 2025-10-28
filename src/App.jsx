@@ -559,6 +559,10 @@ export default function App(){
   const [heatAcclimation, setHeatAcclimation] = useState('Not acclimated'); // Not / Partial / Well
   const [sessionDurationHr, setSessionDurationHr] = useState(1.5);
   
+  // Tooltip visibility states
+  const [showSaltinessTooltip, setShowSaltinessTooltip] = useState(false);
+  const [showAcclimationTooltip, setShowAcclimationTooltip] = useState(false);
+  
   // Map training log intensity to hydration multiplier
   const getIntensityMultiplier = (intensity) => {
     const normalized = intensity ? intensity.toLowerCase() : 'aerobic';
@@ -1511,10 +1515,13 @@ export default function App(){
                     <div className="flex items-center gap-2 mb-1">
                       <Label>Saltiness Category</Label>
                       <div className="group relative inline-block">
-                        <div className="w-5 h-5 rounded-full bg-orange-500 text-white text-xs font-bold cursor-help flex items-center justify-center hover:bg-orange-600 transition-colors">
+                        <div 
+                          className="w-5 h-5 rounded-full bg-orange-500 text-white text-xs font-bold cursor-pointer flex items-center justify-center hover:bg-orange-600 active:bg-orange-700 transition-colors"
+                          onClick={() => setShowSaltinessTooltip(!showSaltinessTooltip)}
+                        >
                           ?
                         </div>
-                        <div className="absolute left-0 bottom-full mb-2 w-80 bg-slate-900 dark:bg-slate-800 text-white text-xs rounded-lg shadow-xl p-3 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50 pointer-events-none">
+                        <div className={`absolute left-0 bottom-full mb-2 w-80 bg-slate-900 dark:bg-slate-800 text-white text-xs rounded-lg shadow-xl p-3 transition-all duration-200 z-50 pointer-events-none ${showSaltinessTooltip ? 'opacity-100 visible' : 'opacity-0 invisible group-hover:opacity-100 group-hover:visible'}`}>
                           <div className="font-semibold mb-2 text-orange-300">Saltiness Category Guide:</div>
                           <div className="space-y-1.5">
                             <div><span className="text-orange-400 font-semibold">Low</span> (500 mg/L): Rare white marks on skin or clothing.</div>
@@ -1541,10 +1548,13 @@ export default function App(){
                     <div className="flex items-center gap-2 mb-1">
                       <Label>Heat Acclimation Status</Label>
                       <div className="group relative inline-block">
-                        <div className="w-5 h-5 rounded-full bg-orange-500 text-white text-xs font-bold cursor-help flex items-center justify-center hover:bg-orange-600 transition-colors">
+                        <div 
+                          className="w-5 h-5 rounded-full bg-orange-500 text-white text-xs font-bold cursor-pointer flex items-center justify-center hover:bg-orange-600 active:bg-orange-700 transition-colors"
+                          onClick={() => setShowAcclimationTooltip(!showAcclimationTooltip)}
+                        >
                           ?
                         </div>
-                        <div className="absolute left-0 bottom-full mb-2 w-80 bg-slate-900 dark:bg-slate-800 text-white text-xs rounded-lg shadow-xl p-3 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50 pointer-events-none">
+                        <div className={`absolute left-0 bottom-full mb-2 w-80 bg-slate-900 dark:bg-slate-800 text-white text-xs rounded-lg shadow-xl p-3 transition-all duration-200 z-50 pointer-events-none ${showAcclimationTooltip ? 'opacity-100 visible' : 'opacity-0 invisible group-hover:opacity-100 group-hover:visible'}`}>
                           <div className="font-semibold mb-2 text-orange-300">Heat Acclimation Guide:</div>
                           <div className="space-y-1.5">
                             <div><span className="text-orange-400 font-semibold">Not acclimated:</span> Heat feels harder, sweating less efficient.</div>
