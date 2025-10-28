@@ -1182,6 +1182,9 @@ export default function App(){
                   carbsPerKg={(carbLow + carbHigh) / 2}
                   proteinPerKg={protein}
                   fatPerKg={fat}
+                  dailyTrainingTime={[0, 60, 0, 45, 0, 120, 90]}
+                  trainingDays={5}
+                  doubleDays={2}
                 />
               </Card>
             </motion.div>
