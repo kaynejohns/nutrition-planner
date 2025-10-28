@@ -1,6 +1,8 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import "./index.css";
+import DayCard from "./components/Week/DayCard";
+import AthleteProfile from "./components/AthleteProfile";
 
 // ---------- UI primitives ----------
 const Card = ({ children, className = "" }) => (
@@ -1111,36 +1113,15 @@ export default function App(){
                 <SectionTitle title="Daily Training Log" subtitle="Track your sessions and nutrition" />
                 <div className="space-y-4">
                   {['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'].map((day, index) => (
-                    <div key={day} className="border border-slate-200 dark:border-slate-700 rounded-lg p-4">
-                      <div className="font-bold capitalize mb-3">{day}</div>
-                      <div className="grid sm:grid-cols-4 gap-3">
-                        <div>
-                          <Label>Duration (min)</Label>
-                          <input type="number" min="0" max="300" defaultValue="0" className="w-full mt-1 border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 rounded-lg px-2 py-1" />
-                        </div>
-                        <div>
-                          <Label>Type</Label>
-                          <select className="w-full mt-1 border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 rounded-lg px-2 py-1">
-                            <option selected>Run</option>
-                            <option>Bike</option>
-                            <option>Swim</option>
-                            <option>Strength</option>
-                          </select>
-                        </div>
-                        <div>
-                          <Label>Intensity</Label>
-                          <select className="w-full mt-1 border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 rounded-lg px-2 py-1">
-                            <option selected>Aerobic</option>
-                            <option>Threshold</option>
-                            <option>VO2max</option>
-                          </select>
-                        </div>
-                        <div className="text-sm">
-                          <div className="font-semibold text-emerald-700 dark:text-emerald-300">Training: 0 kcal</div>
-                          <div className="text-slate-500">Total: 2732 kcal</div>
-                        </div>
-                      </div>
-                    </div>
+                    <DayCard 
+                      key={day}
+                      day={day}
+                      baseCalories={nonTraining}
+                      trainingCalories={dailyTrainingCalories[index]}
+                      carbs={Math.round(weightKg * (carbLow + carbHigh) / 2)}
+                      protein={Math.round(weightKg * protein)}
+                      fat={Math.round(weightKg * fat)}
+                    />
                   ))}
                 </div>
               </Card>
@@ -1149,6 +1130,13 @@ export default function App(){
 
           {tab === "coach" && (
             <motion.div key="coach" initial={{opacity:0,y:8}} animate={{opacity:1,y:0}} exit={{opacity:0,y:-8}} transition={{duration:0.25}} className="space-y-4 sm:space-y-6">
+              <AthleteProfile 
+                weightKg={weightKg}
+                heightCm={heightCm}
+                bmr={bmr}
+                baseActivity={nonTraining}
+              />
+              
               <Card>
                 <SectionTitle title="Coach Dashboard" subtitle="Manage athletes and training programs" />
                 <div className="space-y-4">
