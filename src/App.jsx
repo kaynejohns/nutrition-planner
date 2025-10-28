@@ -1309,20 +1309,6 @@ export default function App(){
                   </Card>
                 </motion.div>
               </div>
-
-              {/* Daily Calories View */}
-              <motion.div initial={{opacity:0,y:8}} animate={{opacity:1,y:0}} transition={{delay:0.3}}>
-                <Card>
-                  <DailyCalories
-                    dailyRestCalories={nonTraining}
-                    dailyTrainingCalories={dailyTrainingCalories}
-                    weightKg={weightKg}
-                    carbsPerKg={(carbLow + carbHigh) / 2}
-                    proteinPerKg={protein}
-                    fatPerKg={fat}
-                  />
-                </Card>
-              </motion.div>
             </motion.div>
           )}
 
