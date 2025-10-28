@@ -655,16 +655,13 @@ export default function App(){
     };
   }, []);
   
-  // Calculate resting fluid needs (ml/day) based on body size and activity
+  // Calculate resting fluid needs (ml/day) based on body size
   // Research basis: General recommendation of 30-40ml/kg (AHA, EFSA, USDA)
-  // 30ml/kg is the lower end of the healthy range, appropriate for hydration planning
-  // Higher activity = higher metabolic rate = slightly higher fluid needs
+  // 30ml/kg is the baseline for daily resting fluid needs
   const restingFluidNeeds = useMemo(() => {
-    // Base fluid: 30ml per kg body weight (common recommendation: 30-40ml/kg range)
-    const baseFluid = weightKg * 30;
-    // Activity factor adjusts for non-training daily activity (sedentary ~1.3, active ~1.6+)
-    return Math.round(baseFluid * activityFactor);
-  }, [weightKg, activityFactor]);
+    // Base fluid: 30ml per kg body weight
+    return Math.round(weightKg * 30);
+  }, [weightKg]);
   
   // Daily resting fluid (24 hours)
   const dailyRestingFluid = useMemo(() => Math.round(restingFluidNeeds / 24), [restingFluidNeeds]);
