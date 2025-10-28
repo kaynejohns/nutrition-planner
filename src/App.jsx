@@ -231,7 +231,15 @@ const WeeklySessionDay = ({ day, dayIndex, session, onUpdate, trainingCalories, 
           <Label>Session Type</Label>
           <select
             value={session.type}
-            onChange={(e) => updateSession('type', e.target.value)}
+            onChange={(e) => {
+              const newType = e.target.value;
+              if (newType === 'strength') {
+                updateSession('type', newType);
+                updateSession('intensity', 'aerobic'); // Clear intensity for strength
+              } else {
+                updateSession('type', newType);
+              }
+            }}
             className="w-full mt-1 border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 rounded-lg px-3 py-2 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
           >
             <option value="run">Run</option>
@@ -242,18 +250,20 @@ const WeeklySessionDay = ({ day, dayIndex, session, onUpdate, trainingCalories, 
           </select>
         </div>
 
-        <div>
-          <Label>Intensity</Label>
-          <select
-            value={session.intensity}
-            onChange={(e) => updateSession('intensity', e.target.value)}
-            className="w-full mt-1 border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 rounded-lg px-3 py-2 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
-          >
-            <option value="aerobic">Aerobic</option>
-            <option value="threshold">Threshold</option>
-            <option value="vo2max">VO2max</option>
-          </select>
-        </div>
+        {session.type !== 'strength' && (
+          <div>
+            <Label>Intensity</Label>
+            <select
+              value={session.intensity}
+              onChange={(e) => updateSession('intensity', e.target.value)}
+              className="w-full mt-1 border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 rounded-lg px-3 py-2 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+            >
+              <option value="aerobic">Aerobic</option>
+              <option value="threshold">Threshold</option>
+              <option value="vo2max">VO2max</option>
+            </select>
+          </div>
+        )}
 
         <div className="flex items-center">
           <label className="flex items-center space-x-2 cursor-pointer">
@@ -289,7 +299,15 @@ const WeeklySessionDay = ({ day, dayIndex, session, onUpdate, trainingCalories, 
               <Label>Session Type</Label>
               <select
                 value={session.secondSession.type}
-                onChange={(e) => updateSecondSession('type', e.target.value)}
+                onChange={(e) => {
+                  const newType = e.target.value;
+                  if (newType === 'strength') {
+                    updateSecondSession('type', newType);
+                    updateSecondSession('intensity', 'aerobic'); // Clear intensity for strength
+                  } else {
+                    updateSecondSession('type', newType);
+                  }
+                }}
                 className="w-full mt-1 border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 rounded-lg px-3 py-2 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
               >
                 <option value="run">Run</option>
@@ -300,18 +318,20 @@ const WeeklySessionDay = ({ day, dayIndex, session, onUpdate, trainingCalories, 
               </select>
             </div>
 
-            <div>
-              <Label>Intensity</Label>
-              <select
-                value={session.secondSession.intensity}
-                onChange={(e) => updateSecondSession('intensity', e.target.value)}
-                className="w-full mt-1 border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 rounded-lg px-3 py-2 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
-              >
-                <option value="aerobic">Aerobic</option>
-                <option value="threshold">Threshold</option>
-                <option value="vo2max">VO2max</option>
-              </select>
-            </div>
+            {session.secondSession.type !== 'strength' && (
+              <div>
+                <Label>Intensity</Label>
+                <select
+                  value={session.secondSession.intensity}
+                  onChange={(e) => updateSecondSession('intensity', e.target.value)}
+                  className="w-full mt-1 border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 rounded-lg px-3 py-2 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+                >
+                  <option value="aerobic">Aerobic</option>
+                  <option value="threshold">Threshold</option>
+                  <option value="vo2max">VO2max</option>
+                </select>
+              </div>
+            )}
           </div>
         </div>
       )}
@@ -1964,6 +1984,75 @@ export default function App(){
                   trainingDays={trainingDays}
                   doubleDays={doubleDays}
                 />
+              </Card>
+
+              {/* Intensity Distribution */}
+              <Card>
+                <SectionTitle title="Intensity Distribution" subtitle="Breakdown of training intensities across the week" />
+                <div className="space-y-4">
+                  {(() => {
+                    const intensityCounts = { aerobic: 0, threshold: 0, vo2max: 0, strength: 0 };
+                    const dayNames = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
+                    
+                    dayNames.forEach(day => {
+                      const session = weeklySessions[day];
+                      if (session && session.duration > 0) {
+                        if (session.type === 'strength') {
+                          intensityCounts.strength++;
+                        } else if (session.intensity) {
+                          intensityCounts[session.intensity] = (intensityCounts[session.intensity] || 0) + 1;
+                        }
+                      }
+                      if (session && session.doubleSession && session.secondSession && session.secondSession.duration > 0) {
+                        if (session.secondSession.type === 'strength') {
+                          intensityCounts.strength++;
+                        } else if (session.secondSession.intensity) {
+                          intensityCounts[session.secondSession.intensity] = (intensityCounts[session.secondSession.intensity] || 0) + 1;
+                        }
+                      }
+                    });
+                    
+                    const total = intensityCounts.aerobic + intensityCounts.threshold + intensityCounts.vo2max + intensityCounts.strength;
+                    
+                    return (
+                      <div className="space-y-3">
+                        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                          <div className="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-3 border-2 border-blue-300 dark:border-blue-700">
+                            <div className="text-xs text-blue-700 dark:text-blue-300 mb-1">Aerobic</div>
+                            <div className="text-2xl font-bold text-blue-800 dark:text-blue-200">{intensityCounts.aerobic}</div>
+                            <div className="text-xs text-blue-600 dark:text-blue-400 mt-1">
+                              {total > 0 ? Math.round((intensityCounts.aerobic / total) * 100) : 0}% of sessions
+                            </div>
+                          </div>
+                          
+                          <div className="bg-orange-50 dark:bg-orange-900/20 rounded-lg p-3 border-2 border-orange-300 dark:border-orange-700">
+                            <div className="text-xs text-orange-700 dark:text-orange-300 mb-1">Threshold</div>
+                            <div className="text-2xl font-bold text-orange-800 dark:text-orange-200">{intensityCounts.threshold}</div>
+                            <div className="text-xs text-orange-600 dark:text-orange-400 mt-1">
+                              {total > 0 ? Math.round((intensityCounts.threshold / total) * 100) : 0}% of sessions
+                            </div>
+                          </div>
+                          
+                          <div className="bg-red-50 dark:bg-red-900/20 rounded-lg p-3 border-2 border-red-300 dark:border-red-700">
+                            <div className="text-xs text-red-700 dark:text-red-300 mb-1">VO2max</div>
+                            <div className="text-2xl font-bold text-red-800 dark:text-red-200">{intensityCounts.vo2max}</div>
+                            <div className="text-xs text-red-600 dark:text-red-400 mt-1">
+                              {total > 0 ? Math.round((intensityCounts.vo2max / total) * 100) : 0}% of sessions
+                            </div>
+                          </div>
+                          
+                          <div className="bg-purple-50 dark:bg-purple-900/20 rounded-lg p-3 border-2 border-purple-300 dark:border-purple-700">
+                            <div className="text-xs text-purple-700 dark:text-purple-300 mb-1">Strength</div>
+                            <div className="text-2xl font-bold text-purple-800 dark:text-purple-200">{intensityCounts.strength}</div>
+                            <div className="text-xs text-purple-600 dark:text-purple-400 mt-1">
+                              {total > 0 ? Math.round((intensityCounts.strength / total) * 100) : 0}% of sessions
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })()}
+                </div>
               </Card>
 
               {/* Daily Hydration Schedule */}
