@@ -1132,8 +1132,106 @@ export default function App(){
     return plans[eventType] || plans['Marathon'];
   };
 
+  // Race day hydration calculations
+  const calculateRaceDayHydration = () => {
+    if (!raceWeather) return null;
+    
+    const temp = raceWeather.temp;
+    const humidity = raceWeather.humidity || 50;
+    const totalMinutes = raceGoalHours * 60 + raceGoalMins;
+    const hours = totalMinutes / 60;
+    
+    // Calculate effective sweat rate based on intensity
+    const intensityMultiplier = raceEvent.includes('Ironman') ? 1.15 : 
+                               raceEvent === 'Marathon' ? 1.10 : 
+                               raceEvent === 'Half Marathon' ? 1.05 : 1.0;
+    
+    // Baseline sweat rate from Daily tab settings
+    const baselineSweatRate = sweatCategory === 'Low' ? 0.7 :
+                              sweatCategory === 'Medium' ? 1.2 :
+                              sweatCategory === 'High' ? 1.7 : 2.3;
+    
+    // Temperature multiplier
+    let tempMult = 1.0;
+    if (temp <= 15) tempMult = 0.85;
+    else if (temp >= 35) tempMult = 1.40;
+    else if (temp >= 29) tempMult = 1.25;
+    else if (temp >= 23) tempMult = 1.10;
+    else tempMult = 1.00;
+    
+    const effectiveSweatRate = baselineSweatRate * intensityMultiplier * tempMult;
+    
+    // Fluid needs (70% replacement strategy)
+    const fluidMlPerHour = Math.round(effectiveSweatRate * 1000 * 0.7);
+    const totalFluidMl = Math.round(fluidMlPerHour * hours);
+    
+    // Sodium needs (using saltiness category)
+    const baselineNaPerL = saltinessCategory === 'Low' ? 500 :
+                          saltinessCategory === 'Medium' ? 900 :
+                          saltinessCategory === 'High' ? 1300 : 1800;
+    
+    const intensityNaMult = raceEvent.includes('Ironman') ? 1.20 :
+                            raceEvent === 'Marathon' ? 1.10 :
+                            raceEvent === 'Half Marathon' ? 1.05 : 1.0;
+    
+    const acclimationMult = heatAcclimation === 'Not acclimated' ? 1.00 :
+                           heatAcclimation.includes('Partially') ? 0.85 : 0.70;
+    
+    const effectiveNa = baselineNaPerL * intensityNaMult * acclimationMult;
+    const sodiumPerHour = Math.round(effectiveSweatRate * effectiveNa);
+    const totalSodiumMg = Math.round(sodiumPerHour * hours);
+    
+    return {
+      fluidPerHour: fluidMlPerHour,
+      totalFluidMl: totalFluidMl,
+      sodiumPerHour: sodiumPerHour,
+      totalSodiumMg: totalSodiumMg,
+      effectiveSweatRate: effectiveSweatRate.toFixed(2)
+    };
+  };
+
+  // Generate race fueling timeline
+  const generateRaceTimeline = () => {
+    const totalMinutes = raceGoalHours * 60 + raceGoalMins;
+    const timeline = [];
+    
+    if (raceEvent.includes('Ironman')) {
+      // Ironman timeline
+      timeline.push({ time: 0, label: 'Race Start', carbs: '0', fluid: '200-300ml', notes: 'Final fluid top-up if needed' });
+      timeline.push({ time: 30, label: 'Swim → Bike Transition', carbs: '30-45g', fluid: '400-500ml', notes: 'Major refueling opportunity' });
+      timeline.push({ time: 60, label: 'Every Hour on Bike', carbs: '60-90g', fluid: '500-750ml', notes: 'Consistent fueling + 300-500mg Na' });
+      timeline.push({ time: Math.round(totalMinutes * 0.5), label: 'Mid-Race Check', carbs: '60-90g', fluid: '500-750ml', notes: 'Assess energy levels' });
+      timeline.push({ time: totalMinutes - 30, label: 'Final Hour', carbs: '30-45g', fluid: '400-600ml', notes: 'Maintain pace, small sips' });
+      timeline.push({ time: totalMinutes, label: 'Finish Line', carbs: '0', fluid: '0', notes: 'Celebrate, then refuel!' });
+    } else if (raceEvent === 'Marathon') {
+      // Marathon timeline
+      timeline.push({ time: 0, label: 'Race Start', carbs: '0', fluid: '100-200ml', notes: 'Light start, don\'t over-fuel' });
+      timeline.push({ time: 30, label: 'First Fuel (30 min)', carbs: '30g', fluid: '200-300ml', notes: 'Gel or sports drink' });
+      timeline.push({ time: 60, label: 'Repeat Every 30 min', carbs: '30-45g', fluid: '150-250ml', notes: 'Consistent small doses' });
+      timeline.push({ time: Math.round(totalMinutes * 0.5), label: 'Halfway Point', carbs: '45g', fluid: '250-300ml', notes: 'You\'re doing great!' });
+      timeline.push({ time: totalMinutes - 30, label: 'Final Push', carbs: '30g', fluid: '200-300ml', notes: 'Keep it steady' });
+      timeline.push({ time: totalMinutes, label: 'Finish Line', carbs: '0', fluid: '0', notes: 'Well done! Now refuel within 30 min' });
+    } else if (raceEvent === 'Half Marathon') {
+      // Half Marathon timeline
+      timeline.push({ time: 0, label: 'Race Start', carbs: '0', fluid: '50-100ml', notes: 'Light sips only' });
+      timeline.push({ time: 30, label: 'First Fuel (30 min)', carbs: '20-30g', fluid: '150-200ml', notes: 'Gel or sports drink' });
+      timeline.push({ time: 60, label: 'Every 30-45 min', carbs: '25-35g', fluid: '100-150ml', notes: 'Small consistent amounts' });
+      timeline.push({ time: Math.round(totalMinutes * 0.8), label: 'Final Fuel', carbs: '30g', fluid: '200-250ml', notes: 'Power through!' });
+      timeline.push({ time: totalMinutes, label: 'Finish Line', carbs: '0', fluid: '0', notes: 'Excellent effort!' });
+    } else {
+      // 10km and shorter
+      timeline.push({ time: 0, label: 'Race Start', carbs: '0', fluid: '50ml', notes: 'Minimal pre-race intake' });
+      timeline.push({ time: Math.round(totalMinutes * 0.3), label: 'Mid-Race Check', carbs: '15-25g', fluid: '100-150ml', notes: 'Quick energy boost if needed' });
+      timeline.push({ time: totalMinutes, label: 'Finish Line', carbs: '0', fluid: '0', notes: 'Post-race refuel within 30 min' });
+    }
+    
+    return timeline;
+  };
+
   const raceCalories = calculateRaceCalories(raceEvent, raceGoalHours, raceGoalMins);
   const carbPlan = getCarbLoadingPlan(raceEvent);
+  const raceHydration = calculateRaceDayHydration();
+  const raceTimeline = generateRaceTimeline();
   
   // Calculate days before race for calendar
   const getDaysBeforeRace = () => {
@@ -1682,6 +1780,119 @@ export default function App(){
                   ))}
                 </div>
               </Card>
+
+              {/* Race Day Hydration & Fueling Strategy */}
+              <div className="grid lg:grid-cols-2 gap-4 sm:gap-6">
+                {raceHydration && (
+                  <Card>
+                    <SectionTitle title="💧 Race Day Hydration" subtitle={`Based on ${raceWeather.temp}°C weather`} />
+                    <div className="space-y-4">
+                      <div className="grid grid-cols-2 gap-4">
+                        <div className="bg-orange-50 dark:bg-orange-950/20 rounded-xl p-4 border border-orange-200 dark:border-orange-900/30">
+                          <div className="text-sm text-slate-600 dark:text-slate-400 mb-1">Sweat Rate</div>
+                          <div className="text-2xl font-bold text-orange-600 dark:text-orange-400">{raceHydration.effectiveSweatRate} L/h</div>
+                        </div>
+                        <div className="bg-orange-50 dark:bg-orange-950/20 rounded-xl p-4 border border-orange-200 dark:border-orange-900/30">
+                          <div className="text-sm text-slate-600 dark:text-slate-400 mb-1">Fluid per Hour</div>
+                          <div className="text-2xl font-bold text-orange-600 dark:text-orange-400">{raceHydration.fluidPerHour} ml</div>
+                        </div>
+                      </div>
+                      
+                      <div className="grid grid-cols-2 gap-4">
+                        <div className="bg-blue-50 dark:bg-blue-950/20 rounded-xl p-4 border border-blue-200 dark:border-blue-900/30">
+                          <div className="text-sm text-slate-600 dark:text-slate-400 mb-1">Total Fluid Needed</div>
+                          <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">{raceHydration.totalFluidMl} ml</div>
+                          <div className="text-xs text-slate-500 mt-1">≈ {Math.round(raceHydration.totalFluidMl / 500)} standard bottles</div>
+                        </div>
+                        <div className="bg-purple-50 dark:bg-purple-950/20 rounded-xl p-4 border border-purple-200 dark:border-purple-900/30">
+                          <div className="text-sm text-slate-600 dark:text-slate-400 mb-1">Sodium Needed</div>
+                          <div className="text-2xl font-bold text-purple-600 dark:text-purple-400">{raceHydration.totalSodiumMg} mg</div>
+                          <div className="text-xs text-slate-500 mt-1">≈ {Math.round(raceHydration.totalSodiumMg / 1000)}g over race</div>
+                        </div>
+                      </div>
+
+                      <div className="bg-slate-50 dark:bg-slate-900 rounded-xl p-3 border border-slate-200 dark:border-slate-700">
+                        <div className="text-sm text-slate-700 dark:text-slate-300">
+                          <strong>💡 Tip:</strong> Aim for {raceHydration.fluidPerHour}ml/hour with electrolytes. 
+                          Start drinking early (every 15-20 min) to stay ahead of dehydration.
+                        </div>
+                      </div>
+                    </div>
+                  </Card>
+                )}
+
+                <Card>
+                  <SectionTitle title="⏱️ Race Day Fueling Timeline" subtitle={`${raceEvent} fueling strategy`} />
+                  <div className="space-y-3">
+                    {raceTimeline.map((item, idx) => {
+                      const totalMinutes = raceGoalHours * 60 + raceGoalMins;
+                      const percentage = (item.time / totalMinutes) * 100;
+                      return (
+                        <motion.div
+                          key={idx}
+                          initial={{opacity:0,x:-10}}
+                          animate={{opacity:1,x:0}}
+                          transition={{delay:idx*0.1}}
+                          className="relative"
+                        >
+                          {/* Timeline connector */}
+                          {idx > 0 && (
+                            <div 
+                              className="absolute left-5 top-0 w-0.5 h-full bg-gradient-to-b from-orange-300 to-orange-200 dark:from-orange-800 dark:to-orange-900"
+                              style={{height: 'calc(100% - 24px)'}}
+                            />
+                          )}
+                          
+                          <div className="flex gap-3 items-start">
+                            {/* Time marker */}
+                            <div className="flex-shrink-0">
+                              <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm ${
+                                item.time === 0 ? 'bg-orange-500 text-white' :
+                                item.time === totalMinutes ? 'bg-emerald-500 text-white' :
+                                'bg-white dark:bg-slate-800 border-2 border-orange-400 dark:border-orange-700 text-orange-700 dark:text-orange-400'
+                              }`}>
+                                {item.time}
+                              </div>
+                            </div>
+                            
+                            {/* Content */}
+                            <div className="flex-1 bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700 p-3">
+                              <div className="flex justify-between items-start mb-2">
+                                <div className="font-semibold text-slate-900 dark:text-slate-100">{item.label}</div>
+                                <div className="text-xs text-slate-500 whitespace-nowrap ml-2">
+                                  {item.time === 0 ? 'Start' : item.time === totalMinutes ? 'Finish' : `~${Math.round((item.time / totalMinutes) * 100)}%`}
+                                </div>
+                              </div>
+                              
+                              <div className="grid grid-cols-2 gap-2 text-sm mb-2">
+                                <div>
+                                  <span className="text-slate-600 dark:text-slate-400">Carbs: </span>
+                                  <span className="font-semibold text-orange-600 dark:text-orange-400">{item.carbs}g</span>
+                                </div>
+                                <div>
+                                  <span className="text-slate-600 dark:text-slate-400">Fluid: </span>
+                                  <span className="font-semibold text-blue-600 dark:text-blue-400">{item.fluid}</span>
+                                </div>
+                              </div>
+                              
+                              <div className="text-xs text-slate-600 dark:text-slate-400 italic">
+                                {item.notes}
+                              </div>
+                            </div>
+                          </div>
+                        </motion.div>
+                      );
+                    })}
+                  </div>
+                  
+                  <div className="mt-4 p-3 bg-orange-50 dark:bg-orange-950/20 border border-orange-200 dark:border-orange-900/30 rounded-lg">
+                    <div className="text-sm text-slate-700 dark:text-slate-300">
+                      <strong>💡 Remember:</strong> Fueling is event-specific. Longer races (4+ hours) need consistent hourly intake. 
+                      Practice your race nutrition in training to dial in what works for you.
+                    </div>
+                  </div>
+                </Card>
+              </div>
 
               <Card>
                 <SectionTitle title="Fiber Caution Foods" subtitle="Smart food choices for race week" />
