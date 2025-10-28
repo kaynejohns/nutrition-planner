@@ -1793,6 +1793,72 @@ export default function App(){
                   doubleDays={doubleDays}
                 />
               </Card>
+
+              {/* Daily Hydration Schedule */}
+              <Card>
+                <SectionTitle title="Daily Hydration & Calories Summary" subtitle="Training + resting calories with hydration targets" />
+                <div className="space-y-4">
+                  {weeklyHydrationSchedule.map((day, index) => {
+                    const dailyCalories = dailyTotalCalories[index];
+                    return (
+                      <div key={index} className="border border-slate-200 dark:border-slate-700 rounded-xl p-4">
+                        <div className="flex items-center justify-between mb-3">
+                          <div>
+                            <div className="font-bold text-lg">{day.day}</div>
+                            <div className="text-xs text-slate-500 dark:text-slate-400">
+                              {day.forecastDate}
+                              {day.hasTraining && ` • ${day.totalTrainingMins} min training`}
+                            </div>
+                          </div>
+                          <div className="text-right">
+                            <div className="font-bold text-xl text-orange-700 dark:text-orange-300">
+                              {dailyCalories} kcal
+                            </div>
+                            <div className="text-xs text-slate-500 dark:text-slate-400">
+                              {day.totalDaily} ml fluid
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-sm">
+                          {/* Energy Breakdown */}
+                          <div className="bg-slate-50 dark:bg-slate-800 rounded-lg p-3">
+                            <div className="text-xs text-slate-600 dark:text-slate-400 mb-1">Energy</div>
+                            <div className="font-semibold text-slate-800 dark:text-slate-200">
+                              <div>Total: {dailyCalories} kcal</div>
+                              <div className="text-xs text-slate-500 mt-1">
+                                Training: {day.hasTraining ? dailyTrainingCalories[index] : 0} kcal
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* Hydration Breakdown */}
+                          <div className="bg-slate-50 dark:bg-slate-800 rounded-lg p-3">
+                            <div className="text-xs text-slate-600 dark:text-slate-400 mb-1">Hydration</div>
+                            <div className="font-semibold text-slate-800 dark:text-slate-200">
+                              <div>Total: {day.totalDaily} ml</div>
+                              <div className="text-xs text-slate-500 mt-1">
+                                Training: {day.totalTrainingFluid} ml
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* Sodium */}
+                          <div className="bg-slate-50 dark:bg-slate-800 rounded-lg p-3">
+                            <div className="text-xs text-slate-600 dark:text-slate-400 mb-1">Sodium</div>
+                            <div className="font-semibold text-slate-800 dark:text-slate-200">
+                              <div>Training: {day.totalTrainingSodium} mg</div>
+                              <div className="text-xs text-slate-500 mt-1">
+                                {day.hasTraining ? 'During session' : 'Rest day'}
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </Card>
             </motion.div>
           )}
         </AnimatePresence>
