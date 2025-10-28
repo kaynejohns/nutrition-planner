@@ -5,6 +5,7 @@ import DayCard from "./components/Week/DayCard";
 import AthleteProfile from "./components/AthleteProfile";
 import WeeklySummary from "./components/WeeklySummary";
 import DailyCalories from "./components/DailyCalories";
+import { fetchWeatherByCity, fetchForecastByCity, calculateHydrationNeeds } from "./utils/weather.js";
 
 // ---------- UI primitives ----------
 const Card = ({ children, className = "" }) => (
@@ -80,6 +81,49 @@ function strengthKcalPerDay(weightKg, weeklyHours) {
 function calculateSessionCalories(weightKg, duration, type, intensity) {
   if (duration === 0) return 0;
   
+  // Normalize type values (handle different casings and variations)
+  const normalizedType = type ? type.toLowerCase().trim() : 'run';
+  
+  // Rest day = no calories
+  if (normalizedType === 'rest') return 0;
+  
+  // Map variations to standard types (handle Cross-Train, HIIT, etc.)
+  const typeMap = {
+    'run': 'run',
+    'bike': 'bike',
+    'cycle': 'bike',
+    'cycling': 'bike',
+    'swim': 'swim',
+    'swimming': 'swim',
+    'strength': 'strength',
+    'weight': 'strength',
+    'weights': 'strength',
+    'cross-train': 'run', // Map Cross-Train to Run for calorie calculation
+    'hiit': 'hitt', // Map HIIT
+    'hitt': 'hitt',
+    'rest': null // Return 0 for rest
+  };
+  
+  const mappedType = typeMap[normalizedType] || 'run';
+  
+  if (!mappedType) return 0; // Handle rest days
+  
+  // Normalize intensity values (handle different casings and variations)
+  const normalizedIntensity = intensity ? intensity.toLowerCase().trim() : 'aerobic';
+  
+  // Map variations to standard intensities
+  const intensityMap = {
+    'aerobic': 'aerobic',
+    'recovery': 'aerobic',
+    'tempo': 'threshold',
+    'threshold': 'threshold',
+    'intervals': 'threshold',
+    'vo2max': 'vo2max',
+    'vo2': 'vo2max'
+  };
+  
+  const mappedIntensity = intensityMap[normalizedIntensity] || 'aerobic';
+  
   // MET values for different activities and intensities
   // Aerobic = Zone 1-2 (65-80% VO2max), Threshold = Zone 3-4 (80-95% VO2max), VO2max = Zone 4-5 (95-100% VO2max)
   const metValues = {
@@ -90,7 +134,8 @@ function calculateSessionCalories(weightKg, duration, type, intensity) {
     strength: { aerobic: 3.5, threshold: 5.0, vo2max: 6.5 }
   };
   
-  const met = metValues[type][intensity];
+  // Get MET value, with fallback to default
+  const met = metValues[mappedType]?.[mappedIntensity] || metValues.run.aerobic;
   
   // Formula: (MET × body weight in kg × 3.5) / 200 = kcal/min
   const kcalPerMinute = (met * weightKg * 3.5) / 200;
@@ -429,13 +474,13 @@ export default function App(){
   
   // Performance tab state
   const [weeklySessions, setWeeklySessions] = useState({
-    monday: { duration: 0, type: 'run', intensity: 'aerobic', doubleSession: false, secondSession: { duration: 0, type: 'run', intensity: 'aerobic' } },
-    tuesday: { duration: 0, type: 'run', intensity: 'aerobic', doubleSession: false, secondSession: { duration: 0, type: 'run', intensity: 'aerobic' } },
-    wednesday: { duration: 0, type: 'run', intensity: 'aerobic', doubleSession: false, secondSession: { duration: 0, type: 'run', intensity: 'aerobic' } },
-    thursday: { duration: 0, type: 'run', intensity: 'aerobic', doubleSession: false, secondSession: { duration: 0, type: 'run', intensity: 'aerobic' } },
-    friday: { duration: 0, type: 'run', intensity: 'aerobic', doubleSession: false, secondSession: { duration: 0, type: 'run', intensity: 'aerobic' } },
-    saturday: { duration: 0, type: 'run', intensity: 'aerobic', doubleSession: false, secondSession: { duration: 0, type: 'run', intensity: 'aerobic' } },
-    sunday: { duration: 0, type: 'run', intensity: 'aerobic', doubleSession: false, secondSession: { duration: 0, type: 'run', intensity: 'aerobic' } }
+    monday: { duration: 0, type: 'run', intensity: 'aerobic', timeOfDay: 'Morning', doubleSession: false, secondSession: { duration: 0, type: 'run', intensity: 'aerobic', timeOfDay: 'Morning' } },
+    tuesday: { duration: 0, type: 'run', intensity: 'aerobic', timeOfDay: 'Morning', doubleSession: false, secondSession: { duration: 0, type: 'run', intensity: 'aerobic', timeOfDay: 'Morning' } },
+    wednesday: { duration: 0, type: 'run', intensity: 'aerobic', timeOfDay: 'Morning', doubleSession: false, secondSession: { duration: 0, type: 'run', intensity: 'aerobic', timeOfDay: 'Morning' } },
+    thursday: { duration: 0, type: 'run', intensity: 'aerobic', timeOfDay: 'Morning', doubleSession: false, secondSession: { duration: 0, type: 'run', intensity: 'aerobic', timeOfDay: 'Morning' } },
+    friday: { duration: 0, type: 'run', intensity: 'aerobic', timeOfDay: 'Morning', doubleSession: false, secondSession: { duration: 0, type: 'run', intensity: 'aerobic', timeOfDay: 'Morning' } },
+    saturday: { duration: 0, type: 'run', intensity: 'aerobic', timeOfDay: 'Morning', doubleSession: false, secondSession: { duration: 0, type: 'run', intensity: 'aerobic', timeOfDay: 'Morning' } },
+    sunday: { duration: 0, type: 'run', intensity: 'aerobic', timeOfDay: 'Morning', doubleSession: false, secondSession: { duration: 0, type: 'run', intensity: 'aerobic', timeOfDay: 'Morning' } }
   });
 
   // Persist dark mode to class on <html>
@@ -508,23 +553,288 @@ export default function App(){
   const [sessionMin, setSessionMin] = useState(75);
   const [ambientC, setAmbientC] = useState(18);
   const [sweatRate, setSweatRate] = useState(0.8); // L/h typical; editable
-  const fluidPerHour = useMemo(()=> clamp(sweatRate, 0.4, 1.2), [sweatRate]);
-  const sodiumMgPerL = useMemo(()=> 500 + Math.max(0, ambientC-15)*20, [ambientC]); // rough heuristic
-  const fluidNeeded = useMemo(()=> (sessionMin/60)*fluidPerHour, [sessionMin, fluidPerHour]);
-  const sodiumNeeded = useMemo(()=> Math.round(fluidNeeded * sodiumMgPerL), [fluidNeeded, sodiumMgPerL]);
+  
+  // Weather integration
+  const [location, setLocation] = useState('');
+  const [weekStartDate, setWeekStartDate] = useState(() => {
+    // Default to this Monday
+    const today = new Date();
+    const day = today.getDay();
+    const diff = today.getDate() - day + (day === 0 ? -6 : 1); // adjust when day is sunday
+    const monday = new Date(today.setDate(diff));
+    return monday.toISOString().split('T')[0]; // YYYY-MM-DD format
+  });
+  const [currentWeather, setCurrentWeather] = useState(null);
+  const [loadingWeather, setLoadingWeather] = useState(false);
+  const [weeklyWeather, setWeeklyWeather] = useState({});
+  
+  // Fetch weather for location
+  const fetchWeather = async (cityName) => {
+    if (!cityName) return;
+    setLoadingWeather(true);
+    try {
+      const [current, forecast] = await Promise.all([
+        fetchWeatherByCity(cityName),
+        fetchForecastByCity(cityName)
+      ]);
+      
+      setCurrentWeather(current);
+      setWeeklyWeather(forecast || {});
+      
+      if (current) {
+        setAmbientC(Math.round(current.temp));
+        console.log(`✓ Weather loaded for ${cityName}: ${current.temp}°C`);
+      }
+    } catch (error) {
+      console.error('Weather fetch failed:', error);
+      // Fall back to manual temperature entry
+    } finally {
+      setLoadingWeather(false);
+    }
+  };
+  
+  // Calculate environmental heat/humidity index
+  const envIndex = useMemo(() => {
+    const t = Math.max(0, ambientC - 10); // >10°C starts to add load
+    const h = Math.max(0, 50 - 40) / 2; // assuming 50% humidity
+    return 50 + t * 3 + h * 2; // 50 baseline
+  }, [ambientC, weightKg]);
+  
+  // Calculate replacement fraction (typically 60-80% of sweat rate)
+  const replacementFraction = useMemo(() => {
+    const baseFraction = 0.65; // Typical gut tolerance for replacement
+    const envScale = 0.9 * Math.min(1, (envIndex - 50) / 70) + 0.6;
+    return Math.max(0.4, Math.min(0.9, baseFraction * envScale));
+  }, [envIndex]);
+  
+  // Sweat rate in ml/h and recommended fluid per hour
+  const sweatMlPerHr = useMemo(() => sweatRate * 1000, [sweatRate]);
+  const fluidPerHour = useMemo(() => {
+    const recFluid = Math.max(300, Math.min(1200, sweatMlPerHr * replacementFraction));
+    return Math.round(recFluid);
+  }, [sweatMlPerHr, replacementFraction]);
+  
+  // Total fluid needed for session
+  const totalFluidMl = useMemo(() => {
+    const hours = sessionMin / 60;
+    return Math.round(fluidPerHour * hours);
+  }, [fluidPerHour, sessionMin]);
+  
+  // Sodium calculations
+  const sweatNaMgPerL = useMemo(() => 500 + Math.max(0, ambientC - 15) * 20, [ambientC]); // Rough estimate based on temp
+  const sweatNaLossPerHr = useMemo(() => sweatRate * sweatNaMgPerL, [sweatRate, sweatNaMgPerL]);
+  const recSodiumPerHr = useMemo(() => Math.round(sweatNaLossPerHr * 0.7), [sweatNaLossPerHr]); // 70% replacement
+  const totalSodiumMg = useMemo(() => {
+    const hours = sessionMin / 60;
+    return Math.round(recSodiumPerHr * hours);
+  }, [recSodiumPerHr, sessionMin]);
+  
+  // Drink sodium concentration
+  const drinkNaMgPerL = useMemo(() => {
+    // If we drink fluidPerHour ml/h, we need recSodiumPerHr mg Na
+    const drinkLPerHr = fluidPerHour / 1000;
+    return drinkLPerHr > 0 ? Math.round(recSodiumPerHr / drinkLPerHr) : 700;
+  }, [fluidPerHour, recSodiumPerHr]);
+  
+  // Additional computed values for display
+  const fluidNeeded = useMemo(() => totalFluidMl / 1000, [totalFluidMl]);
+  const sodiumNeeded = useMemo(() => totalSodiumMg, [totalSodiumMg]);
+  const sodiumMgPerL = useMemo(() => drinkNaMgPerL, [drinkNaMgPerL]);
+  
+  // Helper to estimate temperature based on time of day
+  const getTempForTimeOfDay = useMemo(() => {
+    return (baseTemp, timeOfDay) => {
+      // Temperature variations by time of day (relative to midday peak)
+      const timeAdjustments = {
+        'Morning': -2,      // Cooler in morning
+        'Lunchtime': 0,     // Peak temperature
+        'Afternoon': +2,    // Hottest part of day
+        'Evening': -3       // Cooling down
+      };
+      return baseTemp + (timeAdjustments[timeOfDay] || 0);
+    };
+  }, []);
+  
+  // Calculate resting fluid needs (ml/day) based on body size and activity
+  // Research basis: General recommendation of 30-40ml/kg (AHA, EFSA, USDA)
+  // 30ml/kg is the lower end of the healthy range, appropriate for hydration planning
+  // Higher activity = higher metabolic rate = slightly higher fluid needs
+  const restingFluidNeeds = useMemo(() => {
+    // Base fluid: 30ml per kg body weight (common recommendation: 30-40ml/kg range)
+    const baseFluid = weightKg * 30;
+    // Activity factor adjusts for non-training daily activity (sedentary ~1.3, active ~1.6+)
+    return Math.round(baseFluid * activityFactor);
+  }, [weightKg, activityFactor]);
+  
+  // Daily resting fluid (24 hours)
+  const dailyRestingFluid = useMemo(() => Math.round(restingFluidNeeds / 24), [restingFluidNeeds]);
+  
+  // Calculate dates for the week
+  const weekDates = useMemo(() => {
+    const startDate = new Date(weekStartDate + 'T00:00:00'); // Ensure local date
+    const days = [];
+    for (let i = 0; i < 7; i++) {
+      const date = new Date(startDate);
+      date.setDate(startDate.getDate() + i);
+      // Get YYYY-MM-DD in local timezone to match forecast
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const day = String(date.getDate()).padStart(2, '0');
+      const dateKey = `${year}-${month}-${day}`;
+      
+      days.push({
+        date: dateKey,
+        dayName: date.toLocaleDateString('en-US', { weekday: 'short' }),
+        fullDate: date.toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' })
+      });
+    }
+    return days;
+  }, [weekStartDate]);
+  
+  // Weekly hydration schedule based on training log and weather
+  const weeklyHydrationSchedule = useMemo(() => {
+    const days = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
+    const dayNames = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+    const baseTemp = currentWeather?.temp || ambientC;
+    const baseHumidity = currentWeather?.humidity || 50;
+    
+    return dayNames.map((dayName, index) => {
+      const day = days[index];
+      const session = weeklySessions[day];
+      const hasTraining = session.duration > 0;
+      const weekDate = weekDates[index];
+      
+      // Get forecast for this specific date
+      const forecastForDate = weeklyWeather[weekDate.date] || null;
+      const dayTemp = forecastForDate?.avgTemp || baseTemp;
+      const dayHumidity = forecastForDate?.avgHumidity || baseHumidity;
+      
+      const sessions = [];
+      
+      // First session
+      if (session.duration > 0) {
+        const timeOfDay = session.timeOfDay || 'Morning';
+        const weatherTemp = getTempForTimeOfDay(dayTemp, timeOfDay);
+        const weatherHumidity = dayHumidity;
+        const trainingHours = session.duration / 60;
+        
+        const hydration = calculateHydrationNeeds(
+          weatherTemp,
+          weatherHumidity,
+          trainingHours,
+          sweatRate
+        );
+        
+        
+        sessions.push({
+          type: session.type,
+          duration: session.duration,
+          timeOfDay,
+          temp: Math.round(weatherTemp),
+          humidity: weatherHumidity,
+          fluidPerHour: hydration.fluidPerHour,
+          totalFluid: Math.round(trainingHours * hydration.fluidPerHour),
+          sodiumPerHour: hydration.sodiumPerHour,
+          totalSodium: Math.round(trainingHours * hydration.sodiumPerHour)
+        });
+      }
+      
+      // Second session if double session
+      if (session.doubleSession && session.secondSession?.duration > 0) {
+        const timeOfDay = session.secondSession.timeOfDay || 'Afternoon';
+        const weatherTemp = getTempForTimeOfDay(dayTemp, timeOfDay);
+        const weatherHumidity = dayHumidity;
+        const trainingHours = session.secondSession.duration / 60;
+        
+        const hydration = calculateHydrationNeeds(
+          weatherTemp,
+          weatherHumidity,
+          trainingHours,
+          sweatRate
+        );
+        
+        sessions.push({
+          type: session.secondSession.type,
+          duration: session.secondSession.duration,
+          timeOfDay,
+          temp: Math.round(weatherTemp),
+          humidity: weatherHumidity,
+          fluidPerHour: hydration.fluidPerHour,
+          totalFluid: Math.round(trainingHours * hydration.fluidPerHour),
+          sodiumPerHour: hydration.sodiumPerHour,
+          totalSodium: Math.round(trainingHours * hydration.sodiumPerHour)
+        });
+      }
+      
+      // Calculate totals
+      const totalTrainingFluid = sessions.reduce((sum, s) => sum + s.totalFluid, 0);
+      const totalTrainingSodium = sessions.reduce((sum, s) => sum + s.totalSodium, 0);
+      const totalTrainingMins = sessions.reduce((sum, s) => sum + s.duration, 0);
+      
+      // Resting fluid for the day (24h worth, prorated)
+      const dailyResting = Math.round(restingFluidNeeds);
+      
+      return {
+        day: dayName,
+        fullDay: day,
+        hasTraining: hasTraining,
+        sessions: sessions,
+        totalTrainingFluid,
+        totalTrainingSodium,
+        totalTrainingMins,
+        dailyResting: dailyResting,
+        totalDaily: totalTrainingFluid + dailyResting,
+        baseTemp: Math.round(dayTemp),
+        humidity: dayHumidity,
+        forecastDate: weekDate.fullDate,
+        rawForecast: forecastForDate
+      };
+    });
+  }, [weeklySessions, currentWeather, weeklyWeather, ambientC, sweatRate, getTempForTimeOfDay, restingFluidNeeds, weekDates]);
 
   // Performance tab calculations
   const dailyTrainingCalories = useMemo(() => {
     const days = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
     return days.map(day => {
       const session = weeklySessions[day];
+      if (!session) return 0;
+      
       const firstSessionCalories = calculateSessionCalories(weightKg, session.duration, session.type, session.intensity);
-      const secondSessionCalories = session.doubleSession 
-        ? calculateSessionCalories(weightKg, session.secondSession.duration, session.secondSession.type, session.secondSession.intensity)
-        : 0;
+      
+      let secondSessionCalories = 0;
+      if (session.doubleSession && session.secondSession) {
+        secondSessionCalories = calculateSessionCalories(
+          weightKg, 
+          session.secondSession.duration || 0, 
+          session.secondSession.type || 'run', 
+          session.secondSession.intensity || 'aerobic'
+        );
+      }
+      
       return firstSessionCalories + secondSessionCalories;
     });
   }, [weeklySessions, weightKg]);
+
+  const dailyTrainingTime = useMemo(() => {
+    const days = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
+    return days.map(day => {
+      const session = weeklySessions[day];
+      if (!session) return 0;
+      
+      const firstSessionTime = session.duration || 0;
+      const secondSessionTime = (session.doubleSession && session.secondSession) ? (session.secondSession.duration || 0) : 0;
+      return firstSessionTime + secondSessionTime;
+    });
+  }, [weeklySessions]);
+
+  const trainingDays = useMemo(() => {
+    return dailyTrainingTime.filter(time => time > 0).length;
+  }, [dailyTrainingTime]);
+
+  const doubleDays = useMemo(() => {
+    const days = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
+    return days.filter(day => weeklySessions[day].doubleSession).length;
+  }, [weeklySessions]);
 
   const dailyTotalCalories = useMemo(() => {
     return dailyTrainingCalories.map(trainingCalories => {
@@ -1001,24 +1311,249 @@ export default function App(){
 
           {tab === "hydration" && (
             <motion.div key="hydration" initial={{opacity:0,y:8}} animate={{opacity:1,y:0}} exit={{opacity:0,y:-8}} transition={{duration:0.25}} className="space-y-4 sm:space-y-6">
+              {/* Location and Weather Section */}
               <Card>
-                <SectionTitle title="Session Hydration Calculator" subtitle="Estimate fluid & sodium needs" />
-                <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
-                  <InputRow label="Session duration"><NumberInput value={sessionMin} onChange={setSessionMin} min={30} max={180} step={5} suffix="min" /></InputRow>
-                  <InputRow label="Ambient temp"><NumberInput value={ambientC} onChange={setAmbientC} min={5} max={35} step={1} suffix="°C" /></InputRow>
-                  <InputRow label="Estimated sweat rate"><NumberInput value={sweatRate} onChange={setSweatRate} min={0.4} max={1.6} step={0.1} suffix="L/h" /></InputRow>
+                <SectionTitle title="Location & Weather" subtitle="Get forecast for your training week" />
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-4">
+                  <div>
+                    <Label>Week Start Date</Label>
+                    <input
+                      type="date"
+                      className="w-full mt-1 border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 rounded-xl px-4 py-2 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-emerald-500"
+                      value={weekStartDate}
+                      onChange={(e) => setWeekStartDate(e.target.value)}
+                    />
                 </div>
+                  <div className="md:col-span-2">
+                    <Label>Location</Label>
+                    <div className="flex gap-3 mt-1">
+                      <input
+                        type="text"
+                        placeholder="Enter city name (e.g., London, New York)"
+                        className="flex-1 border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 rounded-xl px-4 py-2 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-emerald-500"
+                        value={location}
+                        onChange={(e) => setLocation(e.target.value)}
+                        onKeyPress={(e) => e.key === 'Enter' && fetchWeather(location)}
+                      />
+                      <button
+                        onClick={() => fetchWeather(location)}
+                        disabled={loadingWeather || !location}
+                        className="px-6 py-2 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white rounded-xl font-medium hover:from-emerald-600 hover:to-emerald-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                      >
+                        {loadingWeather ? 'Loading...' : 'Get Weather'}
+                      </button>
+                    </div>
+                  </div>
+                </div>
+                {currentWeather && (
+                  <div className="flex items-center gap-4 p-4 bg-slate-50 dark:bg-slate-800 rounded-xl">
+                    <div className="text-5xl">🌤️</div>
+                    <div>
+                      <div className="text-xl font-bold">{currentWeather.city}, {currentWeather.country}</div>
+                      <div className="text-sm text-slate-600 dark:text-slate-400 capitalize">{currentWeather.description}</div>
+                    </div>
+                    <div className="ml-auto text-right">
+                      <div className="text-3xl font-bold">{Math.round(currentWeather.temp)}°C</div>
+                      <div className="text-sm text-slate-600 dark:text-slate-400">Humidity: {currentWeather.humidity}%</div>
+                    </div>
+                  </div>
+                )}
               </Card>
-              <div className="grid sm:grid-cols-2 gap-4 sm:gap-6">
+
+              {/* Weekly Hydration Schedule */}
                 <Card>
-                  <SectionTitle title="Fluid Plan" />
-                  <p className="text-sm text-slate-700 dark:text-slate-300">Drink about <span className="font-bold text-emerald-700 dark:text-emerald-300">{fluidPerHour.toFixed(1)} L/h</span>. For this session (~{sessionMin} min), target <span className="font-bold text-emerald-700 dark:text-emerald-300">{fluidNeeded.toFixed(2)} L</span> total.</p>
+                <SectionTitle title="Weekly Hydration Schedule" subtitle="Training sessions + resting fluid needs" />
+                <div className="space-y-4">
+                  {weeklyHydrationSchedule.map((day, index) => (
+                    <div key={day.day} className={`border rounded-xl p-4 ${day.hasTraining ? 'border-emerald-200 dark:border-emerald-800 bg-emerald-50 dark:bg-emerald-900/20' : 'border-slate-200 dark:border-slate-700'}`}>
+                      <div className="mb-3">
+                        <div className="font-bold text-lg">{day.day}</div>
+                        {day.forecastDate && (
+                          <div className="text-sm text-slate-500 dark:text-slate-400">{day.forecastDate}</div>
+                        )}
+                      </div>
+                      
+                      {day.hasTraining ? (
+                        <>
+                          {/* Training Sessions */}
+                          {day.sessions.map((session, idx) => (
+                            <div key={idx} className="mb-3 pb-3 border-b border-emerald-200 dark:border-emerald-700 last:border-0 last:pb-0 last:mb-0">
+                              <div className="flex items-center justify-between mb-2">
+                                <div className="font-semibold text-emerald-700 dark:text-emerald-300">
+                                  {session.timeOfDay} Session • {session.type} • {session.duration} min
+                                </div>
+                                <div className="text-xs text-slate-500">
+                                  {session.temp}°C • {session.humidity}% humidity
+                                </div>
+                              </div>
+                              <div className="grid grid-cols-2 gap-3 text-sm">
+                                <div>
+                                  <div className="text-slate-600 dark:text-slate-400 mb-1">Rate</div>
+                                  <div className="font-semibold">{session.fluidPerHour} ml/h • {session.sodiumPerHour} mg/h</div>
+                                </div>
+                                <div>
+                                  <div className="text-slate-600 dark:text-slate-400 mb-1">Session Total</div>
+                                  <div className="font-semibold">{session.totalFluid} ml • {session.totalSodium} mg</div>
+                                </div>
+                              </div>
+                            </div>
+                          ))}
+                          
+                          {/* Daily Summary */}
+                          <div className="mt-3 pt-3 border-t-2 border-slate-300 dark:border-slate-600">
+                            <div className="grid grid-cols-3 gap-3 text-sm">
+                              <div>
+                                <div className="text-slate-600 dark:text-slate-400 mb-1">Training Total</div>
+                                <div className="font-bold text-emerald-700 dark:text-emerald-300">{day.totalTrainingFluid} ml</div>
+                                <div className="text-xs text-slate-500">{day.totalTrainingSodium} mg Na</div>
+                              </div>
+                              <div>
+                                <div className="text-slate-600 dark:text-slate-400 mb-1">Resting (24h)</div>
+                                <div className="font-bold text-blue-700 dark:text-blue-300">{day.dailyResting} ml</div>
+                                <div className="text-xs text-slate-500">Background fluid</div>
+                              </div>
+                              <div>
+                                <div className="text-slate-600 dark:text-slate-400 mb-1">Daily Total</div>
+                                <div className="font-bold text-xl text-emerald-800 dark:text-emerald-200">{day.totalDaily} ml</div>
+                                <div className="text-xs text-slate-500">All fluids combined</div>
+                              </div>
+                            </div>
+                          </div>
+                        </>
+                      ) : (
+                        <div className="text-sm text-slate-500 dark:text-slate-400">
+                          Rest day • {day.baseTemp}°C forecasted • {day.dailyResting} ml resting fluid recommended
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
                 </Card>
+
+              <div className="grid lg:grid-cols-2 gap-6">
+                {/* Input Section */}
                 <Card>
-                  <SectionTitle title="Sodium Plan" />
-                  <p className="text-sm text-slate-700 dark:text-slate-300">Use drinks/chews providing roughly <span className="font-bold text-emerald-700 dark:text-emerald-300">{sodiumMgPerL} mg/L</span>. For this session, total around <span className="font-bold text-emerald-700 dark:text-emerald-300">{sodiumNeeded} mg</span>.</p>
-                  <p className="text-xs text-slate-500 dark:text-slate-400 mt-2">Heuristic only; personalise using weigh-in/out testing when possible.</p>
+                    <SectionTitle title="Manual Temperature Override" subtitle="Adjust temperature manually or use weather from above" />
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <Label>Body mass (kg)</Label>
+                      <input 
+                        type="number" 
+                        className="w-full mt-1 border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 rounded-xl px-3 py-2 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-emerald-500" 
+                        value={weightKg} 
+                        onChange={e => setWeightKg(Number(e.target.value))}
+                        min={35}
+                        max={140}
+                      />
+                    </div>
+
+                    <div>
+                      <Label>Session duration (min)</Label>
+                      <input 
+                        type="number" 
+                        className="w-full mt-1 border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 rounded-xl px-3 py-2 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-emerald-500" 
+                        value={sessionMin} 
+                        onChange={e => setSessionMin(Number(e.target.value))}
+                        min={15}
+                        max={480}
+                      />
+                    </div>
+
+                    <div>
+                      <Label>Intensity</Label>
+                      <select 
+                        className="w-full mt-1 border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 rounded-xl px-3 py-2 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-emerald-500"
+                        value={"easy"}
+                      >
+                        <option value="easy">Aerobic / Easy</option>
+                        <option value="tempo">Tempo / Threshold</option>
+                        <option value="vo2">VO₂ / Intervals</option>
+                        <option value="strength">Strength</option>
+                      </select>
+                    </div>
+
+                    <div>
+                      <Label>Ambient temperature (°C)</Label>
+                      <input 
+                        type="number" 
+                        className="w-full mt-1 border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 rounded-xl px-3 py-2 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-emerald-500" 
+                        value={ambientC} 
+                        onChange={e => setAmbientC(Number(e.target.value))}
+                        min={-10}
+                        max={45}
+                      />
+                    </div>
+
+                    <div>
+                      <Label>Sweat rate (L/h)</Label>
+                      <input 
+                        type="number" 
+                        step="0.1"
+                        className="w-full mt-1 border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 rounded-xl px-3 py-2 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-emerald-500" 
+                        value={sweatRate} 
+                        onChange={e => setSweatRate(Number(e.target.value))}
+                        min={0.3}
+                        max={2.0}
+                      />
+                      <p className="text-xs text-slate-500 mt-1">Estimate, or measure via before/after body mass in similar conditions.</p>
+                    </div>
+
+                    <div>
+                      <Label>Estimated sweat sodium (mg/L)</Label>
+                      <input 
+                        type="number" 
+                        className="w-full mt-1 border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 rounded-xl px-3 py-2 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-emerald-500" 
+                        value={Math.round(sweatNaMgPerL)} 
+                        onChange={e => {}}
+                        readOnly
+                        min={300}
+                        max={1500}
+                      />
+                      <p className="text-xs text-slate-500 mt-1">Auto-calculated from ambient temp. Typical 500–1000 mg/L.</p>
+                    </div>
+                  </div>
+
+                  <div className="mt-4 flex flex-wrap gap-2">
+                    <span className="px-3 py-1 text-xs font-semibold bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-lg">Env index: {Math.round(envIndex)}</span>
+                    <span className="px-3 py-1 text-xs font-semibold bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300 rounded-lg">Fluid rate: {fluidPerHour} ml/h</span>
+                    <span className="px-3 py-1 text-xs font-semibold bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-300 rounded-lg">Sodium: {recSodiumPerHr} mg/h</span>
+                  </div>
                 </Card>
+
+                {/* Output Section */}
+                <div className="space-y-6">
+                  <Card>
+                    <SectionTitle title="Session Plan" subtitle="Targets per hour and totals for the session" />
+                    <div className="grid grid-cols-2 gap-3 mb-4">
+                      <div className="rounded-xl border border-slate-200 dark:border-slate-700 p-4">
+                        <div className="text-xs text-slate-500 dark:text-slate-400 mb-1">Per hour</div>
+                        <div className="text-2xl font-bold text-emerald-700 dark:text-emerald-300">{fluidPerHour} ml</div>
+                        <div className="text-sm text-slate-600 dark:text-slate-400 mt-1">Sodium: {recSodiumPerHr} mg</div>
+                      </div>
+                      <div className="rounded-xl border border-slate-200 dark:border-slate-700 p-4">
+                        <div className="text-xs text-slate-500 dark:text-slate-400 mb-1">Total this session</div>
+                        <div className="text-2xl font-bold text-emerald-700 dark:text-emerald-300">{totalFluidMl} ml</div>
+                        <div className="text-sm text-slate-600 dark:text-slate-400 mt-1">Sodium: {totalSodiumMg} mg</div>
+                      </div>
+                    </div>
+
+                    <div className="rounded-xl border border-slate-200 dark:border-slate-700 p-4 bg-emerald-50 dark:bg-emerald-900/20">
+                      <div className="text-sm font-semibold text-emerald-700 dark:text-emerald-300 mb-2">Drink Sodium Concentration</div>
+                      <div className="text-sm text-slate-700 dark:text-slate-300">
+                        Your drink should contain approximately <span className="font-bold text-emerald-700 dark:text-emerald-300">{drinkNaMgPerL} mg/L</span> sodium to meet your needs.
+                      </div>
+                    </div>
+                  </Card>
+
+                  <Card>
+                    <SectionTitle title="Notes & Safeguards" />
+                    <ul className="text-sm text-slate-700 dark:text-slate-300 space-y-2">
+                      <li>These are planning targets. Adjust by thirst, gut comfort, and weigh-in feedback.</li>
+                      <li>Aim to limit body mass loss to ~2% in most events. Consider gut training for higher rates.</li>
+                      <li>Use higher drink sodium in heavy sweaters or very hot/humid conditions.</li>
+                    </ul>
+                  </Card>
+                </div>
               </div>
             </motion.div>
           )}
@@ -1189,9 +1724,9 @@ export default function App(){
                   carbsPerKg={(carbLow + carbHigh) / 2}
                   proteinPerKg={protein}
                   fatPerKg={fat}
-                  dailyTrainingTime={[0, 60, 0, 45, 0, 120, 90]}
-                  trainingDays={5}
-                  doubleDays={2}
+                  dailyTrainingTime={dailyTrainingTime}
+                  trainingDays={trainingDays}
+                  doubleDays={doubleDays}
                 />
               </Card>
             </motion.div>

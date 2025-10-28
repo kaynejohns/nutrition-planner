@@ -27,6 +27,7 @@ const WeeklySummary: React.FC<WeeklySummaryProps> = ({
   const weekTotal = dailyCalories.reduce((sum, cal) => sum + cal, 0);
   const avgDaily = Math.round(weekTotal / 7);
   const totalTraining = dailyTrainingCalories.reduce((sum, cal) => sum + cal, 0);
+  const totalResting = weekTotal - totalTraining;
   const totalTrainingTime = dailyTrainingTime.reduce((sum, min) => sum + min, 0);
   const peakDay = Math.max(...dailyCalories);
   const dayNames = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
@@ -43,17 +44,17 @@ const WeeklySummary: React.FC<WeeklySummaryProps> = ({
         <h3 className="text-lg font-bold mb-3 text-slate-900 dark:text-slate-100">Training Snapshot</h3>
         <div className="grid grid-cols-7 gap-2 mb-4">
           {dayNames.map((day, index) => {
-            const hasTraining = dailyTrainingTime[index] > 0;
+            const hasTraining = dailyTrainingCalories[index] > 0;
             return (
               <div key={day} className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg p-2 text-center">
                 <div className="text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">{day}</div>
                 <div className="text-xs text-slate-500 dark:text-slate-400 mb-1">
                   {hasTraining ? 'Key' : 'Rest'}
                 </div>
-                <div className="text-xs text-slate-600 dark:text-slate-400">
-                  Rest: {dailyCalories[index] - dailyTrainingCalories[index]} kcal
-                </div>
                 <div className="text-xs text-emerald-600 dark:text-emerald-400 font-medium">
+                  Total: {dailyCalories[index]} kcal
+                </div>
+                <div className="text-xs text-slate-500 dark:text-slate-400">
                   Train: {dailyTrainingCalories[index]} kcal
                 </div>
               </div>
@@ -79,15 +80,15 @@ const WeeklySummary: React.FC<WeeklySummaryProps> = ({
       
       {/* Training Load & Distribution */}
       <div>
-        <h3 className="text-lg font-bold mb-3 text-slate-900 dark:text-slate-100">Training Load & Distribution</h3>
+        <h3 className="text-lg font-bold mb-3 text-slate-900 dark:text-slate-100">Weekly Energy Summary</h3>
         <div className="grid sm:grid-cols-3 gap-3 mb-4">
           <div className="bg-slate-50 dark:bg-slate-800 rounded-lg p-3">
             <div className="text-xs text-slate-600 dark:text-slate-400 mb-1">Weekly Total</div>
-            <div className="text-lg font-bold text-emerald-700 dark:text-emerald-300">{totalTraining.toLocaleString()} kcal</div>
+            <div className="text-lg font-bold text-emerald-700 dark:text-emerald-300">{weekTotal.toLocaleString()} kcal</div>
           </div>
           <div className="bg-slate-50 dark:bg-slate-800 rounded-lg p-3">
             <div className="text-xs text-slate-600 dark:text-slate-400 mb-1">Daily Average</div>
-            <div className="text-lg font-bold text-emerald-700 dark:text-emerald-300">{Math.round(totalTraining / 7)} kcal</div>
+            <div className="text-lg font-bold text-emerald-700 dark:text-emerald-300">{avgDaily} kcal</div>
           </div>
           <div className="bg-slate-50 dark:bg-slate-800 rounded-lg p-3">
             <div className="text-xs text-slate-600 dark:text-slate-400 mb-1">Peak Day</div>
@@ -95,11 +96,25 @@ const WeeklySummary: React.FC<WeeklySummaryProps> = ({
           </div>
         </div>
         
+        {/* Breakdown */}
+        <div className="grid sm:grid-cols-2 gap-3 mb-4">
+          <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-3">
+            <div className="text-xs text-slate-600 dark:text-slate-400 mb-1">Resting Energy (Non-Training)</div>
+            <div className="text-2xl font-bold text-blue-700 dark:text-blue-300">{totalResting.toLocaleString()} kcal</div>
+            <div className="text-xs text-slate-500 dark:text-slate-400 mt-1">Average: {Math.round(totalResting / 7)} kcal/day</div>
+          </div>
+          <div className="bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-800 rounded-lg p-3">
+            <div className="text-xs text-slate-600 dark:text-slate-400 mb-1">Training Energy</div>
+            <div className="text-2xl font-bold text-emerald-700 dark:text-emerald-300">{totalTraining.toLocaleString()} kcal</div>
+            <div className="text-xs text-slate-500 dark:text-slate-400 mt-1">Average: {Math.round(totalTraining / 7)} kcal/day</div>
+          </div>
+        </div>
+        
         {/* TRIMP-style bars per day */}
         <div className="space-y-2">
           {dayNames.map((day, index) => {
-            const maxLoad = Math.max(...dailyTrainingCalories);
-            const load = dailyTrainingCalories[index];
+            const maxLoad = Math.max(...dailyCalories);
+            const load = dailyCalories[index];
             const width = maxLoad > 0 ? (load / maxLoad) * 100 : 0;
             
             return (

@@ -1,16 +1,16 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 
 interface Session {
   duration: number;
   type: string;
   intensity: string;
-  location?: string;
+  timeOfDay?: string;
   doubleSession?: boolean;
   secondSession?: {
     duration: number;
     type: string;
     intensity: string;
-    location?: string;
+    timeOfDay?: string;
   };
 }
 
@@ -25,6 +25,12 @@ interface DayCardProps {
   onUpdate?: (updatedSession: Session) => void;
 }
 
+// Helper to capitalize first letter
+const capitalize = (str: string) => {
+  if (!str) return '';
+  return str.charAt(0).toUpperCase() + str.slice(1);
+};
+
 const DayCard: React.FC<DayCardProps> = ({ 
   day, 
   baseCalories, 
@@ -35,53 +41,64 @@ const DayCard: React.FC<DayCardProps> = ({
   session,
   onUpdate
 }) => {
+  // Track if we're updating from props to prevent feedback loop
+  const isUpdatingFromProps = useRef(false);
+  const hasInitialized = useRef(false);
+
   const [min, setMin] = useState(session?.duration || 0);
-  const [type, setType] = useState(session?.type || 'Run');
-  const [intensity, setIntensity] = useState(session?.intensity || 'Aerobic');
-  const [location, setLocation] = useState(session?.location || '');
+  const [type, setType] = useState(session?.type ? capitalize(session.type) : 'Run');
+  const [intensity, setIntensity] = useState(session?.intensity ? capitalize(session.intensity) : 'Aerobic');
+  const [timeOfDay, setTimeOfDay] = useState(session?.timeOfDay || 'Morning');
   const [secondSession, setSecondSession] = useState(session?.doubleSession || false);
   const [min2, setMin2] = useState(session?.secondSession?.duration || 0);
-  const [type2, setType2] = useState(session?.secondSession?.type || 'Run');
-  const [intensity2, setIntensity2] = useState(session?.secondSession?.intensity || 'Aerobic');
-  const [location2, setLocation2] = useState(session?.secondSession?.location || '');
+  const [type2, setType2] = useState(session?.secondSession?.type ? capitalize(session.secondSession.type) : 'Run');
+  const [intensity2, setIntensity2] = useState(session?.secondSession?.intensity ? capitalize(session.secondSession.intensity) : 'Aerobic');
+  const [timeOfDay2, setTimeOfDay2] = useState(session?.secondSession?.timeOfDay || 'Morning');
 
-  // Update state when session prop changes
-  useEffect(() => {
-    if (session) {
-      setMin(session.duration || 0);
-      setType(session.type || 'Run');
-      setIntensity(session.intensity || 'Aerobic');
-      setLocation(session.location || '');
-      setSecondSession(session.doubleSession || false);
-      setMin2(session.secondSession?.duration || 0);
-      setType2(session.secondSession?.type || 'Run');
-      setIntensity2(session.secondSession?.intensity || 'Aerobic');
-      setLocation2(session.secondSession?.location || '');
-    }
-  }, [session]);
-
-  // Notify parent of updates
-  const handleUpdate = () => {
-    if (onUpdate) {
+  // Helper to send updates to parent
+  const notifyParent = useCallback(() => {
+    if (onUpdate && hasInitialized.current && !isUpdatingFromProps.current) {
       onUpdate({
         duration: min,
         type: type.toLowerCase(),
         intensity: intensity.toLowerCase(),
-        location,
+        timeOfDay,
         doubleSession: secondSession,
         secondSession: secondSession ? {
           duration: min2,
           type: type2.toLowerCase(),
           intensity: intensity2.toLowerCase(),
-          location: location2
+          timeOfDay: timeOfDay2
         } : undefined
       });
     }
-  };
+  }, [min, type, intensity, timeOfDay, secondSession, min2, type2, intensity2, timeOfDay2, onUpdate]);
 
+  // Update state when session prop changes
   useEffect(() => {
-    handleUpdate();
-  }, [min, type, intensity, location, secondSession, min2, type2, intensity2, location2]);
+    if (session) {
+      isUpdatingFromProps.current = true;
+      setMin(session.duration || 0);
+      setType(session.type ? capitalize(session.type) : 'Run');
+      setIntensity(session.intensity ? capitalize(session.intensity) : 'Aerobic');
+      setTimeOfDay(session.timeOfDay || 'Morning');
+      setSecondSession(session.doubleSession || false);
+      setMin2(session.secondSession?.duration || 0);
+      setType2(session.secondSession?.type ? capitalize(session.secondSession.type) : 'Run');
+      setIntensity2(session.secondSession?.intensity ? capitalize(session.secondSession.intensity) : 'Aerobic');
+      setTimeOfDay2(session.secondSession?.timeOfDay || 'Morning');
+      hasInitialized.current = true;
+      // Reset flag after a moment
+      setTimeout(() => {
+        isUpdatingFromProps.current = false;
+      }, 10);
+    }
+  }, [session]);
+
+  // Notify parent when any state changes
+  useEffect(() => {
+    notifyParent();
+  }, [notifyParent]);
 
   return (
     <div className="bg-white rounded-xl shadow-md p-4 border border-slate-200 dark:border-slate-700">
@@ -123,10 +140,13 @@ const DayCard: React.FC<DayCardProps> = ({
             </label>
             <input
               type="number"
-              value={min}
-              onChange={(e) => setMin(Number(e.target.value))}
+              value={min === 0 ? '' : min}
+              onChange={(e) => setMin(Number(e.target.value) || 0)}
+              onFocus={(e) => { if (min === 0) { e.target.value = ''; setMin(0); } }}
+              onBlur={(e) => { if (e.target.value === '') setMin(0); }}
               min="0"
               max="300"
+              placeholder="0"
               className="w-full border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 rounded-lg px-2 py-1.5 text-sm"
             />
           </div>
@@ -166,20 +186,18 @@ const DayCard: React.FC<DayCardProps> = ({
           </div>
           <div>
             <label className="text-xs font-medium text-slate-600 dark:text-slate-400 uppercase tracking-wide mb-1 block">
-              LOCATION
+              TIME
             </label>
-            <div className="relative">
-              <input
-                type="text"
-                value={location}
-                onChange={(e) => setLocation(e.target.value)}
-                placeholder="City"
-                className="w-full border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 rounded-lg px-2 py-1.5 pl-8 text-sm"
-              />
-              <span className="absolute left-2 top-1/2 transform -translate-y-1/2 text-slate-400">
-                📍
-              </span>
-            </div>
+            <select
+              value={timeOfDay}
+              onChange={(e) => setTimeOfDay(e.target.value)}
+              className="w-full border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 rounded-lg px-2 py-1.5 text-sm"
+            >
+              <option>Morning</option>
+              <option>Lunchtime</option>
+              <option>Afternoon</option>
+              <option>Evening</option>
+            </select>
           </div>
           <div className="flex items-end">
             <label className="flex items-center gap-2 text-sm cursor-pointer">
@@ -207,10 +225,13 @@ const DayCard: React.FC<DayCardProps> = ({
                 </label>
                 <input
                   type="number"
-                  value={min2}
-                  onChange={(e) => setMin2(Number(e.target.value))}
+                  value={min2 === 0 ? '' : min2}
+                  onChange={(e) => setMin2(Number(e.target.value) || 0)}
+                  onFocus={(e) => { if (min2 === 0) { e.target.value = ''; setMin2(0); } }}
+                  onBlur={(e) => { if (e.target.value === '') setMin2(0); }}
                   min="0"
                   max="300"
+                  placeholder="0"
                   className="w-full border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 rounded-lg px-2 py-1.5 text-sm"
                 />
               </div>
@@ -250,20 +271,18 @@ const DayCard: React.FC<DayCardProps> = ({
               </div>
               <div>
                 <label className="text-xs font-medium text-slate-600 dark:text-slate-400 uppercase tracking-wide mb-1 block">
-                  LOCATION
+                  TIME
                 </label>
-                <div className="relative">
-                  <input
-                    type="text"
-                    value={location2}
-                    onChange={(e) => setLocation2(e.target.value)}
-                    placeholder="City"
-                    className="w-full border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 rounded-lg px-2 py-1.5 pl-8 text-sm"
-                  />
-                  <span className="absolute left-2 top-1/2 transform -translate-y-1/2 text-slate-400">
-                    📍
-                  </span>
-                </div>
+                <select
+                  value={timeOfDay2}
+                  onChange={(e) => setTimeOfDay2(e.target.value)}
+                  className="w-full border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 rounded-lg px-2 py-1.5 text-sm"
+                >
+                  <option>Morning</option>
+                  <option>Lunchtime</option>
+                  <option>Afternoon</option>
+                  <option>Evening</option>
+                </select>
               </div>
             </div>
           </>
