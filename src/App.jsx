@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import "./index.css";
 import DayCard from "./components/Week/DayCard";
 import AthleteProfile from "./components/AthleteProfile";
+import WeeklySummary from "./components/WeeklySummary";
 
 // ---------- UI primitives ----------
 const Card = ({ children, className = "" }) => (
@@ -1159,25 +1160,14 @@ export default function App(){
           {tab === "reports" && (
             <motion.div key="reports" initial={{opacity:0,y:8}} animate={{opacity:1,y:0}} exit={{opacity:0,y:-8}} transition={{duration:0.25}} className="space-y-4 sm:space-y-6">
               <Card>
-                <SectionTitle title="Reports & Analysis" subtitle="Nutrition insights and trends" />
-                <div className="grid sm:grid-cols-2 gap-4">
-                  <div className="border border-slate-200 dark:border-slate-700 rounded-lg p-4">
-                    <h4 className="font-semibold mb-2 text-emerald-700 dark:text-emerald-300">📊 Weekly Summary</h4>
-                    <div className="space-y-2 text-sm">
-                      <div>Total Calories: {weeklyTotalCalories} kcal</div>
-                      <div>Avg Daily: {Math.round(weeklyTotalCalories/7)} kcal</div>
-                      <div>Training Load: {dailyTrainingCalories.reduce((a,b)=>a+b,0)} kcal</div>
-                    </div>
-                  </div>
-                  <div className="border border-slate-200 dark:border-slate-700 rounded-lg p-4">
-                    <h4 className="font-semibold mb-2 text-blue-700 dark:text-blue-300">🎯 Targets</h4>
-                    <div className="space-y-2 text-sm">
-                      <div>Carbs: {Math.round(weightKg * (carbLow + carbHigh) / 2)}g avg</div>
-                      <div>Protein: {Math.round(weightKg * protein)}g avg</div>
-                      <div>Fat: {Math.round(weightKg * fat)}g avg</div>
-                    </div>
-                  </div>
-                </div>
+                <WeeklySummary 
+                  dailyCalories={dailyTotalCalories}
+                  dailyTrainingCalories={dailyTrainingCalories}
+                  weightKg={weightKg}
+                  carbsPerKg={(carbLow + carbHigh) / 2}
+                  proteinPerKg={protein}
+                  fatPerKg={fat}
+                />
               </Card>
             </motion.div>
           )}
