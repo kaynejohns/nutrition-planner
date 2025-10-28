@@ -1801,17 +1801,17 @@ export default function App(){
                   {weeklyHydrationSchedule.map((day, index) => {
                     const dailyCalories = dailyTotalCalories[index];
                     return (
-                      <div key={index} className="border border-slate-200 dark:border-slate-700 rounded-xl p-4">
-                        <div className="flex items-center justify-between mb-3">
-                          <div>
-                            <div className="font-bold text-lg">{day.day}</div>
+                      <div key={index} className="border border-slate-200 dark:border-slate-700 rounded-xl p-3 sm:p-4">
+                        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-3 gap-2">
+                          <div className="flex-1">
+                            <div className="font-bold text-base sm:text-lg">{day.day}</div>
                             <div className="text-xs text-slate-500 dark:text-slate-400">
                               {day.forecastDate}
                               {day.hasTraining && ` • ${day.totalTrainingMins} min training`}
                             </div>
                           </div>
-                          <div className="text-right">
-                            <div className="font-bold text-xl text-orange-700 dark:text-orange-300">
+                          <div className="text-left sm:text-right flex-shrink-0">
+                            <div className="font-bold text-lg sm:text-xl text-orange-700 dark:text-orange-300">
                               {dailyCalories} kcal
                             </div>
                             <div className="text-xs text-slate-500 dark:text-slate-400">
@@ -1820,41 +1820,41 @@ export default function App(){
                           </div>
                         </div>
 
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-sm">
+                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 sm:gap-3 text-sm">
                           {/* Energy Breakdown */}
-                          <div className="bg-slate-50 dark:bg-slate-800 rounded-lg p-4 border-2 border-orange-200 dark:border-orange-800">
-                            <div className="text-sm font-bold uppercase tracking-wide text-orange-700 dark:text-orange-300 mb-2 flex items-center gap-2">
+                          <div className="bg-slate-50 dark:bg-slate-800 rounded-lg p-3 sm:p-4 border-2 border-orange-200 dark:border-orange-800">
+                            <div className="text-xs sm:text-sm font-bold uppercase tracking-wide text-orange-700 dark:text-orange-300 mb-1.5 sm:mb-2 flex items-center gap-1 sm:gap-2">
                               ⚡ Energy
                             </div>
                             <div className="font-semibold text-slate-800 dark:text-slate-200">
-                              <div className="text-lg font-bold">Total: {dailyCalories} kcal</div>
-                              <div className="text-xs text-slate-500 mt-1">
+                              <div className="text-base sm:text-lg font-bold">Total: {dailyCalories} kcal</div>
+                              <div className="text-xs text-slate-500 mt-0.5 sm:mt-1">
                                 Training: {day.hasTraining ? dailyTrainingCalories[index] : 0} kcal
                               </div>
                             </div>
                           </div>
 
                           {/* Hydration Breakdown */}
-                          <div className="bg-slate-50 dark:bg-slate-800 rounded-lg p-4 border-2 border-blue-200 dark:border-blue-800">
-                            <div className="text-sm font-bold uppercase tracking-wide text-blue-700 dark:text-blue-300 mb-2 flex items-center gap-2">
+                          <div className="bg-slate-50 dark:bg-slate-800 rounded-lg p-3 sm:p-4 border-2 border-blue-200 dark:border-blue-800">
+                            <div className="text-xs sm:text-sm font-bold uppercase tracking-wide text-blue-700 dark:text-blue-300 mb-1.5 sm:mb-2 flex items-center gap-1 sm:gap-2">
                               💧 Hydration
                             </div>
                             <div className="font-semibold text-slate-800 dark:text-slate-200">
-                              <div className="text-lg font-bold">Total: {day.totalDaily} ml</div>
-                              <div className="text-xs text-slate-500 mt-1">
+                              <div className="text-base sm:text-lg font-bold">Total: {day.totalDaily} ml</div>
+                              <div className="text-xs text-slate-500 mt-0.5 sm:mt-1">
                                 Training: {day.totalTrainingFluid} ml
                               </div>
                             </div>
                           </div>
 
                           {/* Sodium */}
-                          <div className="bg-slate-50 dark:bg-slate-800 rounded-lg p-4 border-2 border-purple-200 dark:border-purple-800">
-                            <div className="text-sm font-bold uppercase tracking-wide text-purple-700 dark:text-purple-300 mb-2 flex items-center gap-2">
+                          <div className="bg-slate-50 dark:bg-slate-800 rounded-lg p-3 sm:p-4 border-2 border-purple-200 dark:border-purple-800">
+                            <div className="text-xs sm:text-sm font-bold uppercase tracking-wide text-purple-700 dark:text-purple-300 mb-1.5 sm:mb-2 flex items-center gap-1 sm:gap-2">
                               🧂 Sodium
                             </div>
                             <div className="font-semibold text-slate-800 dark:text-slate-200">
-                              <div className="text-lg font-bold">Training: {day.totalTrainingSodium} mg</div>
-                              <div className="text-xs text-slate-500 mt-1">
+                              <div className="text-base sm:text-lg font-bold">Training: {day.totalTrainingSodium} mg</div>
+                              <div className="text-xs text-slate-500 mt-0.5 sm:mt-1">
                                 {day.hasTraining ? 'During session' : 'Rest day'}
                               </div>
                             </div>
@@ -1863,60 +1863,60 @@ export default function App(){
 
                         {/* Fuel Status Boxes */}
                         <div className="mt-4">
-                          <div className="text-sm font-bold uppercase tracking-wide text-slate-700 dark:text-slate-300 mb-2">
+                          <div className="text-xs sm:text-sm font-bold uppercase tracking-wide text-slate-700 dark:text-slate-300 mb-2">
                             Daily Calories
                           </div>
-                          <div className="grid grid-cols-3 gap-2">
-                          <div className="border-2 border-red-500 bg-red-50 dark:bg-red-900/20 rounded-lg p-2 text-center">
-                            <div className="text-xs font-semibold text-red-700 dark:text-red-300 mb-1">Underfueling</div>
-                            <div className="text-sm font-bold text-red-800 dark:text-red-200">
-                              {Math.round(dailyCalories * 0.85)} kcal
+                          <div className="grid grid-cols-3 gap-1.5 sm:gap-2">
+                          <div className="border-2 border-red-500 bg-red-50 dark:bg-red-900/20 rounded-lg p-1.5 sm:p-2 text-center">
+                            <div className="text-[10px] sm:text-xs font-semibold text-red-700 dark:text-red-300 mb-0.5 sm:mb-1 leading-tight">Under</div>
+                            <div className="text-xs sm:text-sm font-bold text-red-800 dark:text-red-200">
+                              {Math.round(dailyCalories * 0.85)}
                             </div>
-                            <div className="text-xs text-red-600 dark:text-red-400 mt-1">&lt;85%</div>
+                            <div className="text-[9px] sm:text-xs text-red-600 dark:text-red-400 mt-0.5">&lt;85%</div>
                           </div>
-                          <div className="border-2 border-green-500 bg-green-50 dark:bg-green-900/20 rounded-lg p-2 text-center">
-                            <div className="text-xs font-semibold text-green-700 dark:text-green-300 mb-1">Optimal</div>
-                            <div className="text-sm font-bold text-green-800 dark:text-green-200">
-                              {dailyCalories} kcal
+                          <div className="border-2 border-green-500 bg-green-50 dark:bg-green-900/20 rounded-lg p-1.5 sm:p-2 text-center">
+                            <div className="text-[10px] sm:text-xs font-semibold text-green-700 dark:text-green-300 mb-0.5 sm:mb-1 leading-tight">Optimal</div>
+                            <div className="text-xs sm:text-sm font-bold text-green-800 dark:text-green-200">
+                              {dailyCalories}
                             </div>
-                            <div className="text-xs text-green-600 dark:text-green-400 mt-1">100%</div>
+                            <div className="text-[9px] sm:text-xs text-green-600 dark:text-green-400 mt-0.5">100%</div>
                           </div>
-                          <div className="border-2 border-orange-500 bg-orange-50 dark:bg-orange-900/20 rounded-lg p-2 text-center">
-                            <div className="text-xs font-semibold text-orange-700 dark:text-orange-300 mb-1">Overfueling</div>
-                            <div className="text-sm font-bold text-orange-800 dark:text-orange-200">
-                              {Math.round(dailyCalories * 1.1)} kcal
+                          <div className="border-2 border-orange-500 bg-orange-50 dark:bg-orange-900/20 rounded-lg p-1.5 sm:p-2 text-center">
+                            <div className="text-[10px] sm:text-xs font-semibold text-orange-700 dark:text-orange-300 mb-0.5 sm:mb-1 leading-tight">Over</div>
+                            <div className="text-xs sm:text-sm font-bold text-orange-800 dark:text-orange-200">
+                              {Math.round(dailyCalories * 1.1)}
                             </div>
-                            <div className="text-xs text-orange-600 dark:text-orange-400 mt-1">&gt;110%</div>
+                            <div className="text-[9px] sm:text-xs text-orange-600 dark:text-orange-400 mt-0.5">&gt;110%</div>
                           </div>
                           </div>
                         </div>
 
                         {/* Hydration Status Boxes */}
                         <div className="mt-4">
-                          <div className="text-sm font-bold uppercase tracking-wide text-slate-700 dark:text-slate-300 mb-2">
+                          <div className="text-xs sm:text-sm font-bold uppercase tracking-wide text-slate-700 dark:text-slate-300 mb-2">
                             Daily Hydration
                           </div>
-                          <div className="grid grid-cols-3 gap-2">
-                          <div className="border-2 border-red-500 bg-red-50 dark:bg-red-900/20 rounded-lg p-2 text-center">
-                            <div className="text-xs font-semibold text-red-700 dark:text-red-300 mb-1">Underhydrated</div>
-                            <div className="text-sm font-bold text-red-800 dark:text-red-200">
-                              {Math.round(day.totalDaily * 0.85)} ml
+                          <div className="grid grid-cols-3 gap-1.5 sm:gap-2">
+                          <div className="border-2 border-red-500 bg-red-50 dark:bg-red-900/20 rounded-lg p-1.5 sm:p-2 text-center">
+                            <div className="text-[10px] sm:text-xs font-semibold text-red-700 dark:text-red-300 mb-0.5 sm:mb-1 leading-tight">Under</div>
+                            <div className="text-xs sm:text-sm font-bold text-red-800 dark:text-red-200">
+                              {Math.round(day.totalDaily * 0.85)}
                             </div>
-                            <div className="text-xs text-red-600 dark:text-red-400 mt-1">&lt;85%</div>
+                            <div className="text-[9px] sm:text-xs text-red-600 dark:text-red-400 mt-0.5">ml &lt;85%</div>
                           </div>
-                          <div className="border-2 border-green-500 bg-green-50 dark:bg-green-900/20 rounded-lg p-2 text-center">
-                            <div className="text-xs font-semibold text-green-700 dark:text-green-300 mb-1">Optimal</div>
-                            <div className="text-sm font-bold text-green-800 dark:text-green-200">
-                              {day.totalDaily} ml
+                          <div className="border-2 border-green-500 bg-green-50 dark:bg-green-900/20 rounded-lg p-1.5 sm:p-2 text-center">
+                            <div className="text-[10px] sm:text-xs font-semibold text-green-700 dark:text-green-300 mb-0.5 sm:mb-1 leading-tight">Optimal</div>
+                            <div className="text-xs sm:text-sm font-bold text-green-800 dark:text-green-200">
+                              {day.totalDaily}
                             </div>
-                            <div className="text-xs text-green-600 dark:text-green-400 mt-1">100%</div>
+                            <div className="text-[9px] sm:text-xs text-green-600 dark:text-green-400 mt-0.5">ml 100%</div>
                           </div>
-                          <div className="border-2 border-orange-500 bg-orange-50 dark:bg-orange-900/20 rounded-lg p-2 text-center">
-                            <div className="text-xs font-semibold text-orange-700 dark:text-orange-300 mb-1">Overhydrated</div>
-                            <div className="text-sm font-bold text-orange-800 dark:text-orange-200">
-                              {Math.round(day.totalDaily * 1.1)} ml
+                          <div className="border-2 border-orange-500 bg-orange-50 dark:bg-orange-900/20 rounded-lg p-1.5 sm:p-2 text-center">
+                            <div className="text-[10px] sm:text-xs font-semibold text-orange-700 dark:text-orange-300 mb-0.5 sm:mb-1 leading-tight">Over</div>
+                            <div className="text-xs sm:text-sm font-bold text-orange-800 dark:text-orange-200">
+                              {Math.round(day.totalDaily * 1.1)}
                             </div>
-                            <div className="text-xs text-orange-600 dark:text-orange-400 mt-1">&gt;110%</div>
+                            <div className="text-[9px] sm:text-xs text-orange-600 dark:text-orange-400 mt-0.5">ml &gt;110%</div>
                           </div>
                           </div>
                         </div>
