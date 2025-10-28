@@ -1,4 +1,18 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+
+interface Session {
+  duration: number;
+  type: string;
+  intensity: string;
+  location?: string;
+  doubleSession?: boolean;
+  secondSession?: {
+    duration: number;
+    type: string;
+    intensity: string;
+    location?: string;
+  };
+}
 
 interface DayCardProps {
   day: string;
@@ -7,6 +21,8 @@ interface DayCardProps {
   carbs?: number;
   protein?: number;
   fat?: number;
+  session?: Session;
+  onUpdate?: (updatedSession: Session) => void;
 }
 
 const DayCard: React.FC<DayCardProps> = ({ 
@@ -15,17 +31,57 @@ const DayCard: React.FC<DayCardProps> = ({
   trainingCalories,
   carbs = 261,
   protein = 148,
-  fat = 70
+  fat = 70,
+  session,
+  onUpdate
 }) => {
-  const [min, setMin] = useState(0);
-  const [type, setType] = useState('Run');
-  const [intensity, setIntensity] = useState('Aerobic');
-  const [location, setLocation] = useState('');
-  const [secondSession, setSecondSession] = useState(false);
-  const [min2, setMin2] = useState(0);
-  const [type2, setType2] = useState('Run');
-  const [intensity2, setIntensity2] = useState('Aerobic');
-  const [location2, setLocation2] = useState('');
+  const [min, setMin] = useState(session?.duration || 0);
+  const [type, setType] = useState(session?.type || 'Run');
+  const [intensity, setIntensity] = useState(session?.intensity || 'Aerobic');
+  const [location, setLocation] = useState(session?.location || '');
+  const [secondSession, setSecondSession] = useState(session?.doubleSession || false);
+  const [min2, setMin2] = useState(session?.secondSession?.duration || 0);
+  const [type2, setType2] = useState(session?.secondSession?.type || 'Run');
+  const [intensity2, setIntensity2] = useState(session?.secondSession?.intensity || 'Aerobic');
+  const [location2, setLocation2] = useState(session?.secondSession?.location || '');
+
+  // Update state when session prop changes
+  useEffect(() => {
+    if (session) {
+      setMin(session.duration || 0);
+      setType(session.type || 'Run');
+      setIntensity(session.intensity || 'Aerobic');
+      setLocation(session.location || '');
+      setSecondSession(session.doubleSession || false);
+      setMin2(session.secondSession?.duration || 0);
+      setType2(session.secondSession?.type || 'Run');
+      setIntensity2(session.secondSession?.intensity || 'Aerobic');
+      setLocation2(session.secondSession?.location || '');
+    }
+  }, [session]);
+
+  // Notify parent of updates
+  const handleUpdate = () => {
+    if (onUpdate) {
+      onUpdate({
+        duration: min,
+        type: type.toLowerCase(),
+        intensity: intensity.toLowerCase(),
+        location,
+        doubleSession: secondSession,
+        secondSession: secondSession ? {
+          duration: min2,
+          type: type2.toLowerCase(),
+          intensity: intensity2.toLowerCase(),
+          location: location2
+        } : undefined
+      });
+    }
+  };
+
+  useEffect(() => {
+    handleUpdate();
+  }, [min, type, intensity, location, secondSession, min2, type2, intensity2, location2]);
 
   return (
     <div className="bg-white rounded-xl shadow-md p-4 border border-slate-200 dark:border-slate-700">

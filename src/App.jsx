@@ -1137,6 +1137,13 @@ export default function App(){
                       carbs={Math.round(weightKg * (carbLow + carbHigh) / 2)}
                       protein={Math.round(weightKg * protein)}
                       fat={Math.round(weightKg * fat)}
+                      session={weeklySessions[day]}
+                      onUpdate={(updatedSession) => {
+                        setWeeklySessions(prev => ({
+                          ...prev,
+                          [day]: updatedSession
+                        }));
+                      }}
                     />
                   ))}
                 </div>
