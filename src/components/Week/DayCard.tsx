@@ -167,23 +167,23 @@ const DayCard: React.FC<DayCardProps> = ({
               <option>Rest</option>
             </select>
           </div>
-          <div>
-            <label className="text-xs font-medium text-slate-600 dark:text-slate-400 uppercase tracking-wide mb-1 block">
-              INTENSITY
-            </label>
-            <select
-              value={intensity}
-              onChange={(e) => setIntensity(e.target.value)}
-              className="w-full border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 rounded-lg px-2 py-1.5 text-sm"
-            >
-              <option>Aerobic</option>
-              <option>Threshold</option>
-              <option>VO2max</option>
-              <option>Recovery</option>
-              <option>Tempo</option>
-              <option>Intervals</option>
-            </select>
-          </div>
+          {type.toLowerCase() !== 'strength' && (
+            <div>
+              <label className="text-xs font-medium text-slate-600 dark:text-slate-400 uppercase tracking-wide mb-1 block">
+                INTENSITY
+              </label>
+              <select
+                value={intensity}
+                onChange={(e) => setIntensity(e.target.value)}
+                className="w-full border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 rounded-lg px-2 py-1.5 text-sm"
+              >
+                <option>Aerobic</option>
+                <option>Threshold</option>
+                <option>VO2max</option>
+              </select>
+            </div>
+          )}
+          {type.toLowerCase() === 'strength' && <div></div>}
           <div>
             <label className="text-xs font-medium text-slate-600 dark:text-slate-400 uppercase tracking-wide mb-1 block">
               TIME
@@ -252,23 +252,23 @@ const DayCard: React.FC<DayCardProps> = ({
                   <option>Rest</option>
                 </select>
               </div>
-              <div>
-                <label className="text-xs font-medium text-slate-600 dark:text-slate-400 uppercase tracking-wide mb-1 block">
-                  INTENSITY
-                </label>
-                <select
-                  value={intensity2}
-                  onChange={(e) => setIntensity2(e.target.value)}
-                  className="w-full border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 rounded-lg px-2 py-1.5 text-sm"
-                >
-                  <option>Aerobic</option>
-                  <option>Threshold</option>
-                  <option>VO2max</option>
-                  <option>Recovery</option>
-                  <option>Tempo</option>
-                  <option>Intervals</option>
-                </select>
-              </div>
+              {type2.toLowerCase() !== 'strength' && (
+                <div>
+                  <label className="text-xs font-medium text-slate-600 dark:text-slate-400 uppercase tracking-wide mb-1 block">
+                    INTENSITY
+                  </label>
+                  <select
+                    value={intensity2}
+                    onChange={(e) => setIntensity2(e.target.value)}
+                    className="w-full border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 rounded-lg px-2 py-1.5 text-sm"
+                  >
+                    <option>Aerobic</option>
+                    <option>Threshold</option>
+                    <option>VO2max</option>
+                  </select>
+                </div>
+              )}
+              {type2.toLowerCase() === 'strength' && <div></div>}
               <div>
                 <label className="text-xs font-medium text-slate-600 dark:text-slate-400 uppercase tracking-wide mb-1 block">
                   TIME
