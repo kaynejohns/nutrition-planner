@@ -1854,6 +1854,56 @@ export default function App(){
                             </div>
                           </div>
                         </div>
+
+                        {/* Fuel Status Boxes */}
+                        <div className="grid grid-cols-3 gap-2 mt-3">
+                          <div className="border-2 border-red-500 bg-red-50 dark:bg-red-900/20 rounded-lg p-2 text-center">
+                            <div className="text-xs font-semibold text-red-700 dark:text-red-300 mb-1">Underfueling</div>
+                            <div className="text-sm font-bold text-red-800 dark:text-red-200">
+                              {Math.round(dailyCalories * 0.85)} kcal
+                            </div>
+                            <div className="text-xs text-red-600 dark:text-red-400 mt-1">&lt;85%</div>
+                          </div>
+                          <div className="border-2 border-green-500 bg-green-50 dark:bg-green-900/20 rounded-lg p-2 text-center">
+                            <div className="text-xs font-semibold text-green-700 dark:text-green-300 mb-1">Optimal</div>
+                            <div className="text-sm font-bold text-green-800 dark:text-green-200">
+                              {dailyCalories} kcal
+                            </div>
+                            <div className="text-xs text-green-600 dark:text-green-400 mt-1">100%</div>
+                          </div>
+                          <div className="border-2 border-orange-500 bg-orange-50 dark:bg-orange-900/20 rounded-lg p-2 text-center">
+                            <div className="text-xs font-semibold text-orange-700 dark:text-orange-300 mb-1">Overfueling</div>
+                            <div className="text-sm font-bold text-orange-800 dark:text-orange-200">
+                              {Math.round(dailyCalories * 1.1)} kcal
+                            </div>
+                            <div className="text-xs text-orange-600 dark:text-orange-400 mt-1">&gt;110%</div>
+                          </div>
+                        </div>
+
+                        {/* Hydration Status Boxes */}
+                        <div className="grid grid-cols-3 gap-2 mt-3">
+                          <div className="border-2 border-red-500 bg-red-50 dark:bg-red-900/20 rounded-lg p-2 text-center">
+                            <div className="text-xs font-semibold text-red-700 dark:text-red-300 mb-1">Underhydrated</div>
+                            <div className="text-sm font-bold text-red-800 dark:text-red-200">
+                              {Math.round(day.totalDaily * 0.85)} ml
+                            </div>
+                            <div className="text-xs text-red-600 dark:text-red-400 mt-1">&lt;85%</div>
+                          </div>
+                          <div className="border-2 border-green-500 bg-green-50 dark:bg-green-900/20 rounded-lg p-2 text-center">
+                            <div className="text-xs font-semibold text-green-700 dark:text-green-300 mb-1">Optimal</div>
+                            <div className="text-sm font-bold text-green-800 dark:text-green-200">
+                              {day.totalDaily} ml
+                            </div>
+                            <div className="text-xs text-green-600 dark:text-green-400 mt-1">100%</div>
+                          </div>
+                          <div className="border-2 border-orange-500 bg-orange-50 dark:bg-orange-900/20 rounded-lg p-2 text-center">
+                            <div className="text-xs font-semibold text-orange-700 dark:text-orange-300 mb-1">Overhydrated</div>
+                            <div className="text-sm font-bold text-orange-800 dark:text-orange-200">
+                              {Math.round(day.totalDaily * 1.1)} ml
+                            </div>
+                            <div className="text-xs text-orange-600 dark:text-orange-400 mt-1">&gt;110%</div>
+                          </div>
+                        </div>
                       </div>
                     );
                   })}
