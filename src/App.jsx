@@ -1822,10 +1822,12 @@ export default function App(){
 
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-sm">
                           {/* Energy Breakdown */}
-                          <div className="bg-slate-50 dark:bg-slate-800 rounded-lg p-3">
-                            <div className="text-xs text-slate-600 dark:text-slate-400 mb-1">Energy</div>
+                          <div className="bg-slate-50 dark:bg-slate-800 rounded-lg p-4 border-2 border-orange-200 dark:border-orange-800">
+                            <div className="text-sm font-bold uppercase tracking-wide text-orange-700 dark:text-orange-300 mb-2 flex items-center gap-2">
+                              ⚡ Energy
+                            </div>
                             <div className="font-semibold text-slate-800 dark:text-slate-200">
-                              <div>Total: {dailyCalories} kcal</div>
+                              <div className="text-lg font-bold">Total: {dailyCalories} kcal</div>
                               <div className="text-xs text-slate-500 mt-1">
                                 Training: {day.hasTraining ? dailyTrainingCalories[index] : 0} kcal
                               </div>
@@ -1833,10 +1835,12 @@ export default function App(){
                           </div>
 
                           {/* Hydration Breakdown */}
-                          <div className="bg-slate-50 dark:bg-slate-800 rounded-lg p-3">
-                            <div className="text-xs text-slate-600 dark:text-slate-400 mb-1">Hydration</div>
+                          <div className="bg-slate-50 dark:bg-slate-800 rounded-lg p-4 border-2 border-blue-200 dark:border-blue-800">
+                            <div className="text-sm font-bold uppercase tracking-wide text-blue-700 dark:text-blue-300 mb-2 flex items-center gap-2">
+                              💧 Hydration
+                            </div>
                             <div className="font-semibold text-slate-800 dark:text-slate-200">
-                              <div>Total: {day.totalDaily} ml</div>
+                              <div className="text-lg font-bold">Total: {day.totalDaily} ml</div>
                               <div className="text-xs text-slate-500 mt-1">
                                 Training: {day.totalTrainingFluid} ml
                               </div>
@@ -1844,10 +1848,12 @@ export default function App(){
                           </div>
 
                           {/* Sodium */}
-                          <div className="bg-slate-50 dark:bg-slate-800 rounded-lg p-3">
-                            <div className="text-xs text-slate-600 dark:text-slate-400 mb-1">Sodium</div>
+                          <div className="bg-slate-50 dark:bg-slate-800 rounded-lg p-4 border-2 border-purple-200 dark:border-purple-800">
+                            <div className="text-sm font-bold uppercase tracking-wide text-purple-700 dark:text-purple-300 mb-2 flex items-center gap-2">
+                              🧂 Sodium
+                            </div>
                             <div className="font-semibold text-slate-800 dark:text-slate-200">
-                              <div>Training: {day.totalTrainingSodium} mg</div>
+                              <div className="text-lg font-bold">Training: {day.totalTrainingSodium} mg</div>
                               <div className="text-xs text-slate-500 mt-1">
                                 {day.hasTraining ? 'During session' : 'Rest day'}
                               </div>
