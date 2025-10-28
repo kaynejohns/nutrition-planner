@@ -806,14 +806,23 @@ export default function App(){
         const trainingHours = session.duration / 60;
         
         // Calculate effective sweat rate for this session based on its intensity
-        const intensityMultiplier = getIntensityMultiplier(session.intensity);
-        const sessionEffectiveRate = baselineSweatRate * intensityMultiplier;
+        const intensitySweatMult = getIntensityMultiplier(session.intensity);
+        const intensityNaMult = session.intensity === 'threshold' || session.intensity === 'vo2max' ? 1.10 : 
+                                 session.intensity === 'vo2max' || session.intensity === 'intervals' ? 1.20 : 1.0;
+        const sessionEffectiveRate = baselineSweatRate * intensitySweatMult;
         
         const hydration = calculateHydrationNeeds(
           weatherTemp,
           weatherHumidity,
           trainingHours,
-          sessionEffectiveRate
+          sessionEffectiveRate,
+          {
+            baselineSweatRate,
+            baselineNaPerL: baselineNaMgPerL / 1000, // Convert to g/L
+            intensitySweatMult,
+            intensityNaMult,
+            heatAcclimationMult: acclimationMultiplier
+          }
         );
         
         
@@ -838,14 +847,23 @@ export default function App(){
         const trainingHours = session.secondSession.duration / 60;
         
         // Calculate effective sweat rate for this session based on its intensity
-        const intensityMultiplier = getIntensityMultiplier(session.secondSession.intensity);
-        const sessionEffectiveRate = baselineSweatRate * intensityMultiplier;
+        const intensitySweatMult = getIntensityMultiplier(session.secondSession.intensity);
+        const intensityNaMult = session.secondSession.intensity === 'threshold' || session.secondSession.intensity === 'vo2max' ? 1.10 : 
+                                  session.secondSession.intensity === 'vo2max' || session.secondSession.intensity === 'intervals' ? 1.20 : 1.0;
+        const sessionEffectiveRate = baselineSweatRate * intensitySweatMult;
         
         const hydration = calculateHydrationNeeds(
           weatherTemp,
           weatherHumidity,
           trainingHours,
-          sessionEffectiveRate
+          sessionEffectiveRate,
+          {
+            baselineSweatRate,
+            baselineNaPerL: baselineNaMgPerL / 1000, // Convert to g/L  
+            intensitySweatMult,
+            intensityNaMult,
+            heatAcclimationMult: acclimationMultiplier
+          }
         );
         
         sessions.push({

@@ -77,25 +77,41 @@ export async function fetchForecastByCity(cityName) {
 }
 
 // Calculate hydration needs based on weather
-export function calculateHydrationNeeds(temp, humidity, duration, sweatRate = 0.8) {
-  // Heat index calculation
-  const heatIndex = temp > 27 ? temp + (humidity / 100) * 2 : temp;
+// Now uses premium sodium calculation system
+export function calculateHydrationNeeds(temp, humidity, duration, effectiveSweatRate = 1.2, options = {}) {
+  // Default options
+  const {
+    baselineSweatRate = 1.2,
+    baselineNaPerL = 900,
+    intensitySweatMult = 1.0,
+    intensityNaMult = 1.0,
+    heatAcclimationMult = 1.0
+  } = options;
   
-  // Environmental factor (0.5 to 1.5)
-  const envFactor = 0.7 + (heatIndex - 15) / 40;
-  const adjustedSweatRate = sweatRate * envFactor;
+  // Temperature multiplier for sweat rate
+  let tempMult = 1.0;
+  if (temp <= 15) tempMult = 0.85; // Cool
+  else if (temp >= 35) tempMult = 1.40; // Very hot
+  else if (temp >= 29) tempMult = 1.25; // Hot
+  else if (temp >= 23) tempMult = 1.10; // Warm
+  else tempMult = 1.00; // Temperate
   
-  // Fluid needs in ml/h
-  const fluidPerHour = Math.max(300, Math.min(1200, adjustedSweatRate * 1000 * 0.7));
+  // Calculate effective sweat rate
+  const effectiveSR = effectiveSweatRate * tempMult;
   
-  // Sodium needs (increases with temperature)
-  const baseSodiumPerL = 500;
-  const tempSodium = Math.max(0, temp - 20) * 50;
-  const sodiumPerL = baseSodiumPerL + tempSodium;
+  // Calculate effective sodium concentration
+  const effectiveNa = baselineNaPerL * intensityNaMult * heatAcclimationMult;
+  
+  // Fluid needs in ml/h (target 70% replacement)
+  const fluidPerHour = Math.round(effectiveSR * 1000 * 0.7);
+  
+  // Sodium needs in mg/h
+  const sodiumPerHour = Math.round(effectiveSR * effectiveNa);
   
   return {
-    fluidPerHour: Math.round(fluidPerHour),
-    sodiumPerHour: Math.round(sodiumPerL * (fluidPerHour / 1000)),
-    heatIndex: Math.round(heatIndex)
+    fluidPerHour: Math.max(300, Math.min(1200, fluidPerHour)),
+    sodiumPerHour: sodiumPerHour,
+    effectiveSweatRate: effectiveSR,
+    tempMultiplier: tempMult
   };
 }
