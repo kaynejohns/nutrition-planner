@@ -1,12 +1,14 @@
-// Weather API utility - Uses WeatherAPI via secure proxy
-const API_BASE = '/api/weather';
+// Weather API utility - Uses WeatherAPI via secure proxy in dev, Netlify function in prod
+const API_BASE = import.meta.env.PROD ? '/.netlify/functions/weather?path=current.json' : '/api/weather';
 
 // Fetch current weather by city name
 export async function fetchWeatherByCity(cityName) {
   try {
-    const response = await fetch(
-      `${API_BASE}/current.json?q=${encodeURIComponent(cityName)}&aqi=no`
-    );
+    const url = import.meta.env.PROD 
+      ? `${API_BASE}&q=${encodeURIComponent(cityName)}&aqi=no`
+      : `${API_BASE}?q=${encodeURIComponent(cityName)}&aqi=no`;
+    
+    const response = await fetch(url);
     
     if (!response.ok) {
       throw new Error('Weather fetch failed');
@@ -31,9 +33,11 @@ export async function fetchWeatherByCity(cityName) {
 // Fetch forecast by city name
 export async function fetchForecastByCity(cityName) {
   try {
-    const response = await fetch(
-      `${API_BASE}/forecast.json?q=${encodeURIComponent(cityName)}&days=7&aqi=no&alerts=no`
-    );
+    const url = import.meta.env.PROD
+      ? `${API_BASE.replace('current.json', 'forecast.json')}&q=${encodeURIComponent(cityName)}&days=7&aqi=no&alerts=no`
+      : `${API_BASE}?q=${encodeURIComponent(cityName)}&days=7&aqi=no&alerts=no`;
+    
+    const response = await fetch(url);
     
     if (!response.ok) {
       throw new Error('Forecast fetch failed');
