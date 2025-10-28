@@ -1515,12 +1515,12 @@ export default function App(){
                           ?
                         </div>
                         <div className="absolute left-0 bottom-full mb-2 w-80 bg-slate-900 dark:bg-slate-800 text-white text-xs rounded-lg shadow-xl p-3 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50 pointer-events-none">
-                          <div className="font-semibold mb-2 text-orange-300">Sweat-Rate Category Guide:</div>
+                          <div className="font-semibold mb-2 text-orange-300">Saltiness Category Guide:</div>
                           <div className="space-y-1.5">
-                            <div><span className="text-orange-400 font-semibold">Low</span> (500 mg/L): Light sweater, rare drips, slightly damp clothing.</div>
-                            <div><span className="text-orange-400 font-semibold">Medium</span> (900 mg/L): Noticeable sweat, clearly damp clothing during workouts.</div>
-                            <div><span className="text-orange-400 font-semibold">High</span> (1,300 mg/L): Heavy sweater, frequent drips, clothing soaked by end.</div>
-                            <div><span className="text-orange-400 font-semibold">Very High</span> (1,800 mg/L): Heavy sweating from start, pooling in shoes, white salt streaks.</div>
+                            <div><span className="text-orange-400 font-semibold">Low</span> (500 mg/L): Rare white marks on skin or clothing.</div>
+                            <div><span className="text-orange-400 font-semibold">Medium</span> (900 mg/L): Occasional light salt streaks after longer/harder sessions.</div>
+                            <div><span className="text-orange-400 font-semibold">High</span> (1,300 mg/L): Salt marks common on kit and skin, especially after moderate-long workouts.</div>
+                            <div><span className="text-orange-400 font-semibold">Very High</span> (1,800 mg/L): Heavy salt residue with visible white crusting on clothing and equipment.</div>
                           </div>
                         </div>
                       </div>
