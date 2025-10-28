@@ -583,6 +583,19 @@ export default function App(){
   const [showSaltinessTooltip, setShowSaltinessTooltip] = useState(false);
   const [showAcclimationTooltip, setShowAcclimationTooltip] = useState(false);
   
+  // Race Week states
+  const [raceEvent, setRaceEvent] = useState('Marathon');
+  const [raceDate, setRaceDate] = useState(() => {
+    const date = new Date();
+    date.setDate(date.getDate() + 7);
+    return date.toISOString().split('T')[0];
+  });
+  const [raceGoalHours, setRaceGoalHours] = useState(3);
+  const [raceGoalMins, setRaceGoalMins] = useState(30);
+  const [raceLocation, setRaceLocation] = useState('');
+  const [raceWeather, setRaceWeather] = useState(null);
+  const [loadingRaceWeather, setLoadingRaceWeather] = useState(false);
+  
   // Map training log intensity to hydration multiplier
   const getIntensityMultiplier = (intensity) => {
     const normalized = intensity ? intensity.toLowerCase() : 'aerobic';
@@ -1033,6 +1046,128 @@ export default function App(){
     setCarbLow(5); setCarbHigh(8); setProtein(1.8); setFat(1.1); setDark(false); setTab("daily");
   };
 
+  // Race Week Calculations
+  const calculateRaceCalories = (eventType, goalTimeHours, goalTimeMins) => {
+    const totalMinutes = goalTimeHours * 60 + goalTimeMins;
+    const baseCalories = weightKg * 30; // Resting energy
+    
+    let eventCalories = 0;
+    const eventMultipliers = {
+      '5km': 0.18,
+      '10km': 0.36,
+      'Half Marathon': 0.95,
+      'Marathon': 1.65,
+      'Ironman 70.3': 2.5,
+      'Ironman': 4.5
+    };
+    
+    const multiplier = eventMultipliers[eventType] || 1.65;
+    eventCalories = Math.round(totalMinutes * weightKg * multiplier);
+    
+    return {
+      raceCalories: eventCalories,
+      totalCalories: baseCalories + eventCalories,
+      carbsNeeded: Math.round(eventCalories * 0.8 / 4), // 80% of race cals from carbs, 4 kcal/g
+      proteinNeeded: Math.round(weightKg * 1.8),
+      fatNeeded: Math.round(weightKg * 1.2)
+    };
+  };
+
+  const fetchRaceWeather = async (city) => {
+    if (!city) return;
+    setLoadingRaceWeather(true);
+    try {
+      const [current, forecast] = await Promise.all([
+        fetch(`/api/weather/current.json?q=${encodeURIComponent(city)}`)
+          .then(r => r.ok ? r.json() : { data: null }),
+        fetch(`/api/weather/forecast.json?q=${encodeURIComponent(city)}&days=14`)
+          .then(r => r.ok ? r.json() : { data: null })
+      ]);
+      
+      // Find forecasted weather for race date
+      const raceDay = new Date(raceDate);
+      const raceDayStr = raceDay.toISOString().split('T')[0];
+      let forecastedWeather = null;
+      
+      if (forecast.data?.forecast?.forecastday) {
+        forecastedWeather = forecast.data.forecast.forecastday.find(
+          day => day.date === raceDayStr
+        );
+      }
+      
+      if (forecastedWeather) {
+        setRaceWeather({
+          temp: forecastedWeather.day.avgtemp_c,
+          maxTemp: forecastedWeather.day.maxtemp_c,
+          humidity: forecastedWeather.day.avghumidity,
+          condition: forecastedWeather.day.condition.text,
+          icon: forecastedWeather.day.condition.icon
+        });
+      } else if (current.data) {
+        setRaceWeather({
+          temp: current.data.current.temp_c,
+          maxTemp: current.data.current.temp_c,
+          humidity: current.data.current.humidity,
+          condition: current.data.current.condition.text,
+          icon: current.data.current.condition.icon
+        });
+      }
+    } catch (error) {
+      console.error('Race weather error:', error);
+      setRaceWeather(null);
+    } finally {
+      setLoadingRaceWeather(false);
+    }
+  };
+
+  const getCarbLoadingPlan = (eventType) => {
+    const plans = {
+      '5km': { days: 0, carbs: [], description: 'No special carb loading needed' },
+      '10km': { days: 1, carbs: [8], description: '1 day moderate carb load' },
+      'Half Marathon': { days: 2, carbs: [7, 8], description: '2 day progressive carb load' },
+      'Marathon': { days: 3, carbs: [6, 8, 10], description: '3 day progressive carb load' },
+      'Ironman 70.3': { days: 3, carbs: [6, 8, 10], description: '3 day progressive carb load' },
+      'Ironman': { days: 4, carbs: [5, 7, 9, 10], description: '4 day progressive carb load' }
+    };
+    return plans[eventType] || plans['Marathon'];
+  };
+
+  const raceCalories = calculateRaceCalories(raceEvent, raceGoalHours, raceGoalMins);
+  const carbPlan = getCarbLoadingPlan(raceEvent);
+  
+  // Calculate days before race for calendar
+  const getDaysBeforeRace = () => {
+    const today = new Date();
+    const race = new Date(raceDate);
+    const diffTime = race - today;
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    return diffDays;
+  };
+
+  const daysBeforeRace = getDaysBeforeRace();
+  const carbLoadingDays = Array.from({ length: 7 }, (_, i) => {
+    const daysOut = 7 - i;
+    const carbLoadDay = carbPlan.days >= daysOut;
+    let carbsG = Math.round(weightKg * 5); // Default normal training carbs
+    
+    if (carbLoadDay) {
+      // For carb loading, use the plan's carbs array
+      const carbsIndex = carbPlan.days - daysOut; // Days into carb loading
+      if (carbsIndex >= 0 && carbsIndex < carbPlan.carbs.length) {
+        carbsG = Math.round(carbPlan.carbs[carbsIndex] * weightKg);
+      }
+    }
+    
+    return {
+      dayNumber: daysOut,
+      daysOut: daysOut,
+      carbsG: carbsG,
+      isCarbLoading: carbLoadDay,
+      isFiberCaution: daysOut <= 2,
+      isRaceDay: daysOut === 1
+    };
+  });
+
   // ---------- UI ----------
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-orange-50/30 to-slate-100 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 text-slate-900 dark:text-slate-100">
@@ -1334,95 +1469,216 @@ export default function App(){
 
           {tab === "race" && (
             <motion.div key="race" initial={{opacity:0,y:8}} animate={{opacity:1,y:0}} exit={{opacity:0,y:-8}} transition={{duration:0.25}} className="space-y-4 sm:space-y-6">
+              
+              {/* Race Event Selection */}
               <Card>
-                <SectionTitle title="Race Event Planning" subtitle="Set your race details and goal time" />
-                <div className="grid sm:grid-cols-3 gap-4">
+                <SectionTitle title="🎯 Race Setup" subtitle="Select your event and set your goal" />
+                <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
                   <div>
                     <Label>Race Event</Label>
-                    <select className="w-full mt-1 border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 rounded-lg px-3 py-2 text-slate-800 dark:text-slate-100">
+                    <select 
+                      className="w-full mt-1 border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 rounded-lg px-3 py-2 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-orange-500"
+                      value={raceEvent}
+                      onChange={(e) => setRaceEvent(e.target.value)}
+                    >
                       <option>5km</option>
                       <option>10km</option>
                       <option>Half Marathon</option>
-                      <option selected>Marathon</option>
+                      <option>Marathon</option>
                       <option>Ironman 70.3</option>
                       <option>Ironman</option>
                     </select>
                   </div>
                   <div>
+                    <Label>Race Date</Label>
+                    <input 
+                      type="date" 
+                      className="w-full mt-1 border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 rounded-lg px-3 py-2 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-orange-500"
+                      value={raceDate}
+                      onChange={(e) => setRaceDate(e.target.value)}
+                    />
+                  </div>
+                  <div>
                     <Label>Goal Time (hours)</Label>
-                    <input type="number" min="0" max="24" defaultValue="3" className="w-full mt-1 border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 rounded-lg px-3 py-2" />
+                    <input 
+                      type="number" 
+                      min="0" 
+                      max="24" 
+                      value={raceGoalHours} 
+                      onChange={(e) => setRaceGoalHours(Number(e.target.value))}
+                      className="w-full mt-1 border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 rounded-lg px-3 py-2 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-orange-500" 
+                    />
                   </div>
                   <div>
                     <Label>Goal Time (minutes)</Label>
-                    <input type="number" min="0" max="59" defaultValue="30" className="w-full mt-1 border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 rounded-lg px-3 py-2" />
+                    <input 
+                      type="number" 
+                      min="0" 
+                      max="59" 
+                      value={raceGoalMins} 
+                      onChange={(e) => setRaceGoalMins(Number(e.target.value))}
+                      className="w-full mt-1 border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 rounded-lg px-3 py-2 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-orange-500" 
+                    />
+                  </div>
+                </div>
+                
+                <div className="grid sm:grid-cols-2 gap-4">
+                  <div>
+                    <Label>Race Location</Label>
+                    <div className="flex gap-2 mt-1">
+                      <input 
+                        type="text" 
+                        placeholder="Enter city (e.g., London, New York)"
+                        className="flex-1 border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 rounded-lg px-3 py-2 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-orange-500"
+                        value={raceLocation}
+                        onChange={(e) => setRaceLocation(e.target.value)}
+                        onKeyPress={(e) => e.key === 'Enter' && fetchRaceWeather(raceLocation)}
+                      />
+                      <button
+                        onClick={() => fetchRaceWeather(raceLocation)}
+                        disabled={loadingRaceWeather || !raceLocation}
+                        className="px-4 py-2 bg-orange-500 hover:bg-orange-600 text-white rounded-lg font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                      >
+                        {loadingRaceWeather ? '⏳' : '🌤️'}
+                      </button>
+                    </div>
+                  </div>
+                  
+                  {raceWeather && (
+                    <div className="bg-slate-50 dark:bg-slate-900 rounded-lg p-3 flex items-center gap-3">
+                      <img src={raceWeather.icon} alt={raceWeather.condition} className="w-12 h-12" />
+                      <div>
+                        <div className="font-semibold text-slate-900 dark:text-slate-100">{raceWeather.maxTemp}°C - {raceWeather.condition}</div>
+                        <div className="text-sm text-slate-600 dark:text-slate-400">Humidity: {raceWeather.humidity}%</div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+                
+                {/* Race Calories Summary */}
+                <div className="mt-4 p-4 bg-gradient-to-r from-orange-50 to-slate-50 dark:from-orange-950/20 dark:to-slate-900/50 rounded-lg border border-orange-200 dark:border-orange-900/30">
+                  <div className="grid sm:grid-cols-3 gap-4 text-center">
+                    <div>
+                      <div className="text-sm text-slate-600 dark:text-slate-400">Estimated Race Calories</div>
+                      <div className="text-2xl font-bold text-orange-600 dark:text-orange-400">{raceCalories.raceCalories} kcal</div>
+                    </div>
+                    <div>
+                      <div className="text-sm text-slate-600 dark:text-slate-400">Carbs Required</div>
+                      <div className="text-2xl font-bold text-orange-600 dark:text-orange-400">{raceCalories.carbsNeeded} g</div>
+                    </div>
+                    <div>
+                      <div className="text-sm text-slate-600 dark:text-slate-400">Total Daily (Rest + Race)</div>
+                      <div className="text-2xl font-bold text-orange-600 dark:text-orange-400">{raceCalories.totalCalories} kcal</div>
+                    </div>
                   </div>
                 </div>
               </Card>
               
               <Card>
-                <SectionTitle title="7-Day Race Week Breakdown" />
-                <div className="space-y-4">
-                  {[
-                    {day:7,phase:"Normal Training",carbs:696,calories:2732},
-                    {day:6,phase:"Normal Training",carbs:696,calories:2732},
-                    {day:5,phase:"Normal Training",carbs:696,calories:2732},
-                    {day:4,phase:"🔥 Carb Loading",carbs:696,calories:3428},
-                    {day:3,phase:"🔥 Carb Loading",carbs:696,calories:3428},
-                    {day:2,phase:"⚠️ Fiber Caution + Carb Load",carbs:870,calories:2732},
-                    {day:1,phase:"⚠️ Fiber Caution + Carb Load",carbs:870,calories:2732}
-                  ].map(d => (
-                    <div key={d.day} className="border border-slate-200 dark:border-slate-700 rounded-lg p-4">
-                      <div className="flex justify-between items-center mb-3">
-                        <div>
-                          <div className="font-bold">Day {d.day}</div>
-                          <div className={d.phase.includes("🔥") ? "text-orange-600" : d.phase.includes("⚠️") ? "text-amber-600" : "text-emerald-600"}>
-                            {d.phase}
+                <SectionTitle title="📅 7-Day Race Week Calendar" subtitle={carbPlan.description} />
+                <div className="space-y-3">
+                  {carbLoadingDays.map(d => (
+                    <motion.div 
+                      key={d.dayNumber}
+                      initial={{opacity:0,x:-10}}
+                      animate={{opacity:1,x:0}}
+                      transition={{delay:d.dayNumber*0.05}}
+                      className={`border-2 rounded-xl p-4 transition-all ${
+                        d.isRaceDay 
+                          ? 'border-orange-500 bg-orange-50 dark:bg-orange-950/30 shadow-lg' 
+                          : d.isCarbLoading 
+                            ? 'border-orange-300 dark:border-orange-900 bg-orange-50/50 dark:bg-orange-950/20'
+                            : 'border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800'
+                      }`}
+                    >
+                      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-3">
+                        <div className="flex items-center gap-3">
+                          <div className={`w-12 h-12 rounded-full flex items-center justify-center font-bold text-lg ${
+                            d.isRaceDay 
+                              ? 'bg-orange-500 text-white' 
+                              : 'bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300'
+                          }`}>
+                            {d.dayNumber}
+                          </div>
+                          <div>
+                            <div className="font-bold text-slate-900 dark:text-slate-100">
+                              {d.isRaceDay ? '🏁 Race Day!' : `Day ${d.dayNumber} Before Race`}
+                            </div>
+                            <div className={`text-sm font-medium ${
+                              d.isCarbLoading ? 'text-orange-600 dark:text-orange-400' : 'text-slate-500'
+                            }`}>
+                              {d.isCarbLoading && '🔥 '}
+                              {d.isCarbLoading ? 'Carb Loading Day' : 'Normal Training'}
+                              {d.isFiberCaution && ' - ⚠️ Low Fiber'}
+                            </div>
                           </div>
                         </div>
-                        <div className="text-right">
-                          <div className="font-bold">{d.calories} kcal</div>
-                          <div className="text-sm text-slate-500">Rest: 2732 | Training: 0</div>
+                        <div className="grid grid-cols-3 sm:grid-cols-3 gap-3 text-center sm:text-right">
+                          <div>
+                            <div className="text-xs text-slate-500 mb-1">Carbohydrate</div>
+                            <div className="text-lg font-bold text-orange-600 dark:text-orange-400">{d.carbsG} g</div>
+                          </div>
+                          <div>
+                            <div className="text-xs text-slate-500 mb-1">Protein</div>
+                            <div className="text-lg font-bold text-slate-700 dark:text-slate-300">{Math.round(weightKg * 1.8)} g</div>
+                          </div>
+                          <div>
+                            <div className="text-xs text-slate-500 mb-1">Fat</div>
+                            <div className="text-lg font-bold text-slate-700 dark:text-slate-300">{Math.round(weightKg * 1.2)} g</div>
+                          </div>
                         </div>
                       </div>
-                      <div className="grid grid-cols-4 gap-3">
-                        <div>
-                          <Label>Min</Label>
-                          <input type="number" min="0" max="300" defaultValue="0" className="w-full mt-1 border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 rounded-lg px-2 py-1" />
-                        </div>
-                        <div>
-                          <Label>Type</Label>
-                          <select className="w-full mt-1 border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 rounded-lg px-2 py-1">
-                            <option>Run</option>
-                            <option>Bike</option>
-                            <option>Swim</option>
-                            <option>Strength</option>
-                          </select>
-                        </div>
-                        <div>
-                          <Label>Intensity</Label>
-                          <select className="w-full mt-1 border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 rounded-lg px-2 py-1">
-                            <option selected>Aerobic</option>
-                            <option>Threshold</option>
-                            <option>VO2max</option>
-                          </select>
-                        </div>
-                        <div className="text-sm">
-                          <div>C: {d.carbs}g</div>
-                          <div>P: {Math.round(weightKg * 1.6)}g</div>
-                          <div>F: 87g</div>
-                        </div>
-                      </div>
-                      {d.phase.includes("🔥") && (
-                        <div className="mt-3 p-3 bg-orange-50 dark:bg-orange-900/20 border border-orange-200 dark:border-orange-800 rounded-lg text-sm">
-                          🔥 <strong>Carb Loading:</strong> Eat 5-6 small meals. Focus on simple carbs. Stay hydrated.
+                      
+                      {/* Tips for each day */}
+                      {d.isCarbLoading && !d.isFiberCaution && (
+                        <div className="mt-3 p-3 bg-orange-50 dark:bg-orange-950/30 border border-orange-200 dark:border-orange-900/50 rounded-lg">
+                          <div className="flex items-start gap-2 text-sm">
+                            <span className="text-orange-600 dark:text-orange-400">🔥</span>
+                            <div>
+                              <strong className="text-orange-800 dark:text-orange-300">Carb Loading Tips:</strong>
+                              <ul className="mt-1 text-slate-700 dark:text-slate-300 space-y-1">
+                                <li>• Eat 5-6 small meals throughout the day</li>
+                                <li>• Focus on simple carbs: white rice, pasta, bread</li>
+                                <li>• Drink extra fluids with electrolytes</li>
+                                <li>• Avoid high-fat meals to prevent stomach issues</li>
+                              </ul>
+                            </div>
+                          </div>
                         </div>
                       )}
-                      {d.phase.includes("⚠️") && (
-                        <div className="mt-3 p-3 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-lg text-sm">
-                          ⚠️ <strong>Fiber Caution:</strong> Avoid beans, lentils, bran, cruciferous veg. Choose white rice, pasta, bread.
+                      {d.isFiberCaution && (
+                        <div className="mt-3 p-3 bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-900/50 rounded-lg">
+                          <div className="flex items-start gap-2 text-sm">
+                            <span className="text-amber-600 dark:text-amber-400">⚠️</span>
+                            <div>
+                              <strong className="text-amber-800 dark:text-amber-300">Fiber Caution:</strong>
+                              <ul className="mt-1 text-slate-700 dark:text-slate-300 space-y-1">
+                                <li>• Avoid beans, lentils, bran, cruciferous vegetables</li>
+                                <li>• Choose white rice, pasta, white bread</li>
+                                <li>• Bananas, sports drinks, crackers are excellent choices</li>
+                                <li>• No new or untested foods - stick to familiar foods</li>
+                              </ul>
+                            </div>
+                          </div>
                         </div>
                       )}
-                    </div>
+                      {d.isRaceDay && (
+                        <div className="mt-3 p-3 bg-gradient-to-r from-orange-500 to-orange-600 rounded-lg text-white">
+                          <div className="flex items-start gap-2 text-sm">
+                            <span>🏁</span>
+                            <div>
+                              <strong>Race Day Strategy:</strong>
+                              <ul className="mt-1 space-y-1">
+                                <li>• Pre-race: {Math.round(weightKg * 1)} g carbs 3-4 hours before start</li>
+                                <li>• During race: 60-90g carbs/hour (gels, drinks, bananas)</li>
+                                <li>• Hydration: 500-750ml fluid/hour + electrolytes</li>
+                                <li>• Post-race: 1.2g/kg carbs + 0.3g/kg protein within 30 min</li>
+                              </ul>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+                    </motion.div>
                   ))}
                 </div>
               </Card>
