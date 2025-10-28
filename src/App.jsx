@@ -1508,7 +1508,23 @@ export default function App(){
                 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                   <div>
-                    <Label>Saltiness Category</Label>
+                    <div className="flex items-center gap-2 mb-1">
+                      <Label>Saltiness Category</Label>
+                      <div className="group relative inline-block">
+                        <div className="w-5 h-5 rounded-full bg-orange-500 text-white text-xs font-bold cursor-help flex items-center justify-center hover:bg-orange-600 transition-colors">
+                          ?
+                        </div>
+                        <div className="absolute left-0 bottom-full mb-2 w-80 bg-slate-900 dark:bg-slate-800 text-white text-xs rounded-lg shadow-xl p-3 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50 pointer-events-none">
+                          <div className="font-semibold mb-2 text-orange-300">Sweat-Rate Category Guide:</div>
+                          <div className="space-y-1.5">
+                            <div><span className="text-orange-400 font-semibold">Low</span> (500 mg/L): Light sweater, rare drips, slightly damp clothing.</div>
+                            <div><span className="text-orange-400 font-semibold">Medium</span> (900 mg/L): Noticeable sweat, clearly damp clothing during workouts.</div>
+                            <div><span className="text-orange-400 font-semibold">High</span> (1,300 mg/L): Heavy sweater, frequent drips, clothing soaked by end.</div>
+                            <div><span className="text-orange-400 font-semibold">Very High</span> (1,800 mg/L): Heavy sweating from start, pooling in shoes, white salt streaks.</div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
                     <select 
                       className="w-full mt-1 border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 rounded-xl px-3 py-2 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-orange-500"
                       value={saltinessCategory}
