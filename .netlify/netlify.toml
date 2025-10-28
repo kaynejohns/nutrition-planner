@@ -1,16 +1,15 @@
+functionsDirectory = "C:\\Users\\kayne\\nutrition-planner\\netlify\\functions"
+functionsDirectoryOrigin = "config-v1"
 redirectsOrigin = "config"
 plugins = []
 headers = []
-
-[functions]
-
-[functions."*"]
 
 [build]
 publish = "C:\\Users\\kayne\\nutrition-planner\\dist"
 publishOrigin = "config"
 commandOrigin = "config"
 command = "npm run build"
+functions = "C:\\Users\\kayne\\nutrition-planner\\netlify\\functions"
 
 [build.environment]
 NODE_VERSION = "18"
@@ -26,6 +25,10 @@ NODE_VERSION = "18"
 [build.processing.js]
 
 [build.services]
+
+[functions]
+
+[functions."*"]
 
 [[redirects]]
 from = "/*"

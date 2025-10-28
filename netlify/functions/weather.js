@@ -1,5 +1,6 @@
 // Netlify serverless function for weather API
 // This function proxies requests to WeatherAPI with the API key
+// Uses Node.js built-in fetch (Node 18+)
 
 exports.handler = async (event, context) => {
   // Only allow GET requests
