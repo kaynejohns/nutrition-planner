@@ -2042,21 +2042,21 @@ export default function App(){
                           <div className="border-2 border-red-500 bg-red-50 dark:bg-red-900/20 rounded-lg p-1.5 sm:p-2 text-center">
                             <div className="text-[10px] sm:text-xs font-semibold text-red-700 dark:text-red-300 mb-0.5 sm:mb-1 leading-tight">Under</div>
                             <div className="text-xs sm:text-sm font-bold text-red-800 dark:text-red-200">
-                              {Math.round(dailyCalories * 0.85)}
+                              {Math.round(dailyCalories * 0.85)} kcal
                             </div>
                             <div className="text-[9px] sm:text-xs text-red-600 dark:text-red-400 mt-0.5">&lt;85%</div>
                           </div>
                           <div className="border-2 border-green-500 bg-green-50 dark:bg-green-900/20 rounded-lg p-1.5 sm:p-2 text-center">
                             <div className="text-[10px] sm:text-xs font-semibold text-green-700 dark:text-green-300 mb-0.5 sm:mb-1 leading-tight">Optimal</div>
                             <div className="text-xs sm:text-sm font-bold text-green-800 dark:text-green-200">
-                              {dailyCalories}
+                              {dailyCalories} kcal
                             </div>
                             <div className="text-[9px] sm:text-xs text-green-600 dark:text-green-400 mt-0.5">100%</div>
                           </div>
                           <div className="border-2 border-orange-500 bg-orange-50 dark:bg-orange-900/20 rounded-lg p-1.5 sm:p-2 text-center">
                             <div className="text-[10px] sm:text-xs font-semibold text-orange-700 dark:text-orange-300 mb-0.5 sm:mb-1 leading-tight">Over</div>
                             <div className="text-xs sm:text-sm font-bold text-orange-800 dark:text-orange-200">
-                              {Math.round(dailyCalories * 1.1)}
+                              {Math.round(dailyCalories * 1.1)} kcal
                             </div>
                             <div className="text-[9px] sm:text-xs text-orange-600 dark:text-orange-400 mt-0.5">&gt;110%</div>
                           </div>
@@ -2072,23 +2072,23 @@ export default function App(){
                           <div className="border-2 border-red-500 bg-red-50 dark:bg-red-900/20 rounded-lg p-1.5 sm:p-2 text-center">
                             <div className="text-[10px] sm:text-xs font-semibold text-red-700 dark:text-red-300 mb-0.5 sm:mb-1 leading-tight">Under</div>
                             <div className="text-xs sm:text-sm font-bold text-red-800 dark:text-red-200">
-                              {Math.round(day.totalDaily * 0.85)}
+                              {Math.round(day.totalDaily * 0.85)} ml
                             </div>
-                            <div className="text-[9px] sm:text-xs text-red-600 dark:text-red-400 mt-0.5">ml &lt;85%</div>
+                            <div className="text-[9px] sm:text-xs text-red-600 dark:text-red-400 mt-0.5">&lt;85%</div>
                           </div>
                           <div className="border-2 border-green-500 bg-green-50 dark:bg-green-900/20 rounded-lg p-1.5 sm:p-2 text-center">
                             <div className="text-[10px] sm:text-xs font-semibold text-green-700 dark:text-green-300 mb-0.5 sm:mb-1 leading-tight">Optimal</div>
                             <div className="text-xs sm:text-sm font-bold text-green-800 dark:text-green-200">
-                              {day.totalDaily}
+                              {day.totalDaily} ml
                             </div>
-                            <div className="text-[9px] sm:text-xs text-green-600 dark:text-green-400 mt-0.5">ml 100%</div>
+                            <div className="text-[9px] sm:text-xs text-green-600 dark:text-green-400 mt-0.5">100%</div>
                           </div>
                           <div className="border-2 border-orange-500 bg-orange-50 dark:bg-orange-900/20 rounded-lg p-1.5 sm:p-2 text-center">
                             <div className="text-[10px] sm:text-xs font-semibold text-orange-700 dark:text-orange-300 mb-0.5 sm:mb-1 leading-tight">Over</div>
                             <div className="text-xs sm:text-sm font-bold text-orange-800 dark:text-orange-200">
-                              {Math.round(day.totalDaily * 1.1)}
+                              {Math.round(day.totalDaily * 1.1)} ml
                             </div>
-                            <div className="text-[9px] sm:text-xs text-orange-600 dark:text-orange-400 mt-0.5">ml &gt;110%</div>
+                            <div className="text-[9px] sm:text-xs text-orange-600 dark:text-orange-400 mt-0.5">&gt;110%</div>
                           </div>
                           </div>
                         </div>
