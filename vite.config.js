@@ -20,13 +20,17 @@ export default defineConfig({
       '/api/weather': {
         target: 'https://api.weatherapi.com/v1',
         changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/api\/weather/, ''),
+        rewrite: (path) => {
+          // Remove /api/weather prefix
+          return path.replace(/^\/api\/weather/, '');
+        },
         configure: (proxy, options) => {
           proxy.on('proxyReq', (proxyReq, req, res) => {
             // Add API key to request
-            const url = new URL(proxyReq.path, options.target);
+            const url = new URL(proxyReq.path, 'http://localhost');
             url.searchParams.set('key', weatherAPIKey);
             proxyReq.path = url.pathname + url.search;
+            console.log('Proxying to:', options.target + proxyReq.path);
           });
         }
       }
