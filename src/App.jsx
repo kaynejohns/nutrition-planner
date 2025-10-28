@@ -1862,7 +1862,11 @@ export default function App(){
                         </div>
 
                         {/* Fuel Status Boxes */}
-                        <div className="grid grid-cols-3 gap-2 mt-3">
+                        <div className="mt-4">
+                          <div className="text-sm font-bold uppercase tracking-wide text-slate-700 dark:text-slate-300 mb-2">
+                            Daily Calories
+                          </div>
+                          <div className="grid grid-cols-3 gap-2">
                           <div className="border-2 border-red-500 bg-red-50 dark:bg-red-900/20 rounded-lg p-2 text-center">
                             <div className="text-xs font-semibold text-red-700 dark:text-red-300 mb-1">Underfueling</div>
                             <div className="text-sm font-bold text-red-800 dark:text-red-200">
@@ -1884,10 +1888,15 @@ export default function App(){
                             </div>
                             <div className="text-xs text-orange-600 dark:text-orange-400 mt-1">&gt;110%</div>
                           </div>
+                          </div>
                         </div>
 
                         {/* Hydration Status Boxes */}
-                        <div className="grid grid-cols-3 gap-2 mt-3">
+                        <div className="mt-4">
+                          <div className="text-sm font-bold uppercase tracking-wide text-slate-700 dark:text-slate-300 mb-2">
+                            Daily Hydration
+                          </div>
+                          <div className="grid grid-cols-3 gap-2">
                           <div className="border-2 border-red-500 bg-red-50 dark:bg-red-900/20 rounded-lg p-2 text-center">
                             <div className="text-xs font-semibold text-red-700 dark:text-red-300 mb-1">Underhydrated</div>
                             <div className="text-sm font-bold text-red-800 dark:text-red-200">
@@ -1908,6 +1917,7 @@ export default function App(){
                               {Math.round(day.totalDaily * 1.1)} ml
                             </div>
                             <div className="text-xs text-orange-600 dark:text-orange-400 mt-1">&gt;110%</div>
+                          </div>
                           </div>
                         </div>
                       </div>
