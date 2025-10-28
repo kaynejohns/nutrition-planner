@@ -1538,7 +1538,22 @@ export default function App(){
                   </div>
                   
                   <div>
-                    <Label>Heat Acclimation Status</Label>
+                    <div className="flex items-center gap-2 mb-1">
+                      <Label>Heat Acclimation Status</Label>
+                      <div className="group relative inline-block">
+                        <div className="w-5 h-5 rounded-full bg-orange-500 text-white text-xs font-bold cursor-help flex items-center justify-center hover:bg-orange-600 transition-colors">
+                          ?
+                        </div>
+                        <div className="absolute left-0 bottom-full mb-2 w-80 bg-slate-900 dark:bg-slate-800 text-white text-xs rounded-lg shadow-xl p-3 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50 pointer-events-none">
+                          <div className="font-semibold mb-2 text-orange-300">Heat Acclimation Guide:</div>
+                          <div className="space-y-1.5">
+                            <div><span className="text-orange-400 font-semibold">Not acclimated:</span> Heat feels harder, sweating less efficient.</div>
+                            <div><span className="text-orange-400 font-semibold">Partially (3-7 days):</span> Few recent heat sessions, exercise easier but sweating heavy/uneven.</div>
+                            <div><span className="text-orange-400 font-semibold">Well acclimated (8-14+ days):</span> Regular heat training, sweating starts earlier and more evenly.</div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
                     <select 
                       className="w-full mt-1 border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 rounded-xl px-3 py-2 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-orange-500"
                       value={heatAcclimation}
