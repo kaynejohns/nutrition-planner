@@ -595,6 +595,19 @@ export default function App(){
   const [raceLocation, setRaceLocation] = useState('');
   const [raceWeather, setRaceWeather] = useState(null);
   const [loadingRaceWeather, setLoadingRaceWeather] = useState(false);
+  const [fuelStrategy, setFuelStrategy] = useState('optimal'); // aggressive, optimal, safe
+  
+  // Race-specific hydration settings
+  const [raceSweatCategory, setRaceSweatCategory] = useState('Medium'); // Low / Medium / High / Very High
+  const [raceSaltinessCategory, setRaceSaltinessCategory] = useState('Medium'); // Low / Medium / High / Very High
+  const [raceHeatAcclimation, setRaceHeatAcclimation] = useState('Not acclimated'); // Not acclimated / Partial / Well
+  
+  // Custom product specifications
+  const [gelCarbs, setGelCarbs] = useState(22);
+  const [gelSodium, setGelSodium] = useState(40);
+  const [drinkCarbs, setDrinkCarbs] = useState(14);
+  const [drinkSodium, setDrinkSodium] = useState(230);
+  const [tabSodium, setTabSodium] = useState(500);
   
   // Map training log intensity to hydration multiplier
   const getIntensityMultiplier = (intensity) => {
@@ -1049,25 +1062,30 @@ export default function App(){
   // Race Week Calculations
   const calculateRaceCalories = (eventType, goalTimeHours, goalTimeMins) => {
     const totalMinutes = goalTimeHours * 60 + goalTimeMins;
-    const baseCalories = weightKg * 30; // Resting energy
+    const totalHours = totalMinutes / 60;
     
-    let eventCalories = 0;
-    const eventMultipliers = {
-      '5km': 0.18,
-      '10km': 0.36,
-      'Half Marathon': 0.95,
-      'Marathon': 1.65,
-      'Ironman 70.3': 2.5,
-      'Ironman': 4.5
+    // More accurate calorie burn calculation based on metabolic equivalents (METs)
+    // Average MET values: 5km=9, 10km=10, Half=11, Marathon=12, Ironman=14
+    const metValues = {
+      '5km': 9,
+      '10km': 10,
+      'Half Marathon': 11,
+      'Marathon': 12,
+      'Ironman 70.3': 13,
+      'Ironman': 14
     };
     
-    const multiplier = eventMultipliers[eventType] || 1.65;
-    eventCalories = Math.round(totalMinutes * weightKg * multiplier);
+    const met = metValues[eventType] || 12;
+    // MET calculation: METs × weight (kg) × hours = kcal burned during exercise
+    const raceCalories = Math.round(met * weightKg * totalHours);
+    
+    // Base metabolic rate for race day (24 hours)
+    const baseCalories = Math.round(weightKg * 24); // Resting metabolism for the day
     
     return {
-      raceCalories: eventCalories,
-      totalCalories: baseCalories + eventCalories,
-      carbsNeeded: Math.round(eventCalories * 0.8 / 4), // 80% of race cals from carbs, 4 kcal/g
+      raceCalories: raceCalories,
+      totalCalories: baseCalories + raceCalories,
+      carbsNeeded: Math.round(raceCalories * 0.15 / 4), // 15% of race cals from carbs during event
       proteinNeeded: Math.round(weightKg * 1.8),
       fatNeeded: Math.round(weightKg * 1.2)
     };
@@ -1078,10 +1096,10 @@ export default function App(){
     setLoadingRaceWeather(true);
     try {
       const [current, forecast] = await Promise.all([
-        fetch(`/api/weather/current.json?q=${encodeURIComponent(city)}`)
-          .then(r => r.ok ? r.json() : { data: null }),
-        fetch(`/api/weather/forecast.json?q=${encodeURIComponent(city)}&days=14`)
-          .then(r => r.ok ? r.json() : { data: null })
+        fetch(`/api/weather/current.json?q=${encodeURIComponent(city)}&aqi=no`)
+          .then(r => r.ok ? r.json() : null),
+        fetch(`/api/weather/forecast.json?q=${encodeURIComponent(city)}&days=14&aqi=no`)
+          .then(r => r.ok ? r.json() : null)
       ]);
       
       // Find forecasted weather for race date
@@ -1089,8 +1107,8 @@ export default function App(){
       const raceDayStr = raceDay.toISOString().split('T')[0];
       let forecastedWeather = null;
       
-      if (forecast.data?.forecast?.forecastday) {
-        forecastedWeather = forecast.data.forecast.forecastday.find(
+      if (forecast?.forecast?.forecastday) {
+        forecastedWeather = forecast.forecast.forecastday.find(
           day => day.date === raceDayStr
         );
       }
@@ -1103,13 +1121,13 @@ export default function App(){
           condition: forecastedWeather.day.condition.text,
           icon: forecastedWeather.day.condition.icon
         });
-      } else if (current.data) {
+      } else if (current) {
         setRaceWeather({
-          temp: current.data.current.temp_c,
-          maxTemp: current.data.current.temp_c,
-          humidity: current.data.current.humidity,
-          condition: current.data.current.condition.text,
-          icon: current.data.current.condition.icon
+          temp: current.current.temp_c,
+          maxTemp: current.current.temp_c,
+          humidity: current.current.humidity,
+          condition: current.current.condition.text,
+          icon: current.current.condition.icon
         });
       }
     } catch (error) {
@@ -1132,7 +1150,7 @@ export default function App(){
     return plans[eventType] || plans['Marathon'];
   };
 
-  // Race day hydration calculations
+  // Race day hydration calculations (using race-specific settings)
   const calculateRaceDayHydration = () => {
     if (!raceWeather) return null;
     
@@ -1146,10 +1164,10 @@ export default function App(){
                                raceEvent === 'Marathon' ? 1.10 : 
                                raceEvent === 'Half Marathon' ? 1.05 : 1.0;
     
-    // Baseline sweat rate from Daily tab settings
-    const baselineSweatRate = sweatCategory === 'Low' ? 0.7 :
-                              sweatCategory === 'Medium' ? 1.2 :
-                              sweatCategory === 'High' ? 1.7 : 2.3;
+    // Baseline sweat rate from race-specific settings
+    const baselineSweatRate = raceSweatCategory === 'Low' ? 0.7 :
+                              raceSweatCategory === 'Medium' ? 1.2 :
+                              raceSweatCategory === 'High' ? 1.7 : 2.3;
     
     // Temperature multiplier
     let tempMult = 1.0;
@@ -1165,17 +1183,17 @@ export default function App(){
     const fluidMlPerHour = Math.round(effectiveSweatRate * 1000 * 0.7);
     const totalFluidMl = Math.round(fluidMlPerHour * hours);
     
-    // Sodium needs (using saltiness category)
-    const baselineNaPerL = saltinessCategory === 'Low' ? 500 :
-                          saltinessCategory === 'Medium' ? 900 :
-                          saltinessCategory === 'High' ? 1300 : 1800;
+    // Sodium needs (using race-specific saltiness category)
+    const baselineNaPerL = raceSaltinessCategory === 'Low' ? 500 :
+                          raceSaltinessCategory === 'Medium' ? 900 :
+                          raceSaltinessCategory === 'High' ? 1300 : 1800;
     
     const intensityNaMult = raceEvent.includes('Ironman') ? 1.20 :
                             raceEvent === 'Marathon' ? 1.10 :
                             raceEvent === 'Half Marathon' ? 1.05 : 1.0;
     
-    const acclimationMult = heatAcclimation === 'Not acclimated' ? 1.00 :
-                           heatAcclimation.includes('Partially') ? 0.85 : 0.70;
+    const acclimationMult = raceHeatAcclimation === 'Not acclimated' ? 1.00 :
+                           raceHeatAcclimation.includes('Partial') ? 0.85 : 0.70;
     
     const effectiveNa = baselineNaPerL * intensityNaMult * acclimationMult;
     const sodiumPerHour = Math.round(effectiveSweatRate * effectiveNa);
@@ -1190,40 +1208,114 @@ export default function App(){
     };
   };
 
-  // Generate race fueling timeline
+  // Generate race fueling timeline with strategy and weather awareness
   const generateRaceTimeline = () => {
     const totalMinutes = raceGoalHours * 60 + raceGoalMins;
+    const totalHours = totalMinutes / 60;
     const timeline = [];
     
-    if (raceEvent.includes('Ironman')) {
-      // Ironman timeline
-      timeline.push({ time: 0, label: 'Race Start', carbs: '0', fluid: '200-300ml', notes: 'Final fluid top-up if needed' });
-      timeline.push({ time: 30, label: 'Swim → Bike Transition', carbs: '30-45g', fluid: '400-500ml', notes: 'Major refueling opportunity' });
-      timeline.push({ time: 60, label: 'Every Hour on Bike', carbs: '60-90g', fluid: '500-750ml', notes: 'Consistent fueling + 300-500mg Na' });
-      timeline.push({ time: Math.round(totalMinutes * 0.5), label: 'Mid-Race Check', carbs: '60-90g', fluid: '500-750ml', notes: 'Assess energy levels' });
-      timeline.push({ time: totalMinutes - 30, label: 'Final Hour', carbs: '30-45g', fluid: '400-600ml', notes: 'Maintain pace, small sips' });
-      timeline.push({ time: totalMinutes, label: 'Finish Line', carbs: '0', fluid: '0', notes: 'Celebrate, then refuel!' });
-    } else if (raceEvent === 'Marathon') {
-      // Marathon timeline
-      timeline.push({ time: 0, label: 'Race Start', carbs: '0', fluid: '100-200ml', notes: 'Light start, don\'t over-fuel' });
-      timeline.push({ time: 30, label: 'First Fuel (30 min)', carbs: '30g', fluid: '200-300ml', notes: 'Gel or sports drink' });
-      timeline.push({ time: 60, label: 'Repeat Every 30 min', carbs: '30-45g', fluid: '150-250ml', notes: 'Consistent small doses' });
-      timeline.push({ time: Math.round(totalMinutes * 0.5), label: 'Halfway Point', carbs: '45g', fluid: '250-300ml', notes: 'You\'re doing great!' });
-      timeline.push({ time: totalMinutes - 30, label: 'Final Push', carbs: '30g', fluid: '200-300ml', notes: 'Keep it steady' });
-      timeline.push({ time: totalMinutes, label: 'Finish Line', carbs: '0', fluid: '0', notes: 'Well done! Now refuel within 30 min' });
-    } else if (raceEvent === 'Half Marathon') {
-      // Half Marathon timeline
-      timeline.push({ time: 0, label: 'Race Start', carbs: '0', fluid: '50-100ml', notes: 'Light sips only' });
-      timeline.push({ time: 30, label: 'First Fuel (30 min)', carbs: '20-30g', fluid: '150-200ml', notes: 'Gel or sports drink' });
-      timeline.push({ time: 60, label: 'Every 30-45 min', carbs: '25-35g', fluid: '100-150ml', notes: 'Small consistent amounts' });
-      timeline.push({ time: Math.round(totalMinutes * 0.8), label: 'Final Fuel', carbs: '30g', fluid: '200-250ml', notes: 'Power through!' });
-      timeline.push({ time: totalMinutes, label: 'Finish Line', carbs: '0', fluid: '0', notes: 'Excellent effort!' });
-    } else {
-      // 10km and shorter
-      timeline.push({ time: 0, label: 'Race Start', carbs: '0', fluid: '50ml', notes: 'Minimal pre-race intake' });
-      timeline.push({ time: Math.round(totalMinutes * 0.3), label: 'Mid-Race Check', carbs: '15-25g', fluid: '100-150ml', notes: 'Quick energy boost if needed' });
-      timeline.push({ time: totalMinutes, label: 'Finish Line', carbs: '0', fluid: '0', notes: 'Post-race refuel within 30 min' });
+    // Fuel strategy multipliers
+    const strategyMultiplier = {
+      aggressive: 1.3,  // 30% more than optimal
+      optimal: 1.0,     // Standard
+      safe: 0.7         // 30% less (backoff)
+    };
+    
+    const multiplier = strategyMultiplier[fuelStrategy];
+    
+    // Use the actual carbsNeeded from race calories calculation
+    const raceCalories = calculateRaceCalories(raceEvent, raceGoalHours, raceGoalMins);
+    const baseCarbsNeeded = raceCalories.carbsNeeded;
+    const totalCarbsNeeded = Math.round(baseCarbsNeeded * multiplier);
+    
+    // Determine time bucket intervals and carb distribution
+    const timeBucket = totalHours < 4 ? 30 : 60; // 30min for <4hr races, 60min for >=4hr races
+    const buckets = Math.ceil(totalMinutes / timeBucket);
+    
+    // Calculate carbs per interval based on actual needs
+    const effectiveIntervals = buckets - 1; // Exclude start at 0min
+    const carbsPerInterval = Math.round(totalCarbsNeeded / effectiveIntervals);
+    
+    // Distribute carbs across buckets
+    const carbDistribution = [];
+    for (let i = 0; i < buckets; i++) {
+      if (i === 0) {
+        carbDistribution.push(0); // Start with no carbs
+      } else {
+        carbDistribution.push(carbsPerInterval);
+      }
     }
+    
+    // Adjust if total doesn't match target
+    const currentTotal = carbDistribution.reduce((sum, val) => sum + val, 0);
+    const diff = totalCarbsNeeded - currentTotal;
+    if (diff !== 0) {
+      // Distribute the difference across middle buckets
+      const middleStart = Math.floor(buckets / 3);
+      const middleEnd = Math.ceil(buckets * 2 / 3);
+      for (let i = middleStart; i < middleEnd && i < buckets; i++) {
+        carbDistribution[i] += Math.round(diff / (middleEnd - middleStart));
+      }
+    }
+    
+    // Weather impact on hydration
+    const weatherImpact = raceWeather ? (raceWeather.temp > 25 ? 1.2 : raceWeather.temp < 15 ? 0.9 : 1.0) : 1.0;
+    
+    // Calculate sodium needs from race hydration
+    const hydrationInfo = calculateRaceDayHydration();
+    const sodiumPerMin = hydrationInfo ? hydrationInfo.sodiumPerHour / 60 : 0;
+    
+    // Calculate fluid per bucket
+    const totalFluidNeeded = hydrationInfo ? hydrationInfo.totalFluidMl : 0;
+    const fluidPerBucket = Math.round(totalFluidNeeded / buckets);
+    
+    // Generate timeline entries
+    for (let i = 0; i < buckets; i++) {
+      const time = i * timeBucket;
+      
+      if (time > totalMinutes) break;
+      
+      const carbs = carbDistribution[i] || 0;
+      const fluid = Math.round(fluidPerBucket * weatherImpact * multiplier);
+      const sodium = Math.round(sodiumPerMin * timeBucket * multiplier);
+      
+      let label = '';
+      let notes = '';
+      
+      if (time === 0) {
+        label = 'Race Start';
+        notes = 'Light start, no carbs - hydrate well';
+      } else if (time >= totalMinutes - timeBucket) {
+        label = totalHours < 4 ? 'Near Finish' : 'Final Hour';
+        notes = 'Reduce intake, focus on hydration';
+      } else {
+        if (totalHours < 4) {
+          label = `${time}min`;
+        } else {
+          label = `Hour ${Math.floor(time / 60) + 1}`;
+        }
+        notes = 'Consistent fueling';
+      }
+      
+      timeline.push({
+        time: time,
+        label: label,
+        carbs: `${carbs}g`,
+        fluid: `${fluid}ml`,
+        sodium: `${sodium}mg`,
+        notes: notes
+      });
+    }
+    
+    // Add finish line entry
+    timeline.push({
+      time: totalMinutes,
+      label: 'Finish Line',
+      carbs: '0',
+      fluid: '0',
+      sodium: '0',
+      notes: 'Immediate recovery: 1.2g/kg carbs + 0.3g/kg protein within 30 min!'
+    });
     
     return timeline;
   };
@@ -1232,6 +1324,16 @@ export default function App(){
   const carbPlan = getCarbLoadingPlan(raceEvent);
   const raceHydration = calculateRaceDayHydration();
   const raceTimeline = generateRaceTimeline();
+  const totalMinutes = raceGoalHours * 60 + raceGoalMins;
+  const totalHours = totalMinutes / 60;
+  
+  // Calculate strategy-adjusted carbs needed to match timeline
+  const strategyMultiplier = {
+    aggressive: 1.3,
+    optimal: 1.0,
+    safe: 0.7
+  };
+  const adjustedCarbsNeeded = Math.round(raceCalories.carbsNeeded * strategyMultiplier[fuelStrategy]);
   
   // Calculate days before race for calendar
   const getDaysBeforeRace = () => {
@@ -1661,8 +1763,8 @@ export default function App(){
                       <div className="text-2xl font-bold text-orange-600 dark:text-orange-400">{raceCalories.raceCalories} kcal</div>
                     </div>
                     <div>
-                      <div className="text-sm text-slate-600 dark:text-slate-400">Carbs Required</div>
-                      <div className="text-2xl font-bold text-orange-600 dark:text-orange-400">{raceCalories.carbsNeeded} g</div>
+                      <div className="text-sm text-slate-600 dark:text-slate-400">Carbs Required ({fuelStrategy})</div>
+                      <div className="text-2xl font-bold text-orange-600 dark:text-orange-400">{adjustedCarbsNeeded} g</div>
                     </div>
                     <div>
                       <div className="text-sm text-slate-600 dark:text-slate-400">Total Daily (Rest + Race)</div>
@@ -1670,6 +1772,77 @@ export default function App(){
                     </div>
                   </div>
                 </div>
+              </Card>
+              
+              {/* Hydration Settings */}
+              <Card>
+                <SectionTitle title="💧 Hydration Settings" subtitle="Configure your sweat rate and sodium needs" />
+                <div className="grid sm:grid-cols-3 gap-4">
+                  <div>
+                    <Label>Sweat Rate</Label>
+                    <select 
+                      className="w-full mt-1 border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 rounded-lg px-3 py-2 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-orange-500"
+                      value={raceSweatCategory}
+                      onChange={(e) => setRaceSweatCategory(e.target.value)}
+                    >
+                      <option>Low</option>
+                      <option>Medium</option>
+                      <option>High</option>
+                      <option>Very High</option>
+                    </select>
+                    <div className="text-xs text-slate-500 mt-1">
+                      {raceSweatCategory === 'Low' ? '0.7 L/hr' :
+                       raceSweatCategory === 'Medium' ? '1.2 L/hr' :
+                       raceSweatCategory === 'High' ? '1.7 L/hr' : '2.3 L/hr'}
+                    </div>
+                  </div>
+                  <div>
+                    <Label>Sodium Loss</Label>
+                    <select 
+                      className="w-full mt-1 border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 rounded-lg px-3 py-2 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-orange-500"
+                      value={raceSaltinessCategory}
+                      onChange={(e) => setRaceSaltinessCategory(e.target.value)}
+                    >
+                      <option>Low</option>
+                      <option>Medium</option>
+                      <option>High</option>
+                      <option>Very High</option>
+                    </select>
+                    <div className="text-xs text-slate-500 mt-1">
+                      {raceSaltinessCategory === 'Low' ? '500 mg/L' :
+                       raceSaltinessCategory === 'Medium' ? '900 mg/L' :
+                       raceSaltinessCategory === 'High' ? '1300 mg/L' : '1800 mg/L'}
+                    </div>
+                  </div>
+                  <div>
+                    <Label>Heat Acclimation</Label>
+                    <select 
+                      className="w-full mt-1 border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 rounded-lg px-3 py-2 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-orange-500"
+                      value={raceHeatAcclimation}
+                      onChange={(e) => setRaceHeatAcclimation(e.target.value)}
+                    >
+                      <option>Not acclimated</option>
+                      <option>Partially acclimated</option>
+                      <option>Well acclimated</option>
+                    </select>
+                    <div className="text-xs text-slate-500 mt-1">
+                      {raceHeatAcclimation === 'Not acclimated' ? '100% sodium' :
+                       raceHeatAcclimation === 'Partially acclimated' ? '85% sodium' : '70% sodium'}
+                      {raceHydration && (
+                        <span className="ml-2 text-orange-600 dark:text-orange-400">
+                          → {raceHydration.totalSodiumMg}mg total
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                </div>
+                {!raceWeather && (
+                  <div className="mt-4 p-3 bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-900/30 rounded-lg">
+                    <div className="text-sm text-amber-800 dark:text-amber-200">
+                      ⚠️ Please enter a race location and fetch weather to calculate race day hydration and sodium needs.
+                    </div>
+                  </div>
+                )}
               </Card>
               
               <Card>
@@ -1781,102 +1954,122 @@ export default function App(){
                 </div>
               </Card>
 
-              {/* Race Day Hydration & Fueling Strategy */}
-              <div className="grid lg:grid-cols-2 gap-4 sm:gap-6">
-                {raceHydration && (
-                  <Card>
-                    <SectionTitle title="💧 Race Day Hydration" subtitle={`Based on ${raceWeather.temp}°C weather`} />
-                    <div className="space-y-4">
-                      <div className="grid grid-cols-2 gap-4">
-                        <div className="bg-orange-50 dark:bg-orange-950/20 rounded-xl p-4 border border-orange-200 dark:border-orange-900/30">
-                          <div className="text-sm text-slate-600 dark:text-slate-400 mb-1">Sweat Rate</div>
-                          <div className="text-2xl font-bold text-orange-600 dark:text-orange-400">{raceHydration.effectiveSweatRate} L/h</div>
-                        </div>
-                        <div className="bg-orange-50 dark:bg-orange-950/20 rounded-xl p-4 border border-orange-200 dark:border-orange-900/30">
-                          <div className="text-sm text-slate-600 dark:text-slate-400 mb-1">Fluid per Hour</div>
-                          <div className="text-2xl font-bold text-orange-600 dark:text-orange-400">{raceHydration.fluidPerHour} ml</div>
-                        </div>
-                      </div>
-                      
-                      <div className="grid grid-cols-2 gap-4">
-                        <div className="bg-blue-50 dark:bg-blue-950/20 rounded-xl p-4 border border-blue-200 dark:border-blue-900/30">
-                          <div className="text-sm text-slate-600 dark:text-slate-400 mb-1">Total Fluid Needed</div>
-                          <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">{raceHydration.totalFluidMl} ml</div>
-                          <div className="text-xs text-slate-500 mt-1">≈ {Math.round(raceHydration.totalFluidMl / 500)} standard bottles</div>
-                        </div>
-                        <div className="bg-purple-50 dark:bg-purple-950/20 rounded-xl p-4 border border-purple-200 dark:border-purple-900/30">
-                          <div className="text-sm text-slate-600 dark:text-slate-400 mb-1">Sodium Needed</div>
-                          <div className="text-2xl font-bold text-purple-600 dark:text-purple-400">{raceHydration.totalSodiumMg} mg</div>
-                          <div className="text-xs text-slate-500 mt-1">≈ {Math.round(raceHydration.totalSodiumMg / 1000)}g over race</div>
-                        </div>
-                      </div>
+              {/* Race Day Fueling Timeline - Made Prominent */}
+              <Card className="border-2 border-orange-300 dark:border-orange-700 bg-gradient-to-br from-orange-50 to-white dark:from-orange-950/20 dark:to-slate-900">
+                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+                  <div>
+                    <SectionTitle title="⏱️ Race Day Fueling Strategy" subtitle="Personalized race timeline with weather-adaptive fueling" />
+                  </div>
+                  <div>
+                    <Label className="text-sm mb-2 block">Fuel Strategy</Label>
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() => setFuelStrategy('aggressive')}
+                        className={`px-4 py-2 rounded-lg font-medium text-sm transition-all ${
+                          fuelStrategy === 'aggressive'
+                            ? 'bg-red-500 text-white shadow-md'
+                            : 'bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-300'
+                        }`}
+                      >
+                        Aggressive
+                      </button>
+                      <button
+                        onClick={() => setFuelStrategy('optimal')}
+                        className={`px-4 py-2 rounded-lg font-medium text-sm transition-all ${
+                          fuelStrategy === 'optimal'
+                            ? 'bg-green-500 text-white shadow-md'
+                            : 'bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-300'
+                        }`}
+                      >
+                        Optimal
+                      </button>
+                      <button
+                        onClick={() => setFuelStrategy('safe')}
+                        className={`px-4 py-2 rounded-lg font-medium text-sm transition-all ${
+                          fuelStrategy === 'safe'
+                            ? 'bg-blue-500 text-white shadow-md'
+                            : 'bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-300'
+                        }`}
+                      >
+                        Safe
+                      </button>
+                    </div>
+                  </div>
+                </div>
 
-                      <div className="bg-slate-50 dark:bg-slate-900 rounded-xl p-3 border border-slate-200 dark:border-slate-700">
-                        <div className="text-sm text-slate-700 dark:text-slate-300">
-                          <strong>💡 Tip:</strong> Aim for {raceHydration.fluidPerHour}ml/hour with electrolytes. 
-                          Start drinking early (every 15-20 min) to stay ahead of dehydration.
-                        </div>
+                <div className="bg-white dark:bg-slate-800 rounded-xl p-6 border-2 border-slate-200 dark:border-slate-700">
+                  {fuelStrategy === 'aggressive' && (
+                    <div className="mb-4 p-3 bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-900/30 rounded-lg">
+                      <div className="text-sm text-red-800 dark:text-red-200">
+                        <strong>🔥 Aggressive Strategy:</strong> Higher carbohydrate intake for maximal performance. Best for experienced racers with well-trained gut. Takes risks for speed.
                       </div>
                     </div>
-                  </Card>
-                )}
+                  )}
+                  {fuelStrategy === 'optimal' && (
+                    <div className="mb-4 p-3 bg-green-50 dark:bg-green-950/20 border border-green-200 dark:border-green-900/30 rounded-lg">
+                      <div className="text-sm text-green-800 dark:text-green-200">
+                        <strong>✅ Optimal Strategy:</strong> Balanced approach for most athletes. Provides adequate fuel without overwhelming the gut.
+                      </div>
+                    </div>
+                  )}
+                  {fuelStrategy === 'safe' && (
+                    <div className="mb-4 p-3 bg-blue-50 dark:bg-blue-950/20 border border-blue-200 dark:border-blue-900/30 rounded-lg">
+                      <div className="text-sm text-blue-800 dark:text-blue-200">
+                        <strong>🛡️ Safe Strategy:</strong> Conservative fueling reduces gut distress risk. Best for first-time racers or those with sensitive stomachs.
+                      </div>
+                    </div>
+                  )}
 
-                <Card>
-                  <SectionTitle title="⏱️ Race Day Fueling Timeline" subtitle={`${raceEvent} fueling strategy`} />
-                  <div className="space-y-3">
+                  <div className="space-y-4">
                     {raceTimeline.map((item, idx) => {
                       const totalMinutes = raceGoalHours * 60 + raceGoalMins;
-                      const percentage = (item.time / totalMinutes) * 100;
                       return (
                         <motion.div
                           key={idx}
                           initial={{opacity:0,x:-10}}
                           animate={{opacity:1,x:0}}
-                          transition={{delay:idx*0.1}}
+                          transition={{delay:idx*0.05}}
                           className="relative"
                         >
-                          {/* Timeline connector */}
-                          {idx > 0 && (
-                            <div 
-                              className="absolute left-5 top-0 w-0.5 h-full bg-gradient-to-b from-orange-300 to-orange-200 dark:from-orange-800 dark:to-orange-900"
-                              style={{height: 'calc(100% - 24px)'}}
-                            />
-                          )}
-                          
-                          <div className="flex gap-3 items-start">
+                          <div className="flex gap-4 items-start">
                             {/* Time marker */}
                             <div className="flex-shrink-0">
-                              <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm ${
-                                item.time === 0 ? 'bg-orange-500 text-white' :
-                                item.time === totalMinutes ? 'bg-emerald-500 text-white' :
+                              <div className={`w-12 h-12 rounded-full flex items-center justify-center font-bold text-base ${
+                                item.time === 0 ? 'bg-orange-500 text-white shadow-lg' :
+                                item.time === totalMinutes ? 'bg-emerald-500 text-white shadow-lg' :
                                 'bg-white dark:bg-slate-800 border-2 border-orange-400 dark:border-orange-700 text-orange-700 dark:text-orange-400'
                               }`}>
                                 {item.time}
                               </div>
+                              <div className="text-xs text-center mt-1 text-slate-500">min</div>
                             </div>
                             
                             {/* Content */}
-                            <div className="flex-1 bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700 p-3">
-                              <div className="flex justify-between items-start mb-2">
-                                <div className="font-semibold text-slate-900 dark:text-slate-100">{item.label}</div>
-                                <div className="text-xs text-slate-500 whitespace-nowrap ml-2">
-                                  {item.time === 0 ? 'Start' : item.time === totalMinutes ? 'Finish' : `~${Math.round((item.time / totalMinutes) * 100)}%`}
+                            <div className="flex-1 bg-slate-50 dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-700 p-4">
+                              <div className="flex justify-between items-start mb-3">
+                                <div className="font-semibold text-lg text-slate-900 dark:text-slate-100">{item.label}</div>
+                                <div className="text-sm text-slate-500 whitespace-nowrap ml-2">
+                                  {item.time === 0 ? 'Start' : item.time === totalMinutes ? 'Finish' : `${Math.round((item.time / totalMinutes) * 100)}%`}
                                 </div>
                               </div>
                               
-                              <div className="grid grid-cols-2 gap-2 text-sm mb-2">
-                                <div>
-                                  <span className="text-slate-600 dark:text-slate-400">Carbs: </span>
-                                  <span className="font-semibold text-orange-600 dark:text-orange-400">{item.carbs}g</span>
+                              <div className="grid grid-cols-3 gap-4 mb-3">
+                                <div className="bg-orange-50 dark:bg-orange-950/20 rounded-lg p-2">
+                                  <div className="text-xs text-slate-600 dark:text-slate-400 mb-1">Carbohydrates</div>
+                                  <div className="text-lg font-bold text-orange-600 dark:text-orange-400">{item.carbs}</div>
                                 </div>
-                                <div>
-                                  <span className="text-slate-600 dark:text-slate-400">Fluid: </span>
-                                  <span className="font-semibold text-blue-600 dark:text-blue-400">{item.fluid}</span>
+                                <div className="bg-blue-50 dark:bg-blue-950/20 rounded-lg p-2">
+                                  <div className="text-xs text-slate-600 dark:text-slate-400 mb-1">Fluid Intake</div>
+                                  <div className="text-lg font-bold text-blue-600 dark:text-blue-400">{item.fluid}</div>
+                                </div>
+                                <div className="bg-purple-50 dark:bg-purple-950/20 rounded-lg p-2">
+                                  <div className="text-xs text-slate-600 dark:text-slate-400 mb-1">Sodium</div>
+                                  <div className="text-lg font-bold text-purple-600 dark:text-purple-400">{item.sodium}</div>
                                 </div>
                               </div>
                               
-                              <div className="text-xs text-slate-600 dark:text-slate-400 italic">
-                                {item.notes}
+                              <div className="text-sm text-slate-700 dark:text-slate-300 italic">
+                                💡 {item.notes}
                               </div>
                             </div>
                           </div>
@@ -1885,14 +2078,162 @@ export default function App(){
                     })}
                   </div>
                   
-                  <div className="mt-4 p-3 bg-orange-50 dark:bg-orange-950/20 border border-orange-200 dark:border-orange-900/30 rounded-lg">
-                    <div className="text-sm text-slate-700 dark:text-slate-300">
-                      <strong>💡 Remember:</strong> Fueling is event-specific. Longer races (4+ hours) need consistent hourly intake. 
-                      Practice your race nutrition in training to dial in what works for you.
+                  {/* Race Totals Summary */}
+                  <div className="mt-6 p-6 bg-gradient-to-r from-orange-500 to-orange-600 rounded-xl text-white">
+                    <div className="text-center mb-4">
+                      <div className="text-lg font-semibold mb-2">📊 Race Totals - What You Need</div>
+                      <div className="text-sm opacity-90">Total amounts for the entire race</div>
+                    </div>
+                    <div className="grid grid-cols-3 gap-4">
+                      <div className="text-center">
+                        <div className="text-3xl font-bold mb-1">
+                          {raceTimeline.reduce((sum, item) => {
+                            const carbs = item.carbs.replace('g', '');
+                            return sum + (parseInt(carbs) || 0);
+                          }, 0)}g
+                        </div>
+                        <div className="text-sm opacity-80">Total Carbs</div>
+                      </div>
+                      <div className="text-center">
+                        <div className="text-3xl font-bold mb-1">
+                          {raceTimeline.reduce((sum, item) => {
+                            const fluid = item.fluid.replace('ml', '');
+                            return sum + (parseInt(fluid) || 0);
+                          }, 0)}ml
+                        </div>
+                        <div className="text-sm opacity-80">Total Fluid</div>
+                      </div>
+                      <div className="text-center">
+                        <div className="text-3xl font-bold mb-1">
+                          {raceTimeline.reduce((sum, item) => {
+                            const sodium = item.sodium.replace('mg', '');
+                            return sum + (parseInt(sodium) || 0);
+                          }, 0)}mg
+                        </div>
+                        <div className="text-sm opacity-80">Total Sodium</div>
+                      </div>
+                    </div>
+                    <div className="mt-4 pt-4 border-t border-orange-400/30">
+                      <div className="text-sm text-center opacity-90">
+                        💡 Prepare this in advance to avoid running out during your race
+                      </div>
                     </div>
                   </div>
+                  
+                  <div className="space-y-3 mt-6">
+                    <div className="p-4 bg-gradient-to-r from-purple-100 to-slate-100 dark:from-purple-950/30 dark:to-slate-900 border border-purple-200 dark:border-purple-900/30 rounded-lg">
+                      <div className="text-sm text-slate-700 dark:text-slate-300">
+                        <strong>🧂 Sodium & Fluid:</strong> Based on your sweat rate ({raceHydration?.effectiveSweatRate} L/h) and race weather ({raceWeather?.temp}°C). 
+                        All recommendations adjust with your {fuelStrategy} fuel strategy (×{strategyMultiplier[fuelStrategy]}). Timeline split into {totalHours < 4 ? '30-minute' : '60-minute'} buckets.
+                      </div>
+                    </div>
+                    <div className="p-4 bg-gradient-to-r from-orange-100 to-slate-100 dark:from-orange-950/30 dark:to-slate-900 border border-orange-200 dark:border-orange-900/30 rounded-lg">
+                      <div className="text-sm text-slate-700 dark:text-slate-300">
+                        <strong>🌍 Weather-Adaptive:</strong> Fluid recommendations adjust for temperature. Hot days ({raceWeather?.temp > 25 ? '↑ Increased' : raceWeather?.temp < 15 ? '↓ Reduced' : 'Normal'} intake) to match your sweat rate.
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </Card>
+
+              {/* Race Day Fueling Product Guide */}
+              {raceTimeline.length > 0 && (
+                <Card>
+                  <SectionTitle title="🥤 Race Day Fueling Options" subtitle="Customize your products and see what you need" />
+                  
+                  {/* Product Customization Sliders */}
+                  <div className="grid md:grid-cols-2 gap-4 mb-6 p-4 bg-slate-50 dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700">
+                    <div>
+                      <Label>⚡ Gel Carbs (g)</Label>
+                      <NumberInput value={gelCarbs} onChange={setGelCarbs} min={15} max={90} step={1} suffix="g" />
+                      <Label className="mt-2">Sodium (mg)</Label>
+                      <NumberInput value={gelSodium} onChange={setGelSodium} min={0} max={100} step={10} suffix="mg" />
+                    </div>
+                    <div>
+                      <Label>🧃 Drink Carbs (g per 500ml)</Label>
+                      <NumberInput value={drinkCarbs} onChange={setDrinkCarbs} min={5} max={30} step={1} suffix="g" />
+                      <Label className="mt-2">Sodium (mg per 500ml)</Label>
+                      <NumberInput value={drinkSodium} onChange={setDrinkSodium} min={0} max={500} step={10} suffix="mg" />
+                    </div>
+                  </div>
+                  
+                  {(() => {
+                    const totalCarbs = raceTimeline.reduce((sum, item) => {
+                      const carbs = item.carbs.replace('g', '');
+                      return sum + (parseInt(carbs) || 0);
+                    }, 0);
+                    const totalFluid = raceTimeline.reduce((sum, item) => {
+                      const fluid = item.fluid.replace('ml', '');
+                      return sum + (parseInt(fluid) || 0);
+                    }, 0);
+                    const totalSodium = raceTimeline.reduce((sum, item) => {
+                      const sodium = item.sodium.replace('mg', '');
+                      return sum + (parseInt(sodium) || 0);
+                    }, 0);
+                    
+                    // Use custom product specifications
+                    const gels = { carbs: gelCarbs, fluid: 30, sodium: gelSodium, name: 'Energy Gel' };
+                    const sportsDrink = { carbs: drinkCarbs, fluid: 500, sodium: drinkSodium, name: 'Sports Drink (500ml)' };
+                    const electrolyteTab = { carbs: 0, fluid: 500, sodium: tabSodium, name: 'Electrolyte Tab + Water' };
+                    
+                    return (
+                      <div className="grid md:grid-cols-2 gap-4">
+                        {/* Option 1: Gels */}
+                        <div className="border-2 rounded-xl p-4 bg-gradient-to-br from-orange-50 to-white dark:from-orange-950/20 dark:to-slate-900 border-orange-300 dark:border-orange-700">
+                          <div className="text-center mb-4">
+                            <div className="text-2xl mb-2">⚡</div>
+                            <div className="font-bold text-lg">Gels Only</div>
+                            <div className="text-sm text-slate-600 dark:text-slate-400 mt-1">Easy & fast</div>
+                          </div>
+                          <div className="space-y-2 text-sm">
+                            <div className="flex justify-between">
+                              <span className="text-slate-600 dark:text-slate-400">Gels needed:</span>
+                              <span className="font-bold text-orange-600 dark:text-orange-400">{Math.ceil(totalCarbs / gels.carbs)} packs</span>
+                            </div>
+                            <div className="flex justify-between">
+                              <span className="text-slate-600 dark:text-slate-400">Water needed:</span>
+                              <span className="font-bold">{Math.round(totalFluid / 500)} bottles</span>
+                            </div>
+                            <div className="flex justify-between">
+                              <span className="text-slate-600 dark:text-slate-400">Electrolytes:</span>
+                              <span className="font-bold">{Math.ceil(totalSodium / tabSodium)} tabs</span>
+                            </div>
+                          </div>
+                          <div className="mt-4 p-2 bg-slate-100 dark:bg-slate-800 rounded text-xs text-slate-600 dark:text-slate-400">
+                            💡 {gels.name}: {gels.carbs}g carbs, {gels.sodium}mg sodium each
+                          </div>
+                        </div>
+                        
+                        {/* Option 2: Gels + Sports Drink */}
+                        <div className="border-2 rounded-xl p-4 bg-gradient-to-br from-blue-50 to-white dark:from-blue-950/20 dark:to-slate-900 border-blue-300 dark:border-blue-700">
+                          <div className="text-center mb-4">
+                            <div className="text-2xl mb-2">🚴</div>
+                            <div className="font-bold text-lg">Gels + Drink</div>
+                            <div className="text-sm text-slate-600 dark:text-slate-400 mt-1">Balanced approach</div>
+                          </div>
+                          <div className="space-y-2 text-sm">
+                            <div className="flex justify-between">
+                              <span className="text-slate-600 dark:text-slate-400">Sports drinks:</span>
+                              <span className="font-bold text-blue-600 dark:text-blue-400">{Math.ceil(totalFluid / sportsDrink.fluid)} bottles</span>
+                            </div>
+                            <div className="flex justify-between">
+                              <span className="text-slate-600 dark:text-slate-400">Carbs from drinks:</span>
+                              <span className="font-bold">{Math.round((totalFluid / sportsDrink.fluid) * sportsDrink.carbs)}g</span>
+                            </div>
+                            <div className="flex justify-between">
+                              <span className="text-slate-600 dark:text-slate-400">Additional gels:</span>
+                              <span className="font-bold">{Math.ceil((totalCarbs - Math.round((totalFluid / sportsDrink.fluid) * sportsDrink.carbs)) / gels.carbs)} packs</span>
+                            </div>
+                          </div>
+                          <div className="mt-4 p-2 bg-slate-100 dark:bg-slate-800 rounded text-xs text-slate-600 dark:text-slate-400">
+                            💡 {sportsDrink.name}: {sportsDrink.carbs}g carbs, {sportsDrink.sodium}mg sodium
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })()}
                 </Card>
-              </div>
+              )}
 
               <Card>
                 <SectionTitle title="Fiber Caution Foods" subtitle="Smart food choices for race week" />
