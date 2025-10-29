@@ -216,15 +216,16 @@ const WeeklySessionDay = ({ day, dayIndex, session, onUpdate, trainingCalories, 
       <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-3 mb-3">
         <div>
           <Label>Duration (min)</Label>
-          <input
-            type="number"
-            value={session.duration}
-            onChange={(e) => updateSession('duration', Number(e.target.value))}
-            onFocus={(e) => { if (session.duration === 0) { e.target.select(); } }}
-            min="0"
-            max="300"
-            className="w-full mt-1 border border-[#2A2A35] bg-[#24242A] rounded-lg px-3 py-2 text-[#FFFFFF] focus:ring-2 focus:ring-[#FFCE34] focus:border-[#FFCE34]"
-          />
+              <input
+                type="number"
+                value={session.duration}
+                onChange={(e) => updateSession('duration', Number(e.target.value))}
+                onFocus={(e) => { if (session.duration === 0) { e.target.select(); } }}
+                min="0"
+                max="300"
+                className="w-full mt-1 border border-[#2A2A35] bg-[#24242A] rounded-lg px-3 py-2 text-white focus:ring-2 focus:ring-[#FFCE34] focus:border-[#FFCE34]"
+                style={{ color: '#FFFFFF' }}
+              />
         </div>
 
         <div>
@@ -293,7 +294,8 @@ const WeeklySessionDay = ({ day, dayIndex, session, onUpdate, trainingCalories, 
                 onFocus={(e) => { if (session.secondSession.duration === 0) { e.target.select(); } }}
                 min="0"
                 max="300"
-                className="w-full mt-1 border border-[#2A2A35] bg-[#24242A] rounded-lg px-3 py-2 text-[#FFFFFF] focus:ring-2 focus:ring-[#FFCE34] focus:border-[#FFCE34]"
+                className="w-full mt-1 border border-[#2A2A35] bg-[#24242A] rounded-lg px-3 py-2 text-white focus:ring-2 focus:ring-[#FFCE34] focus:border-[#FFCE34]"
+                style={{ color: '#FFFFFF' }}
               />
             </div>
 
@@ -1768,7 +1770,7 @@ export default function App(){
                             onClick={()=>setSex(s)} 
                             className={`px-4 py-2 rounded-card border text-sm font-medium transition-all ${
                               sex===s
-                                ? "bg-[#24242A] border-[#2A2A35] text-white shadow-sm" 
+                                ? "bg-blue-600 border-blue-500 text-white shadow-lg font-bold" 
                                 : "bg-[#24242A] text-[#FFFFFF] border-[#2A2A35] hover:bg-[#2A2A35]"
                             }`}
                           >
