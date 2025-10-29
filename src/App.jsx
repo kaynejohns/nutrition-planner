@@ -502,12 +502,40 @@ export default function App(){
     saturday: { duration: 0, type: 'run', intensity: 'aerobic', timeOfDay: 'Morning', doubleSession: false, secondSession: { duration: 0, type: 'run', intensity: 'aerobic', timeOfDay: 'Morning' } },
     sunday: { duration: 0, type: 'run', intensity: 'aerobic', timeOfDay: 'Morning', doubleSession: false, secondSession: { duration: 0, type: 'run', intensity: 'aerobic', timeOfDay: 'Morning' } }
   });
+  
+  // Product Library State
+  const [products, setProducts] = useState(() => {
+    const saved = localStorage.getItem('race_products');
+    return saved ? JSON.parse(saved) : [
+      { id: 1, name: 'Energy Gel', carbs: 22, fluid: 30, sodium: 40, unit: 'pack' },
+      { id: 2, name: 'Sports Drink', carbs: 14, fluid: 500, sodium: 230, unit: '500ml' },
+      { id: 3, name: 'Electrolyte Tab', carbs: 0, fluid: 500, sodium: 500, unit: 'tab' }
+    ];
+  });
+  
+  const [productCounts, setProductCounts] = useState(() => {
+    const saved = localStorage.getItem('race_product_counts');
+    return saved ? JSON.parse(saved) : {};
+  });
 
   // Persist dark mode to class on <html>
   useEffect(()=>{
     const root = document.documentElement;
     if(dark) root.classList.add("dark"); else root.classList.remove("dark");
   },[dark]);
+  
+  // Persist products to localStorage
+  useEffect(() => {
+    localStorage.setItem('race_products', JSON.stringify(products));
+  }, [products]);
+  
+  // Persist product counts to localStorage
+  useEffect(() => {
+    if (Object.keys(productCounts).length > 0) {
+      localStorage.setItem('race_product_counts', JSON.stringify(productCounts));
+    }
+  }, [productCounts]);
+  
 
   // ---------- Derived numbers ----------
   const bmr = useMemo(() => Math.round(mifflinStJeor({ sex, weightKg, heightCm, age })), [sex, weightKg, heightCm, age]);
@@ -1149,6 +1177,102 @@ export default function App(){
     };
     return plans[eventType] || plans['Marathon'];
   };
+  
+  // Calculate race nutrition targets (will be inlined in useMemo)
+  const calculateRaceTargets = (timeline) => {
+    if (!timeline || timeline.length === 0) return { carbs: 0, fluid: 0, sodium: 0 };
+    
+    const totalCarbs = timeline.reduce((sum, item) => {
+      const carbs = item.carbs.replace('g', '');
+      return sum + (parseInt(carbs) || 0);
+    }, 0);
+    const totalFluid = timeline.reduce((sum, item) => {
+      const fluid = item.fluid.replace('ml', '');
+      return sum + (parseInt(fluid) || 0);
+    }, 0);
+    const totalSodium = timeline.reduce((sum, item) => {
+      const sodium = item.sodium.replace('mg', '');
+      return sum + (parseInt(sodium) || 0);
+    }, 0);
+    
+    return { carbs: totalCarbs, fluid: totalFluid, sodium: totalSodium };
+  };
+  
+  // Solver: Find optimal product combinations to meet targets
+  const solveProductMix = (targets, availableProducts) => {
+    if (!targets || targets.carbs === 0) return {};
+    
+    const weights = { carbs: 1.0, fluid: 0.8, sodium: 1.2, units: 0.1 };
+    const maxUnits = 30; // Reasonable max for search space
+    let bestSolution = {};
+    let bestError = Infinity;
+    
+    // Helper: Calculate error for a solution
+    const calcError = (counts) => {
+      let totalCarbs = 0, totalFluid = 0, totalSodium = 0, totalUnits = 0;
+      
+      availableProducts.forEach(p => {
+        const count = counts[p.id] || 0;
+        totalCarbs += p.carbs * count;
+        totalFluid += p.fluid * count;
+        totalSodium += p.sodium * count;
+        totalUnits += count;
+      });
+      
+      const carbErr = Math.abs(targets.carbs - totalCarbs) / Math.max(targets.carbs, 1);
+      const fluidErr = Math.abs(targets.fluid - totalFluid) / Math.max(targets.fluid, 1);
+      const sodiumErr = Math.abs(targets.sodium - totalSodium) / Math.max(targets.sodium, 1);
+      const unitsPenalty = totalUnits / maxUnits;
+      
+      return weights.carbs * carbErr + weights.fluid * fluidErr + weights.sodium * sodiumErr + weights.units * unitsPenalty;
+    };
+    
+    // Greedy heuristic fallback
+    const greedySolve = () => {
+      const counts = {};
+      let remainingCarbs = targets.carbs;
+      let remainingFluid = targets.fluid;
+      let remainingSodium = targets.sodium;
+      
+      // Sort products by efficiency (carbs + fluid + sodium per unit)
+      const sorted = [...availableProducts].sort((a, b) => {
+        const aValue = a.carbs * 2 + a.fluid / 100 + a.sodium / 50;
+        const bValue = b.carbs * 2 + b.fluid / 100 + b.sodium / 50;
+        return bValue - aValue;
+      });
+      
+      sorted.forEach(p => {
+        let count = 0;
+        const maxCount = Math.ceil(Math.max(
+          remainingCarbs / (p.carbs || 1),
+          remainingFluid / (p.fluid || 1),
+          remainingSodium / (p.sodium || 1)
+        ));
+        
+        // Try to add this product
+        for (let c = 0; c <= maxCount; c++) {
+          const testCounts = { ...counts, [p.id]: c };
+          const err = calcError(testCounts);
+          if (err < bestError) {
+            count = c;
+            bestError = err;
+          }
+        }
+        
+        if (count > 0) {
+          counts[p.id] = count;
+          remainingCarbs -= p.carbs * count;
+          remainingFluid -= p.fluid * count;
+          remainingSodium -= p.sodium * count;
+        }
+      });
+      
+      return counts;
+    };
+    
+    // Use greedy heuristic
+    return greedySolve();
+  };
 
   // Race day hydration calculations (using race-specific settings)
   const calculateRaceDayHydration = () => {
@@ -1334,6 +1458,25 @@ export default function App(){
     safe: 0.7
   };
   const adjustedCarbsNeeded = Math.round(raceCalories.carbsNeeded * strategyMultiplier[fuelStrategy]);
+  
+  // Compute race targets and solver solution
+  const raceTargets = useMemo(() => calculateRaceTargets(raceTimeline), [raceTimeline]);
+  const optimalCounts = useMemo(() => {
+    if (!raceTimeline || raceTimeline.length === 0) return {};
+    return solveProductMix(raceTargets, products);
+  }, [raceTargets, products]);
+  
+  // Calculate actual values from product counts
+  const planValues = useMemo(() => {
+    let actualCarbs = 0, actualFluid = 0, actualSodium = 0;
+    products.forEach(p => {
+      const count = productCounts[p.id] || 0;
+      actualCarbs += p.carbs * count;
+      actualFluid += p.fluid * count;
+      actualSodium += p.sodium * count;
+    });
+    return { carbs: actualCarbs, fluid: actualFluid, sodium: actualSodium };
+  }, [products, productCounts]);
   
   // Calculate days before race for calendar
   const getDaysBeforeRace = () => {
@@ -2136,102 +2279,186 @@ export default function App(){
                 </div>
               </Card>
 
-              {/* Race Day Fueling Product Guide */}
+              {/* Race Day Fueling Product Guide - New Solver-Based System */}
               {raceTimeline.length > 0 && (
                 <Card>
-                  <SectionTitle title="🥤 Race Day Fueling Options" subtitle="Customize your products and see what you need" />
+                  <SectionTitle title="🥤 Race Day Fueling Planner" subtitle="Product Library & Optimization Solver" />
                   
-                  {/* Product Customization Sliders */}
-                  <div className="grid md:grid-cols-2 gap-4 mb-6 p-4 bg-slate-50 dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700">
-                    <div>
-                      <Label>⚡ Gel Carbs (g)</Label>
-                      <NumberInput value={gelCarbs} onChange={setGelCarbs} min={15} max={90} step={1} suffix="g" />
-                      <Label className="mt-2">Sodium (mg)</Label>
-                      <NumberInput value={gelSodium} onChange={setGelSodium} min={0} max={100} step={10} suffix="mg" />
-                    </div>
-                    <div>
-                      <Label>🧃 Drink Carbs (g per 500ml)</Label>
-                      <NumberInput value={drinkCarbs} onChange={setDrinkCarbs} min={5} max={30} step={1} suffix="g" />
-                      <Label className="mt-2">Sodium (mg per 500ml)</Label>
-                      <NumberInput value={drinkSodium} onChange={setDrinkSodium} min={0} max={500} step={10} suffix="mg" />
-                    </div>
+                  {/* Targets vs Plan */}
+                  <div className="mb-6 grid grid-cols-3 gap-4">
+                    {['carbs', 'fluid', 'sodium'].map(metric => {
+                      const target = raceTargets[metric] || 0;
+                      const plan = planValues[metric] || 0;
+                      const diff = plan - target;
+                      const percent = target > 0 ? Math.round((diff / target) * 100) : 0;
+                      const color = percent >= -5 && percent <= 10 ? 'green' : percent < -20 ? 'red' : 'orange';
+                      
+                      return (
+                        <div key={metric} className="bg-slate-50 dark:bg-slate-900 rounded-xl p-4 border-2 border-slate-200 dark:border-slate-700">
+                          <div className="text-sm text-slate-600 dark:text-slate-400 mb-2 capitalize">{metric}</div>
+                          <div className="flex items-center gap-2">
+                            <div className="text-2xl font-bold text-slate-900 dark:text-slate-100">
+                              {metric === 'carbs' ? plan : metric === 'fluid' ? plan : plan}
+                            </div>
+                            <div className={`px-2 py-1 rounded text-xs font-bold ${color === 'green' ? 'bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300' : color === 'red' ? 'bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-300' : 'bg-orange-100 text-orange-700 dark:bg-orange-900 dark:text-orange-300'}`}>
+                              {percent > 0 ? '+' : ''}{percent}%
+                            </div>
+                          </div>
+                          <div className="text-xs text-slate-500 mt-1">
+                            Target: {target}{metric === 'carbs' ? 'g' : metric === 'fluid' ? 'ml' : 'mg'}
+                          </div>
+                        </div>
+                      );
+                    })}
                   </div>
                   
-                  {(() => {
-                    const totalCarbs = raceTimeline.reduce((sum, item) => {
-                      const carbs = item.carbs.replace('g', '');
-                      return sum + (parseInt(carbs) || 0);
-                    }, 0);
-                    const totalFluid = raceTimeline.reduce((sum, item) => {
-                      const fluid = item.fluid.replace('ml', '');
-                      return sum + (parseInt(fluid) || 0);
-                    }, 0);
-                    const totalSodium = raceTimeline.reduce((sum, item) => {
-                      const sodium = item.sodium.replace('mg', '');
-                      return sum + (parseInt(sodium) || 0);
-                    }, 0);
+                  {/* Product Mix Table with Steppers */}
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-sm">
+                      <thead>
+                        <tr className="border-b border-slate-200 dark:border-slate-700">
+                          <th className="text-left py-3 px-2 font-semibold text-slate-700 dark:text-slate-300">Product</th>
+                          <th className="text-center py-3 px-2 font-semibold text-slate-700 dark:text-slate-300">Carbs/unit</th>
+                          <th className="text-center py-3 px-2 font-semibold text-slate-700 dark:text-slate-300">Fluid/unit</th>
+                          <th className="text-center py-3 px-2 font-semibold text-slate-700 dark:text-slate-300">Sodium/unit</th>
+                          <th className="text-center py-3 px-2 font-semibold text-slate-700 dark:text-slate-300">Quantity</th>
+                          <th className="text-right py-3 px-2 font-semibold text-slate-700 dark:text-slate-300">Contribution</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {products.map(p => {
+                          const count = productCounts[p.id] || 0;
+                          const carbs = p.carbs * count;
+                          const fluid = p.fluid * count;
+                          const sodium = p.sodium * count;
+                          
+                          return (
+                            <tr key={p.id} className="border-b border-slate-100 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-900">
+                              <td className="py-3 px-2 font-medium text-slate-900 dark:text-slate-100">{p.name}</td>
+                              <td className="text-center py-3 px-2 text-slate-600 dark:text-slate-400">{p.carbs}g</td>
+                              <td className="text-center py-3 px-2 text-slate-600 dark:text-slate-400">{p.fluid}ml</td>
+                              <td className="text-center py-3 px-2 text-slate-600 dark:text-slate-400">{p.sodium}mg</td>
+                              <td className="py-3 px-2">
+                                <div className="flex items-center justify-center gap-2">
+                                  <button
+                                    onClick={() => setProductCounts(prev => ({...prev, [p.id]: Math.max(0, (prev[p.id] || 0) - 1)}))}
+                                    className="w-8 h-8 flex items-center justify-center rounded-lg bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-300 dark:hover:bg-slate-600 font-bold"
+                                    aria-label={`Decrease ${p.name}`}
+                                    tabIndex={0}
+                                  >
+                                    −
+                                  </button>
+                                  <div className="w-12 text-center font-bold text-slate-900 dark:text-slate-100">{count}</div>
+                                  <button
+                                    onClick={() => setProductCounts(prev => ({...prev, [p.id]: ((prev[p.id] || 0) + 1)}))}
+                                    className="w-8 h-8 flex items-center justify-center rounded-lg bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-300 dark:hover:bg-slate-600 font-bold"
+                                    aria-label={`Increase ${p.name}`}
+                                    tabIndex={0}
+                                  >
+                                    +
+                                  </button>
+                                </div>
+                              </td>
+                              <td className="text-right py-3 px-2 text-slate-600 dark:text-slate-400">
+                                {carbs}g / {fluid}ml / {sodium}mg
+                              </td>
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    </table>
+                  </div>
+                  
+                  {/* Auto-Optimize Button */}
+                  <div className="mt-4 flex gap-3">
+                    <button
+                      onClick={() => setProductCounts(optimalCounts)}
+                      className="px-4 py-2 bg-gradient-to-r from-orange-500 to-orange-600 text-white rounded-lg font-medium hover:from-orange-600 hover:to-orange-700 transition-all"
+                      aria-label="Auto-optimize product mix"
+                    >
+                      Auto-Optimize Mix
+                    </button>
+                    <button
+                      onClick={() => setProductCounts({})}
+                      className="px-4 py-2 bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-lg font-medium hover:bg-slate-300 dark:hover:bg-slate-600 transition-all"
+                    >
+                      Clear All
+                    </button>
+                  </div>
+                  
+                  {/* Product Library Management */}
+                  <div className="mt-6 pt-6 border-t border-slate-200 dark:border-slate-700">
+                    <div className="flex justify-between items-center mb-4">
+                      <SectionTitle title="📚 Product Library" subtitle="Manage your custom products" />
+                      <button
+                        onClick={() => {
+                          const newId = Math.max(...products.map(p => p.id), 0) + 1;
+                          setProducts([...products, { id: newId, name: 'New Product', carbs: 0, fluid: 0, sodium: 0, unit: 'piece' }]);
+                        }}
+                        className="px-4 py-2 bg-green-500 text-white rounded-lg font-medium hover:bg-green-600 transition-all"
+                        aria-label="Add new product"
+                      >
+                        + Add Product
+                      </button>
+                    </div>
                     
-                    // Use custom product specifications
-                    const gels = { carbs: gelCarbs, fluid: 30, sodium: gelSodium, name: 'Energy Gel' };
-                    const sportsDrink = { carbs: drinkCarbs, fluid: 500, sodium: drinkSodium, name: 'Sports Drink (500ml)' };
-                    const electrolyteTab = { carbs: 0, fluid: 500, sodium: tabSodium, name: 'Electrolyte Tab + Water' };
+                    {/* Column Headers */}
+                    <div className="grid grid-cols-12 gap-2 mb-2 pb-2 border-b border-slate-300 dark:border-slate-600">
+                      <div className="col-span-3 font-semibold text-sm text-slate-700 dark:text-slate-300">Product</div>
+                      <div className="col-span-2 font-semibold text-sm text-slate-700 dark:text-slate-300">Carbs (g)</div>
+                      <div className="col-span-2 font-semibold text-sm text-slate-700 dark:text-slate-300">Fluid (ml)</div>
+                      <div className="col-span-2 font-semibold text-sm text-slate-700 dark:text-slate-300">Sodium (mg)</div>
+                      <div className="col-span-3"></div>
+                    </div>
                     
-                    return (
-                      <div className="grid md:grid-cols-2 gap-4">
-                        {/* Option 1: Gels */}
-                        <div className="border-2 rounded-xl p-4 bg-gradient-to-br from-orange-50 to-white dark:from-orange-950/20 dark:to-slate-900 border-orange-300 dark:border-orange-700">
-                          <div className="text-center mb-4">
-                            <div className="text-2xl mb-2">⚡</div>
-                            <div className="font-bold text-lg">Gels Only</div>
-                            <div className="text-sm text-slate-600 dark:text-slate-400 mt-1">Easy & fast</div>
+                    <div className="space-y-3">
+                      {products.map(p => (
+                        <div key={p.id} className="grid grid-cols-12 gap-2 p-3 bg-slate-50 dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-700">
+                          <input
+                            type="text"
+                            value={p.name}
+                            onChange={e => setProducts(prev => prev.map(prod => prod.id === p.id ? {...prod, name: e.target.value} : prod))}
+                            className="col-span-3 border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 rounded px-2 py-1 text-sm"
+                            placeholder="Product name"
+                          />
+                          <div className="col-span-2">
+                            <input
+                              type="number"
+                              value={p.carbs}
+                              onChange={e => setProducts(prev => prev.map(prod => prod.id === p.id ? {...prod, carbs: parseInt(e.target.value) || 0} : prod))}
+                              className="w-full border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 rounded px-2 py-1 text-sm"
+                              placeholder="g"
+                            />
                           </div>
-                          <div className="space-y-2 text-sm">
-                            <div className="flex justify-between">
-                              <span className="text-slate-600 dark:text-slate-400">Gels needed:</span>
-                              <span className="font-bold text-orange-600 dark:text-orange-400">{Math.ceil(totalCarbs / gels.carbs)} packs</span>
-                            </div>
-                            <div className="flex justify-between">
-                              <span className="text-slate-600 dark:text-slate-400">Water needed:</span>
-                              <span className="font-bold">{Math.round(totalFluid / 500)} bottles</span>
-                            </div>
-                            <div className="flex justify-between">
-                              <span className="text-slate-600 dark:text-slate-400">Electrolytes:</span>
-                              <span className="font-bold">{Math.ceil(totalSodium / tabSodium)} tabs</span>
-                            </div>
+                          <div className="col-span-2">
+                            <input
+                              type="number"
+                              value={p.fluid}
+                              onChange={e => setProducts(prev => prev.map(prod => prod.id === p.id ? {...prod, fluid: parseInt(e.target.value) || 0} : prod))}
+                              className="w-full border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 rounded px-2 py-1 text-sm"
+                              placeholder="ml"
+                            />
                           </div>
-                          <div className="mt-4 p-2 bg-slate-100 dark:bg-slate-800 rounded text-xs text-slate-600 dark:text-slate-400">
-                            💡 {gels.name}: {gels.carbs}g carbs, {gels.sodium}mg sodium each
+                          <div className="col-span-2">
+                            <input
+                              type="number"
+                              value={p.sodium}
+                              onChange={e => setProducts(prev => prev.map(prod => prod.id === p.id ? {...prod, sodium: parseInt(e.target.value) || 0} : prod))}
+                              className="w-full border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 rounded px-2 py-1 text-sm"
+                              placeholder="mg"
+                            />
                           </div>
+                          <button
+                            onClick={() => setProducts(prev => prev.filter(prod => prod.id !== p.id))}
+                            className="col-span-3 px-3 py-1 bg-red-500 text-white rounded text-sm hover:bg-red-600 transition-all"
+                            aria-label={`Delete ${p.name}`}
+                          >
+                            Delete
+                          </button>
                         </div>
-                        
-                        {/* Option 2: Gels + Sports Drink */}
-                        <div className="border-2 rounded-xl p-4 bg-gradient-to-br from-blue-50 to-white dark:from-blue-950/20 dark:to-slate-900 border-blue-300 dark:border-blue-700">
-                          <div className="text-center mb-4">
-                            <div className="text-2xl mb-2">🚴</div>
-                            <div className="font-bold text-lg">Gels + Drink</div>
-                            <div className="text-sm text-slate-600 dark:text-slate-400 mt-1">Balanced approach</div>
-                          </div>
-                          <div className="space-y-2 text-sm">
-                            <div className="flex justify-between">
-                              <span className="text-slate-600 dark:text-slate-400">Sports drinks:</span>
-                              <span className="font-bold text-blue-600 dark:text-blue-400">{Math.ceil(totalFluid / sportsDrink.fluid)} bottles</span>
-                            </div>
-                            <div className="flex justify-between">
-                              <span className="text-slate-600 dark:text-slate-400">Carbs from drinks:</span>
-                              <span className="font-bold">{Math.round((totalFluid / sportsDrink.fluid) * sportsDrink.carbs)}g</span>
-                            </div>
-                            <div className="flex justify-between">
-                              <span className="text-slate-600 dark:text-slate-400">Additional gels:</span>
-                              <span className="font-bold">{Math.ceil((totalCarbs - Math.round((totalFluid / sportsDrink.fluid) * sportsDrink.carbs)) / gels.carbs)} packs</span>
-                            </div>
-                          </div>
-                          <div className="mt-4 p-2 bg-slate-100 dark:bg-slate-800 rounded text-xs text-slate-600 dark:text-slate-400">
-                            💡 {sportsDrink.name}: {sportsDrink.carbs}g carbs, {sportsDrink.sodium}mg sodium
-                          </div>
-                        </div>
-                      </div>
-                    );
-                  })()}
+                      ))}
+                    </div>
+                  </div>
                 </Card>
               )}
 
