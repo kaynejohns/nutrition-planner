@@ -9,20 +9,20 @@ import { fetchWeatherByCity, fetchForecastByCity, calculateHydrationNeeds } from
 
 // ---------- UI primitives ----------
 const Card = ({ children, className = "" }) => (
-  <div className={`bg-white/95 dark:bg-slate-900/95 backdrop-blur-sm rounded-3xl shadow-lg ring-1 ring-slate-200/50 dark:ring-slate-700/50 p-4 sm:p-6 ${className}`}>
+  <div className={`bg-[#24242A] rounded-card shadow-elevated border border-[#2A2A35] p-4 sm:p-6 ${className}`}>
     {children}
   </div>
 );
 
 const SectionTitle = ({ title, subtitle }) => (
   <div className="mb-4 sm:mb-6">
-    <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold tracking-tight text-orange-700 dark:text-orange-300 drop-shadow-sm">{title}</h2>
-    {subtitle && <p className="text-sm sm:text-base lg:text-lg text-slate-700 dark:text-slate-300 mt-1">{subtitle}</p>}
+    <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold tracking-tight text-[#FFCE34] uppercase">{title}</h2>
+    {subtitle && <p className="text-sm sm:text-base lg:text-lg text-[#A9A9B8] mt-1">{subtitle}</p>}
   </div>
 );
 
 const Label = ({ children }) => (
-  <label className="text-xs sm:text-sm font-semibold text-slate-600 dark:text-slate-300 uppercase tracking-wide">{children}</label>
+  <label className="text-xs sm:text-sm font-semibold text-[#A9A9B8] uppercase tracking-wide">{children}</label>
 );
 // slider + number input aligned in one row
 const NumberInput = ({ value, onChange, min = 0, max = 9999, step = 1, suffix = "", ...props }) => (
@@ -34,7 +34,7 @@ const NumberInput = ({ value, onChange, min = 0, max = 9999, step = 1, suffix = 
       max={max} 
       step={step} 
       onChange={(e)=>onChange(Number(e.target.value))} 
-      className="flex-1 accent-orange-600 h-6 sm:h-8 rounded-lg" 
+      className="flex-1 accent-[#FFCE34] h-6 sm:h-8 rounded-lg" 
       {...props}
     />
     <div className="flex items-center gap-2 w-full sm:w-40">
@@ -42,12 +42,12 @@ const NumberInput = ({ value, onChange, min = 0, max = 9999, step = 1, suffix = 
         type="number" 
         value={value} 
         onChange={(e)=>onChange(Number(e.target.value))} 
-        className="flex-1 sm:w-full border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 rounded-xl px-3 py-2.5 text-base sm:text-lg text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-all"
+        className="flex-1 sm:w-full border border-[#2A2A35] bg-[#24242A] rounded-card px-3 py-2.5 text-base sm:text-lg text-[#FFFFFF] focus:ring-2 focus:ring-[#FFCE34] focus:border-[#FFCE34] transition-all"
         min={min}
         max={max}
         step={step}
       />
-      {suffix && <span className="text-sm sm:text-base text-orange-700 dark:text-orange-300 font-semibold whitespace-nowrap">{suffix}</span>}
+      {suffix && <span className="text-sm sm:text-base text-[#FFCE34] font-semibold whitespace-nowrap">{suffix}</span>}
     </div>
   </div>
 );
@@ -201,13 +201,13 @@ const WeeklySessionDay = ({ day, dayIndex, session, onUpdate, trainingCalories, 
   };
 
   return (
-    <div className="border border-slate-200 dark:border-slate-700 rounded-xl p-4 bg-slate-50/50 dark:bg-slate-800/50">
+    <div className="border border-[#2A2A35] rounded-card p-4 bg-[#2A2A35]">
       <div className="flex items-center justify-between mb-3">
-        <h3 className="text-lg font-semibold text-slate-800 dark:text-slate-200 capitalize">{day}</h3>
+        <h3 className="text-lg font-semibold text-[#FFFFFF] capitalize">{day}</h3>
         <div className="text-right">
-          <div className="text-sm text-slate-600 dark:text-slate-400">Total Daily Calories</div>
-          <div className="text-xl font-bold text-orange-700 dark:text-orange-300">{totalCalories} kcal</div>
-          <div className="text-xs text-slate-500 dark:text-slate-400">
+          <div className="text-sm text-[#A9A9B8]">Total Daily Calories</div>
+          <div className="text-xl font-bold text-[#FFCE34]">{totalCalories} kcal</div>
+          <div className="text-xs text-[#A9A9B8]">
             Training: {trainingCalories} kcal
           </div>
         </div>
@@ -223,7 +223,7 @@ const WeeklySessionDay = ({ day, dayIndex, session, onUpdate, trainingCalories, 
             onFocus={(e) => { if (session.duration === 0) { e.target.select(); } }}
             min="0"
             max="300"
-            className="w-full mt-1 border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 rounded-lg px-3 py-2 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+            className="w-full mt-1 border border-[#2A2A35] bg-[#24242A] rounded-lg px-3 py-2 text-[#FFFFFF] focus:ring-2 focus:ring-[#FFCE34] focus:border-[#FFCE34]"
           />
         </div>
 
@@ -240,13 +240,14 @@ const WeeklySessionDay = ({ day, dayIndex, session, onUpdate, trainingCalories, 
                 updateSession('type', newType);
               }
             }}
-            className="w-full mt-1 border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 rounded-lg px-3 py-2 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+            className="w-full mt-1 border border-[#2A2A35] bg-[#24242A] rounded-lg px-3 py-2 text-[#FFFFFF] focus:ring-2 focus:ring-[#FFCE34] focus:border-[#FFCE34]"
+            style={{ color: '#FFFFFF' }}
           >
-            <option value="run">Run</option>
-            <option value="bike">Bike</option>
-            <option value="swim">Swim</option>
-            <option value="hitt">HIIT</option>
-            <option value="strength">Strength</option>
+            <option value="run" style={{ background: '#24242A', color: '#FFFFFF' }}>Run</option>
+            <option value="bike" style={{ background: '#24242A', color: '#FFFFFF' }}>Bike</option>
+            <option value="swim" style={{ background: '#24242A', color: '#FFFFFF' }}>Swim</option>
+            <option value="hitt" style={{ background: '#24242A', color: '#FFFFFF' }}>HIIT</option>
+            <option value="strength" style={{ background: '#24242A', color: '#FFFFFF' }}>Strength</option>
           </select>
         </div>
 
@@ -256,11 +257,12 @@ const WeeklySessionDay = ({ day, dayIndex, session, onUpdate, trainingCalories, 
             <select
               value={session.intensity}
               onChange={(e) => updateSession('intensity', e.target.value)}
-              className="w-full mt-1 border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 rounded-lg px-3 py-2 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+              className="w-full mt-1 border border-[#2A2A35] bg-[#24242A] rounded-lg px-3 py-2 text-[#FFFFFF] focus:ring-2 focus:ring-[#FFCE34] focus:border-[#FFCE34]"
+            style={{ color: '#FFFFFF' }}
             >
-              <option value="aerobic">Aerobic</option>
-              <option value="threshold">Threshold</option>
-              <option value="vo2max">VO2max</option>
+              <option value="aerobic" style={{ background: '#24242A', color: '#FFFFFF' }}>Aerobic</option>
+              <option value="threshold" style={{ background: '#24242A', color: '#FFFFFF' }}>Threshold</option>
+              <option value="vo2max" style={{ background: '#24242A', color: '#FFFFFF' }}>VO2max</option>
             </select>
           </div>
         )}
@@ -271,16 +273,16 @@ const WeeklySessionDay = ({ day, dayIndex, session, onUpdate, trainingCalories, 
               type="checkbox"
               checked={session.doubleSession}
               onChange={toggleDoubleSession}
-              className="w-4 h-4 text-emerald-600 bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 rounded focus:ring-orange-500"
+              className="w-4 h-4 text-emerald-600 bg-[#24242A] border-[#2A2A35] rounded focus:ring-[#FFCE34]"
             />
-            <span className="text-sm font-medium text-slate-700 dark:text-slate-300">Double Session</span>
+            <span className="text-sm font-medium text-[#FFFFFF]">Double Session</span>
           </label>
         </div>
       </div>
 
       {session.doubleSession && (
-        <div className="border-t border-slate-200 dark:border-slate-700 pt-3 mt-3">
-          <h4 className="text-sm font-semibold text-slate-700 dark:text-slate-300 mb-3">Second Session</h4>
+        <div className="border-t border-[#2A2A35] pt-3 mt-3">
+          <h4 className="text-sm font-semibold text-[#FFFFFF] mb-3">Second Session</h4>
           <div className="grid sm:grid-cols-3 gap-3">
             <div>
               <Label>Duration (min)</Label>
@@ -291,7 +293,7 @@ const WeeklySessionDay = ({ day, dayIndex, session, onUpdate, trainingCalories, 
                 onFocus={(e) => { if (session.secondSession.duration === 0) { e.target.select(); } }}
                 min="0"
                 max="300"
-                className="w-full mt-1 border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 rounded-lg px-3 py-2 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+                className="w-full mt-1 border border-[#2A2A35] bg-[#24242A] rounded-lg px-3 py-2 text-[#FFFFFF] focus:ring-2 focus:ring-[#FFCE34] focus:border-[#FFCE34]"
               />
             </div>
 
@@ -308,13 +310,14 @@ const WeeklySessionDay = ({ day, dayIndex, session, onUpdate, trainingCalories, 
                     updateSecondSession('type', newType);
                   }
                 }}
-                className="w-full mt-1 border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 rounded-lg px-3 py-2 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+                className="w-full mt-1 border border-[#2A2A35] bg-[#24242A] rounded-lg px-3 py-2 text-[#FFFFFF] focus:ring-2 focus:ring-[#FFCE34] focus:border-[#FFCE34]"
+                style={{ color: '#FFFFFF' }}
               >
-                <option value="run">Run</option>
-                <option value="bike">Bike</option>
-                <option value="swim">Swim</option>
-                <option value="hitt">HIIT</option>
-                <option value="strength">Strength</option>
+                <option value="run" style={{ background: '#24242A', color: '#FFFFFF' }}>Run</option>
+                <option value="bike" style={{ background: '#24242A', color: '#FFFFFF' }}>Bike</option>
+                <option value="swim" style={{ background: '#24242A', color: '#FFFFFF' }}>Swim</option>
+                <option value="hitt" style={{ background: '#24242A', color: '#FFFFFF' }}>HIIT</option>
+                <option value="strength" style={{ background: '#24242A', color: '#FFFFFF' }}>Strength</option>
               </select>
             </div>
 
@@ -324,11 +327,12 @@ const WeeklySessionDay = ({ day, dayIndex, session, onUpdate, trainingCalories, 
                 <select
                   value={session.secondSession.intensity}
                   onChange={(e) => updateSecondSession('intensity', e.target.value)}
-                  className="w-full mt-1 border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 rounded-lg px-3 py-2 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+                  className="w-full mt-1 border border-[#2A2A35] bg-[#24242A] rounded-lg px-3 py-2 text-[#FFFFFF] focus:ring-2 focus:ring-[#FFCE34] focus:border-[#FFCE34]"
+                  style={{ color: '#FFFFFF' }}
                 >
-                  <option value="aerobic">Aerobic</option>
-                  <option value="threshold">Threshold</option>
-                  <option value="vo2max">VO2max</option>
+                  <option value="aerobic" style={{ background: '#24242A', color: '#FFFFFF' }}>Aerobic</option>
+                  <option value="threshold" style={{ background: '#24242A', color: '#FFFFFF' }}>Threshold</option>
+                  <option value="vo2max" style={{ background: '#24242A', color: '#FFFFFF' }}>VO2max</option>
                 </select>
               </div>
             )}
@@ -337,34 +341,34 @@ const WeeklySessionDay = ({ day, dayIndex, session, onUpdate, trainingCalories, 
       )}
 
       {/* Fueling Scenarios */}
-      <div className="border-t border-slate-200 dark:border-slate-700 pt-3 mt-3">
-        <h4 className="text-sm font-semibold text-slate-700 dark:text-slate-300 mb-3">Fueling Scenarios</h4>
+      <div className="border-t border-[#2A2A35] pt-3 mt-3">
+        <h4 className="text-sm font-semibold text-[#FFFFFF] mb-3">Fueling Scenarios</h4>
         <div className="grid grid-cols-3 gap-2">
           {/* Underfueling */}
-          <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-2">
-            <div className="text-xs font-semibold text-red-700 dark:text-red-300 mb-1">Underfueling</div>
-            <div className="text-xs text-red-600 dark:text-red-400 mb-2">{Math.round(totalCalories * 0.85)} kcal</div>
-            <div className="text-xs text-slate-600 dark:text-slate-400">C: {Math.round(weightKg * 5.0)}g</div>
-            <div className="text-xs text-slate-600 dark:text-slate-400">P: {macros.protein}g</div>
-            <div className="text-xs text-slate-600 dark:text-slate-400">F: {Math.round(((totalCalories * 0.85) - (Math.round(weightKg * 5.0) * 4) - (macros.protein * 4)) / 9)}g</div>
+          <div className="bg-red-950/40 border border-red-800 rounded-lg p-2">
+            <div className="text-xs font-semibold text-red-300 mb-1">Underfueling</div>
+            <div className="text-xs text-red-300 mb-2">{Math.round(totalCalories * 0.85)} kcal</div>
+            <div className="text-xs text-[#A9A9B8]">C: {Math.round(weightKg * 5.0)}g</div>
+            <div className="text-xs text-[#A9A9B8]">P: {macros.protein}g</div>
+            <div className="text-xs text-[#A9A9B8]">F: {Math.round(((totalCalories * 0.85) - (Math.round(weightKg * 5.0) * 4) - (macros.protein * 4)) / 9)}g</div>
           </div>
           
           {/* Optimal */}
-          <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg p-2">
-            <div className="text-xs font-semibold text-green-700 dark:text-green-300 mb-1">Optimal</div>
-            <div className="text-xs text-green-600 dark:text-green-400 mb-2">{totalCalories} kcal</div>
-            <div className="text-xs text-slate-600 dark:text-slate-400">C: {macros.carbs}g</div>
-            <div className="text-xs text-slate-600 dark:text-slate-400">P: {macros.protein}g</div>
-            <div className="text-xs text-slate-600 dark:text-slate-400">F: {macros.fat}g</div>
+          <div className="bg-green-950/40 border border-green-800 rounded-lg p-2">
+            <div className="text-xs font-semibold text-green-300 mb-1">Optimal</div>
+            <div className="text-xs text-green-300 mb-2">{totalCalories} kcal</div>
+            <div className="text-xs text-[#A9A9B8]">C: {macros.carbs}g</div>
+            <div className="text-xs text-[#A9A9B8]">P: {macros.protein}g</div>
+            <div className="text-xs text-[#A9A9B8]">F: {macros.fat}g</div>
           </div>
           
           {/* Overfueling */}
-          <div className="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-lg p-2">
-            <div className="text-xs font-semibold text-amber-700 dark:text-amber-300 mb-1">Overfueling</div>
-            <div className="text-xs text-amber-600 dark:text-amber-400 mb-2">{Math.round(totalCalories * 1.10)} kcal</div>
-            <div className="text-xs text-slate-600 dark:text-slate-400">C: {Math.round(weightKg * 8.0)}g</div>
-            <div className="text-xs text-slate-600 dark:text-slate-400">P: {macros.protein}g</div>
-            <div className="text-xs text-slate-600 dark:text-slate-400">F: {Math.round(((totalCalories * 1.10) - (Math.round(weightKg * 8.0) * 4) - (macros.protein * 4)) / 9)}g</div>
+          <div className="bg-amber-950/40 border border-amber-800 rounded-lg p-2">
+            <div className="text-xs font-semibold text-amber-300 mb-1">Overfueling</div>
+            <div className="text-xs text-amber-300 mb-2">{Math.round(totalCalories * 1.10)} kcal</div>
+            <div className="text-xs text-[#A9A9B8]">C: {Math.round(weightKg * 8.0)}g</div>
+            <div className="text-xs text-[#A9A9B8]">P: {macros.protein}g</div>
+            <div className="text-xs text-[#A9A9B8]">F: {Math.round(((totalCalories * 1.10) - (Math.round(weightKg * 8.0) * 4) - (macros.protein * 4)) / 9)}g</div>
           </div>
         </div>
       </div>
@@ -424,7 +428,7 @@ const WeeklyCalorieChart = ({ dailyTotalCalories, dailyTrainingCalories, weeklyS
           
           return (
             <div key={index} className="flex flex-col items-center flex-1">
-              <div className="text-lg font-bold text-slate-700 dark:text-slate-300 mb-2">{totalCalories}</div>
+              <div className="text-lg font-bold text-[#FFFFFF] mb-2">{totalCalories}</div>
               <div className="w-full h-full flex flex-col justify-end">
                 {/* Session calories (stacked on top) */}
                 {sessionHeights.map((height, sessionIndex) => (
@@ -443,7 +447,7 @@ const WeeklyCalorieChart = ({ dailyTotalCalories, dailyTrainingCalories, weeklyS
                   title={`Resting: ${nonTraining} kcal`}
                 />
               </div>
-              <div className="text-xs text-slate-600 dark:text-slate-400 mt-2 font-medium">{days[index]}</div>
+              <div className="text-xs text-[#A9A9B8] mt-2 font-medium">{days[index]}</div>
             </div>
           );
         })}
@@ -453,17 +457,17 @@ const WeeklyCalorieChart = ({ dailyTotalCalories, dailyTrainingCalories, weeklyS
       <div className="flex flex-wrap justify-center gap-4 text-xs">
         <div className="flex items-center gap-2">
           <div className="w-3 h-3 bg-gradient-to-r from-slate-400 to-slate-300 rounded"></div>
-          <span className="text-slate-600 dark:text-slate-400">Resting</span>
+          <span className="text-[#A9A9B8]">Resting</span>
         </div>
         {Object.entries(sessionColors).map(([type, color]) => (
           <div key={type} className="flex items-center gap-2">
             <div className={`w-3 h-3 bg-gradient-to-r ${color} rounded`}></div>
-            <span className="text-slate-600 dark:text-slate-400 capitalize">{type}</span>
+            <span className="text-[#A9A9B8] capitalize">{type}</span>
           </div>
         ))}
       </div>
       
-      <div className="text-center text-sm text-slate-600 dark:text-slate-400">
+      <div className="text-center text-sm text-[#A9A9B8]">
         Total calories per day (resting + training)
       </div>
     </div>
@@ -1593,20 +1597,20 @@ export default function App(){
 
   // ---------- UI ----------
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-orange-50/30 to-slate-100 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 text-slate-900 dark:text-slate-100">
+    <div className="min-h-screen bg-[#1A1A1E] text-[#FFFFFF]">
       {/* Header */}
-      <header className="sticky top-0 z-20 backdrop-blur-md bg-white/80 dark:bg-slate-950/80 border-b border-slate-200/50 dark:border-slate-700/50 print:hidden shadow-sm">
+      <header className="sticky top-0 z-20 backdrop-blur-md bg-[#1A1A1E]/95 border-b border-[#2A2A35] print:hidden shadow-elevated">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 sm:py-4">
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4">
             <div className="flex items-center gap-3">
               <img 
                 src="/logo.png" 
                 alt="Nutrition Planner Logo" 
-                className="h-10 w-10 sm:h-12 sm:w-12 rounded-xl shadow-lg object-contain bg-white dark:bg-slate-800 p-1"
+                className="h-10 w-10 sm:h-12 sm:w-12 rounded-card shadow-soft object-contain bg-[#24242A] p-1"
               />
               <div>
-                <div className="text-lg sm:text-xl font-bold leading-tight text-orange-700 dark:text-orange-400">Nutrition Planner</div>
-                <div className="text-xs sm:text-sm text-slate-600 dark:text-slate-400">Running fuel calculator</div>
+                <div className="text-lg sm:text-xl font-bold leading-tight text-[#FFCE34]">Nutrition Planner</div>
+                <div className="text-xs sm:text-sm text-[#A9A9B8]">Running fuel calculator</div>
               </div>
             </div>
           </div>
@@ -1624,10 +1628,10 @@ export default function App(){
               <button 
                 key={t.id} 
                 onClick={()=>setTab(t.id)} 
-                className={`px-3 sm:px-4 py-2 text-xs sm:text-sm font-medium transition-all rounded-xl border-2 ${
+                className={`px-3 sm:px-4 py-2 text-xs sm:text-sm font-medium transition-all rounded-card border-2 ${
                   tab===t.id
-                    ? "bg-gradient-to-r from-orange-500 to-orange-600 text-white border-orange-500 shadow-sm" 
-                    : "bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border-slate-300 dark:border-slate-600 hover:bg-slate-50 dark:hover:bg-slate-700"
+                    ? "bg-[#FFCE34] text-[#1A1A1E] border-[#FFCE34] shadow-soft font-bold" 
+                    : "bg-[#24242A] text-[#A9A9B8] border-[#2A2A35] hover:bg-[#2A2A35] hover:text-[#FFFFFF]"
                 }`}
               >
                 <span className="hidden sm:inline">{t.icon} </span>{t.label}
@@ -1644,40 +1648,40 @@ export default function App(){
             <motion.div key="daily" initial={{opacity:0,y:8}} animate={{opacity:1,y:0}} exit={{opacity:0,y:-8}} transition={{duration:0.25}}>
               {/* Help Modal */}
               {showDailyHelp && (
-                <div className="mb-6 p-4 sm:p-6 bg-gradient-to-br from-orange-50 to-blue-50 dark:from-slate-800 dark:to-slate-900 border-2 border-orange-300 dark:border-orange-700 rounded-xl space-y-4 overflow-hidden">
+                <div className="mb-6 p-4 sm:p-6 bg-[#24242A] border-2 border-[#FFCE34] rounded-card space-y-4 overflow-hidden">
                   <div className="flex items-center justify-between">
-                    <h3 className="text-lg sm:text-xl font-bold text-slate-900 dark:text-slate-100">📚 How to Use Daily Nutrition</h3>
+                    <h3 className="text-lg sm:text-xl font-bold text-[#FFFFFF]">📚 How to Use Daily Nutrition</h3>
                     <button
                       onClick={() => setShowDailyHelp(false)}
-                      className="text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200 text-2xl font-bold flex-shrink-0 ml-2"
+                      className="text-[#A9A9B8] hover:text-[#FFFFFF] text-2xl font-bold flex-shrink-0 ml-2"
                     >
                       ×
                     </button>
                   </div>
                   
-                  <div className="space-y-3 text-xs sm:text-sm text-slate-700 dark:text-slate-300 break-words">
+                  <div className="space-y-3 text-xs sm:text-sm text-[#FFFFFF] break-words">
                     <div>
-                      <strong className="text-orange-600 dark:text-orange-400">1️⃣ Athlete Information:</strong>
+                      <strong className="text-[#FFCE34]">1️⃣ Athlete Information:</strong>
                       <p>Enter your sex, age, weight, height, and sweat rate category. This calculates your Basal Metabolic Rate (BMR) and daily calorie needs.</p>
                     </div>
                     
                     <div>
-                      <strong className="text-orange-600 dark:text-orange-400">2️⃣ Activity Level:</strong>
+                      <strong className="text-[#FFCE34]">2️⃣ Activity Level:</strong>
                       <p>Select your non-training activity level: Sedentary, Light, Moderate, or Very Active. This affects your daily calorie burn.</p>
                     </div>
                     
                     <div>
-                      <strong className="text-orange-600 dark:text-orange-400">3️⃣ Macro Targets:</strong>
+                      <strong className="text-[#FFCE34]">3️⃣ Macro Targets:</strong>
                       <p>Set your carbohydrate, protein, and fat targets in grams per kilogram of body weight. These are your daily nutrition goals.</p>
                     </div>
                     
                     <div>
-                      <strong className="text-orange-600 dark:text-orange-400">4️⃣ Daily Summary:</strong>
+                      <strong className="text-[#FFCE34]">4️⃣ Daily Summary:</strong>
                       <p>View your calculated daily calories, macros breakdown, and hydration targets based on your inputs.</p>
                     </div>
                     
                     <div>
-                      <strong className="text-orange-600 dark:text-orange-400">5️⃣ Upgrade to Premium:</strong>
+                      <strong className="text-[#FFCE34]">5️⃣ Upgrade to Premium:</strong>
                       <p>Access advanced features like Training Log, Race Week planning, Hydration analysis, Coach Reports, and more.</p>
                     </div>
                   </div>
@@ -1691,7 +1695,7 @@ export default function App(){
                     <SectionTitle title="Athlete" subtitle="Basics for BMR and per-kg macros" />
                     <button
                       onClick={() => setShowDailyHelp(!showDailyHelp)}
-                      className="w-8 h-8 rounded-full bg-orange-500 text-white flex items-center justify-center hover:bg-orange-600 transition-all text-sm font-bold flex-shrink-0"
+                      className="w-8 h-8 rounded-full bg-[#FFCE34] text-white flex items-center justify-center hover:bg-[#FFD966] transition-all text-sm font-bold flex-shrink-0"
                       aria-label="Help"
                     >
                       ?
@@ -1704,10 +1708,10 @@ export default function App(){
                           <button 
                             key={s} 
                             onClick={()=>setSex(s)} 
-                            className={`px-4 py-2 rounded-xl border text-sm font-medium transition-all ${
+                            className={`px-4 py-2 rounded-card border text-sm font-medium transition-all ${
                               sex===s
-                                ? "bg-gradient-to-r from-slate-700 to-slate-800 dark:from-slate-600 dark:to-slate-700 text-white shadow-sm" 
-                                : "bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-300 dark:border-slate-600 hover:bg-slate-50 dark:hover:bg-slate-700"
+                                ? "bg-[#24242A] border-[#2A2A35] text-white shadow-sm" 
+                                : "bg-[#24242A] text-[#FFFFFF] border-[#2A2A35] hover:bg-[#2A2A35]"
                             }`}
                           >
                             {s}
@@ -1720,14 +1724,15 @@ export default function App(){
                     <InputRow label="Height"><NumberInput value={heightCm} onChange={setHeightCm} min={120} max={220} step={0.5} suffix="cm" /></InputRow>
                     <InputRow label="Sweat Rate Category">
                       <select 
-                        className="w-full mt-1 border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 rounded-xl px-3 py-2 text-sm text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-orange-500" 
+                        className="w-full mt-1 border border-[#2A2A35] bg-[#24242A] rounded-card px-3 py-2 text-sm text-[#FFFFFF] focus:ring-2 focus:ring-[#FFCE34]" 
                         value={sweatCategory}
                         onChange={(e) => setSweatCategory(e.target.value)}
+                        style={{ color: '#FFFFFF' }}
                       >
-                        <option value="Low">Low (0.7 L/hr)</option>
-                        <option value="Medium">Medium (1.2 L/hr)</option>
-                        <option value="High">High (1.7 L/hr)</option>
-                        <option value="Very High">Very High (2.3 L/hr)</option>
+                        <option value="Low" style={{ background: '#24242A', color: '#FFFFFF' }}>Low (0.7 L/hr)</option>
+                        <option value="Medium" style={{ background: '#24242A', color: '#FFFFFF' }}>Medium (1.2 L/hr)</option>
+                        <option value="High" style={{ background: '#24242A', color: '#FFFFFF' }}>High (1.7 L/hr)</option>
+                        <option value="Very High" style={{ background: '#24242A', color: '#FFFFFF' }}>Very High (2.3 L/hr)</option>
                       </select>
                     </InputRow>
                   </div>
@@ -1744,17 +1749,17 @@ export default function App(){
                     </div>
                     <InputRow label="Double Session Days"><NumberInput value={doubleSessionDays} onChange={setDoubleSessionDays} min={0} max={7} step={1} suffix="days/week" /></InputRow>
                     <InputRow label="Activity Factor (non-training)"><NumberInput value={activityFactor} onChange={setActivityFactor} min={1.2} max={1.8} step={0.01} /></InputRow>
-                    <div className="text-xs text-slate-500 -mt-2">Sedentary ~1.3, active job ~1.6. Double sessions add +150 kcal/day.</div>
+                    <div className="text-xs text-[#A9A9B8] -mt-2">Sedentary ~1.3, active job ~1.6. Double sessions add +150 kcal/day.</div>
                     <InputRow label="Day Type">
                       <div className="flex gap-2 flex-wrap">
                         {[{id:"key",label:"Key"},{id:"normal",label:"Normal"},{id:"recovery",label:"Recovery"}].map(d=> (
                           <button 
                             key={d.id} 
                             onClick={()=>setDayType(d.id)} 
-                            className={`px-4 py-2 rounded-xl border text-sm font-medium transition-all ${
+                            className={`px-4 py-2 rounded-card border text-sm font-medium transition-all ${
                               dayType===d.id
-                                ? "bg-gradient-to-r from-orange-500 to-orange-600 text-white shadow-sm" 
-                                : "bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-300 dark:border-slate-600 hover:bg-slate-50 dark:hover:bg-slate-700"
+                                ? "bg-[#FFCE34] text-white shadow-sm" 
+                                : "bg-[#24242A] text-[#FFFFFF] border-[#2A2A35] hover:bg-[#2A2A35]"
                             }`}
                           >
                             {d.label}
@@ -1768,10 +1773,10 @@ export default function App(){
                           <button 
                             key={g.id} 
                             onClick={()=>setGoal(g.id)} 
-                            className={`px-4 py-2 rounded-xl border text-sm font-medium transition-all ${
+                            className={`px-4 py-2 rounded-card border text-sm font-medium transition-all ${
                               goal===g.id
                                 ? "bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-sm" 
-                                : "bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-300 dark:border-slate-600 hover:bg-slate-50 dark:hover:bg-slate-700"
+                                : "bg-[#24242A] text-[#FFFFFF] border-[#2A2A35] hover:bg-[#2A2A35]"
                             }`}
                           >
                             {g.label}
@@ -1789,7 +1794,7 @@ export default function App(){
                     <InputRow label="Carbohydrate (high)"><NumberInput value={carbHigh} onChange={setCarbHigh} min={carbLow} max={12} step={0.1} suffix="g/kg" /></InputRow>
                     <InputRow label="Protein"><NumberInput value={protein} onChange={setProtein} min={1.4} max={2.4} step={0.1} suffix="g/kg" /></InputRow>
                     <InputRow label="Fat"><NumberInput value={fat} onChange={setFat} min={0.6} max={1.6} step={0.05} suffix="g/kg" /></InputRow>
-                    <p className="text-xs text-slate-500">Protein held constant; carbs/fats scale if macros exceed daily kcal.</p>
+                    <p className="text-xs text-[#A9A9B8]">Protein held constant; carbs/fats scale if macros exceed daily kcal.</p>
                   </div>
                 </Card>
               </div>
@@ -1822,12 +1827,12 @@ export default function App(){
                   <Card>
                     <SectionTitle title="Macros (targets)" />
                     <div className="text-sm space-y-1">
-                      <div className="mb-2 p-2 bg-slate-50 dark:bg-slate-800 rounded-lg">
-                        <div className="text-xs text-slate-600 dark:text-slate-400 mb-1">Training Load Multiplier</div>
-                        <div className="text-lg font-bold text-orange-700 dark:text-orange-300">
+                      <div className="mb-2 p-2 bg-[#24242A] rounded-lg">
+                        <div className="text-xs text-[#A9A9B8] mb-1">Training Load Multiplier</div>
+                        <div className="text-lg font-bold text-[#FFCE34]">
                           {trainingLoadMultiplier.toFixed(2)}x
                         </div>
-                        <div className="text-xs text-slate-500">
+                        <div className="text-xs text-[#A9A9B8]">
                           {trainingLoadMultiplier < 1.1 ? "Light" : trainingLoadMultiplier < 1.2 ? "Moderate" : "Heavy"} training load
                         </div>
                       </div>
@@ -1836,7 +1841,7 @@ export default function App(){
                       <KV label="Fat" value={`${fatGFinal} g (${fatKcalFinal} kcal)`} />
                       <hr className="my-2" />
                       <KV label="Total macro kcal" value={`${carbKcal + proteinKcalFinal + fatKcalFinal} kcal`} />
-                      <div className="text-xs text-slate-500 mt-2">
+                      <div className="text-xs text-[#A9A9B8] mt-2">
                         Macro calories are 95% of total daily energy, leaving 5% for micronutrients and fiber.
                       </div>
                     </div>
@@ -1871,9 +1876,9 @@ export default function App(){
                         {title:"Dinner",items:["Pasta (120 g dry)","Lean beef (180 g)","Tomato sauce"]},
                         {title:"Evening Snack",items:["Milk","Toast + nut butter"]},
                       ].map((m,i)=> (
-                        <div key={i} className="border border-slate-200 dark:border-slate-700 rounded-xl p-3 sm:p-4 bg-slate-50/50 dark:bg-slate-800/50">
-                          <div className="font-semibold mb-2 text-slate-800 dark:text-slate-200">{m.title}</div>
-                          <ul className="list-disc pl-4 text-sm text-slate-700 dark:text-slate-300 space-y-1">
+                        <div key={i} className="border border-[#2A2A35] rounded-card p-3 sm:p-4 bg-[#2A2A35]">
+                          <div className="font-semibold mb-2 text-[#FFFFFF]">{m.title}</div>
+                          <ul className="list-disc pl-4 text-sm text-[#FFFFFF] space-y-1">
                             {m.items.map((it,j)=>(<li key={j}>{it}</li>))}
                           </ul>
                         </div>
@@ -1885,7 +1890,7 @@ export default function App(){
                 <motion.div initial={{opacity:0,y:8}} animate={{opacity:1,y:0}} transition={{delay:0.25}}>
                   <Card>
                     <SectionTitle title="Guidelines" />
-                    <ul className="list-disc pl-4 text-sm space-y-2 text-slate-700 dark:text-slate-300">
+                    <ul className="list-disc pl-4 text-sm space-y-2 text-[#FFFFFF]">
                       <li>Carb periodisation: push to upper range on key days / long sessions.</li>
                       <li>Protein ~0.3 g/kg per feeding × 4–5 meals to optimise MPS.</li>
                       <li>Fats mostly from olive oil, nuts, avocado, fatty fish.</li>
@@ -1898,7 +1903,7 @@ export default function App(){
                     <div className="mt-4 flex gap-2 print:hidden">
                       <button 
                         onClick={resetAll} 
-                        className="px-4 py-2 rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-sm font-medium hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors"
+                        className="px-4 py-2 rounded-card border border-[#2A2A35] bg-[#24242A] text-[#FFFFFF] text-sm font-medium hover:bg-[#2A2A35] transition-colors"
                       >
                         🔄 Reset All
                       </button>
@@ -1907,38 +1912,38 @@ export default function App(){
                   
                   {/* Upgrade to Premium Card */}
                   {!isPremium && (
-                    <Card className="bg-gradient-to-br from-orange-50 via-purple-50 to-blue-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 border-2 border-orange-300 dark:border-orange-700">
+                    <Card className="bg-[#24242A] border-2 border-[#FFCE34]">
                       <div className="flex flex-col md:flex-row items-center md:items-start gap-6">
                         <div className="flex-1">
                           <div className="flex items-center gap-2 mb-2">
                             <span className="text-2xl sm:text-3xl">🚀</span>
-                            <h2 className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-slate-100">Upgrade to Premium</h2>
+                            <h2 className="text-xl sm:text-2xl font-bold text-[#FFFFFF]">Upgrade to Premium</h2>
                           </div>
-                          <p className="text-sm sm:text-base text-slate-700 dark:text-slate-300 mb-4">Unlock advanced features to take your nutrition planning to the next level</p>
+                          <p className="text-sm sm:text-base text-[#FFFFFF] mb-4">Unlock advanced features to take your nutrition planning to the next level</p>
                           
                           <div className="grid sm:grid-cols-2 gap-3 mb-4">
-                            <div className="flex items-start gap-2 text-xs sm:text-sm text-slate-700 dark:text-slate-300 break-words">
-                              <span className="text-green-600 dark:text-green-400 flex-shrink-0">✓</span>
+                            <div className="flex items-start gap-2 text-xs sm:text-sm text-[#FFFFFF] break-words">
+                              <span className="text-green-300 flex-shrink-0">✓</span>
                               <span><strong>Training Tab:</strong> Detailed weekly training log with nutrition timing</span>
                             </div>
-                            <div className="flex items-start gap-2 text-xs sm:text-sm text-slate-700 dark:text-slate-300 break-words">
-                              <span className="text-green-600 dark:text-green-400 flex-shrink-0">✓</span>
+                            <div className="flex items-start gap-2 text-xs sm:text-sm text-[#FFFFFF] break-words">
+                              <span className="text-green-300 flex-shrink-0">✓</span>
                               <span><strong>Race Week:</strong> Complete race nutrition planner with timeline</span>
                             </div>
-                            <div className="flex items-start gap-2 text-xs sm:text-sm text-slate-700 dark:text-slate-300 break-words">
-                              <span className="text-green-600 dark:text-green-400 flex-shrink-0">✓</span>
+                            <div className="flex items-start gap-2 text-xs sm:text-sm text-[#FFFFFF] break-words">
+                              <span className="text-green-300 flex-shrink-0">✓</span>
                               <span><strong>Hydration:</strong> Advanced sodium calculator with weather</span>
                             </div>
-                            <div className="flex items-start gap-2 text-xs sm:text-sm text-slate-700 dark:text-slate-300 break-words">
-                              <span className="text-green-600 dark:text-green-400 flex-shrink-0">✓</span>
+                            <div className="flex items-start gap-2 text-xs sm:text-sm text-[#FFFFFF] break-words">
+                              <span className="text-green-300 flex-shrink-0">✓</span>
                               <span><strong>Coach Reports:</strong> Weekly summaries and insights</span>
                             </div>
-                            <div className="flex items-start gap-2 text-xs sm:text-sm text-slate-700 dark:text-slate-300 break-words">
-                              <span className="text-green-600 dark:text-green-400 flex-shrink-0">✓</span>
+                            <div className="flex items-start gap-2 text-xs sm:text-sm text-[#FFFFFF] break-words">
+                              <span className="text-green-300 flex-shrink-0">✓</span>
                               <span><strong>Product Library:</strong> Custom fueling solver & optimization</span>
                             </div>
-                            <div className="flex items-start gap-2 text-xs sm:text-sm text-slate-700 dark:text-slate-300 break-words">
-                              <span className="text-green-600 dark:text-green-400 flex-shrink-0">✓</span>
+                            <div className="flex items-start gap-2 text-xs sm:text-sm text-[#FFFFFF] break-words">
+                              <span className="text-green-300 flex-shrink-0">✓</span>
                               <span><strong>Weather Integration:</strong> Race day climate adaptation</span>
                             </div>
                           </div>
@@ -1946,13 +1951,13 @@ export default function App(){
                         <div className="w-full md:w-auto flex flex-col gap-3">
                           <button
                             onClick={() => setIsPremium(true)}
-                            className="px-6 sm:px-8 py-3 sm:py-4 bg-gradient-to-r from-orange-500 to-purple-600 text-white rounded-xl font-bold text-base sm:text-lg hover:from-orange-600 hover:to-purple-700 transition-all shadow-lg hover:shadow-xl"
+                            className="px-6 sm:px-8 py-3 sm:py-4 bg-gradient-to-r from-orange-500 to-purple-600 text-white rounded-card font-bold text-base sm:text-lg hover:from-orange-600 hover:to-purple-700 transition-all shadow-lg hover:shadow-xl"
                           >
                             Upgrade Now
                           </button>
                           <button
                             onClick={() => setIsPremium(true)}
-                            className="px-6 sm:px-8 py-2 sm:py-3 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 rounded-xl font-semibold text-sm sm:text-base border-2 border-slate-300 dark:border-slate-600 hover:bg-slate-50 dark:hover:bg-slate-700 transition-all"
+                            className="px-6 sm:px-8 py-2 sm:py-3 bg-[#24242A] text-[#FFFFFF] rounded-card font-semibold text-sm sm:text-base border-2 border-[#2A2A35] hover:bg-[#2A2A35] transition-all"
                           >
                             Try Premium Free
                           </button>
@@ -1974,7 +1979,7 @@ export default function App(){
                   <SectionTitle title="🎯 Race Setup" subtitle="Select your event and set your goal" />
                   <button
                     onClick={() => setShowRaceHelp(!showRaceHelp)}
-                    className="w-8 h-8 rounded-full bg-orange-500 text-white flex items-center justify-center hover:bg-orange-600 transition-all"
+                    className="w-8 h-8 rounded-full bg-[#FFCE34] text-white flex items-center justify-center hover:bg-[#FFD966] transition-all"
                     aria-label="Help"
                   >
                     ?
@@ -1983,25 +1988,25 @@ export default function App(){
                 
                 {/* Help Modal */}
                 {showRaceHelp && (
-                  <div className="mb-6 p-4 sm:p-6 bg-gradient-to-br from-orange-50 to-blue-50 dark:from-slate-800 dark:to-slate-900 border-2 border-orange-300 dark:border-orange-700 rounded-xl space-y-4 overflow-hidden">
+                  <div className="mb-6 p-4 sm:p-6 bg-[#24242A] border-2 border-[#FFCE34] rounded-card space-y-4 overflow-hidden">
                     <div className="flex items-center justify-between">
-                      <h3 className="text-lg sm:text-xl font-bold text-slate-900 dark:text-slate-100">📚 How to Use Race Week</h3>
+                      <h3 className="text-lg sm:text-xl font-bold text-[#FFFFFF]">📚 How to Use Race Week</h3>
                       <button
                         onClick={() => setShowRaceHelp(false)}
-                        className="text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200 text-2xl font-bold flex-shrink-0 ml-2"
+                        className="text-[#A9A9B8] hover:text-[#FFFFFF] text-2xl font-bold flex-shrink-0 ml-2"
                       >
                         ×
                       </button>
                     </div>
                     
-                    <div className="space-y-3 text-xs sm:text-sm text-slate-700 dark:text-slate-300 break-words">
+                    <div className="space-y-3 text-xs sm:text-sm text-[#FFFFFF] break-words">
                       <div>
-                        <strong className="text-orange-600 dark:text-orange-400">1️⃣ Race Setup:</strong>
+                        <strong className="text-[#FFCE34]">1️⃣ Race Setup:</strong>
                         <p>Select your race type, date, and goal time. The system calculates your calorie and carbohydrate needs.</p>
                       </div>
                       
                       <div>
-                        <strong className="text-orange-600 dark:text-orange-400">2️⃣ Fueling Strategy:</strong>
+                        <strong className="text-[#FFCE34]">2️⃣ Fueling Strategy:</strong>
                         <p>Choose your approach:</p>
                         <ul className="list-disc list-inside ml-4 mt-1 space-y-1">
                           <li><strong>Aggressive:</strong> +30% carbs for maximum performance (experienced racers)</li>
@@ -2011,7 +2016,7 @@ export default function App(){
                       </div>
                       
                       <div>
-                        <strong className="text-orange-600 dark:text-orange-400">3️⃣ Weather & Hydration:</strong>
+                        <strong className="text-[#FFCE34]">3️⃣ Weather & Hydration:</strong>
                         <p>Enter your race location and fetch weather. Configure:</p>
                         <ul className="list-disc list-inside ml-4 mt-1 space-y-1">
                           <li><strong>Sweat Rate:</strong> How much you sweat (Low to Very High)</li>
@@ -2021,18 +2026,18 @@ export default function App(){
                       </div>
                       
                       <div>
-                        <strong className="text-orange-600 dark:text-orange-400">4️⃣ Race Day Timeline:</strong>
+                        <strong className="text-[#FFCE34]">4️⃣ Race Day Timeline:</strong>
                         <p>See when to fuel with carbs, fluids, and sodium. Timeline splits into 30-min (races &lt;4hrs) or 60-min buckets (races ≥4hrs).</p>
                       </div>
                       
                       <div>
-                        <strong className="text-orange-600 dark:text-orange-400">5️⃣ Fueling Planner:</strong>
+                        <strong className="text-[#FFCE34]">5️⃣ Fueling Planner:</strong>
                         <p>Use the Product Library to customize your fuel products, then click "Auto-Optimize Mix" to get quantities that meet your targets.</p>
                         <p className="mt-2">Targets vs Plan badges show how close you are to meeting your needs (green = good, orange = close, red = far off).</p>
                       </div>
                       
                       <div>
-                        <strong className="text-orange-600 dark:text-orange-400">6️⃣ Carb Loading Calendar:</strong>
+                        <strong className="text-[#FFCE34]">6️⃣ Carb Loading Calendar:</strong>
                         <p>See your 7-day carb loading plan leading up to race day. Avoid fiber-rich foods 2 days before your race.</p>
                       </div>
                     </div>
@@ -2042,23 +2047,24 @@ export default function App(){
                   <div>
                     <Label>Race Event</Label>
                     <select 
-                      className="w-full mt-1 border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 rounded-lg px-3 py-2 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-orange-500"
+                      className="w-full mt-1 border border-[#2A2A35] bg-[#24242A] rounded-lg px-3 py-2 text-[#FFFFFF] focus:ring-2 focus:ring-[#FFCE34]"
                       value={raceEvent}
                       onChange={(e) => setRaceEvent(e.target.value)}
+                      style={{ color: '#FFFFFF' }}
                     >
-                      <option>5km</option>
-                      <option>10km</option>
-                      <option>Half Marathon</option>
-                      <option>Marathon</option>
-                      <option>Ironman 70.3</option>
-                      <option>Ironman</option>
+                      <option style={{ background: '#24242A', color: '#FFFFFF' }}>5km</option>
+                      <option style={{ background: '#24242A', color: '#FFFFFF' }}>10km</option>
+                      <option style={{ background: '#24242A', color: '#FFFFFF' }}>Half Marathon</option>
+                      <option style={{ background: '#24242A', color: '#FFFFFF' }}>Marathon</option>
+                      <option style={{ background: '#24242A', color: '#FFFFFF' }}>Ironman 70.3</option>
+                      <option style={{ background: '#24242A', color: '#FFFFFF' }}>Ironman</option>
                     </select>
                   </div>
                   <div>
                     <Label>Race Date</Label>
                     <input 
                       type="date" 
-                      className="w-full mt-1 border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 rounded-lg px-3 py-2 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-orange-500"
+                      className="w-full mt-1 border border-[#2A2A35] bg-[#24242A] rounded-lg px-3 py-2 text-[#FFFFFF] focus:ring-2 focus:ring-[#FFCE34]"
                       value={raceDate}
                       onChange={(e) => setRaceDate(e.target.value)}
                     />
@@ -2071,7 +2077,7 @@ export default function App(){
                       max="24" 
                       value={raceGoalHours} 
                       onChange={(e) => setRaceGoalHours(Number(e.target.value))}
-                      className="w-full mt-1 border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 rounded-lg px-3 py-2 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-orange-500" 
+                      className="w-full mt-1 border border-[#2A2A35] bg-[#24242A] rounded-lg px-3 py-2 text-[#FFFFFF] focus:ring-2 focus:ring-[#FFCE34]" 
                     />
                   </div>
                   <div>
@@ -2082,7 +2088,7 @@ export default function App(){
                       max="59" 
                       value={raceGoalMins} 
                       onChange={(e) => setRaceGoalMins(Number(e.target.value))}
-                      className="w-full mt-1 border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 rounded-lg px-3 py-2 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-orange-500" 
+                      className="w-full mt-1 border border-[#2A2A35] bg-[#24242A] rounded-lg px-3 py-2 text-[#FFFFFF] focus:ring-2 focus:ring-[#FFCE34]" 
                     />
                   </div>
                 </div>
@@ -2094,7 +2100,7 @@ export default function App(){
                       <input 
                         type="text" 
                         placeholder="Enter city (e.g., London, New York)"
-                        className="flex-1 border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 rounded-lg px-3 py-2 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-orange-500"
+                        className="flex-1 border border-[#2A2A35] bg-[#24242A] rounded-lg px-3 py-2 text-[#FFFFFF] focus:ring-2 focus:ring-[#FFCE34]"
                         value={raceLocation}
                         onChange={(e) => setRaceLocation(e.target.value)}
                         onKeyPress={(e) => e.key === 'Enter' && fetchRaceWeather(raceLocation)}
@@ -2102,7 +2108,7 @@ export default function App(){
                       <button
                         onClick={() => fetchRaceWeather(raceLocation)}
                         disabled={loadingRaceWeather || !raceLocation}
-                        className="px-4 py-2 bg-orange-500 hover:bg-orange-600 text-white rounded-lg font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="px-4 py-2 bg-[#FFCE34] hover:bg-[#FFD966] text-white rounded-lg font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                       >
                         {loadingRaceWeather ? '⏳' : '🌤️'}
                       </button>
@@ -2110,30 +2116,30 @@ export default function App(){
                   </div>
                   
                   {raceWeather && (
-                    <div className="bg-slate-50 dark:bg-slate-900 rounded-lg p-3 flex items-center gap-3">
+                    <div className="bg-[#2A2A35] rounded-lg p-3 flex items-center gap-3">
                       <img src={raceWeather.icon} alt={raceWeather.condition} className="w-12 h-12" />
                       <div>
-                        <div className="font-semibold text-slate-900 dark:text-slate-100">{raceWeather.maxTemp}°C - {raceWeather.condition}</div>
-                        <div className="text-sm text-slate-600 dark:text-slate-400">Humidity: {raceWeather.humidity}%</div>
+                        <div className="font-semibold text-[#FFFFFF]">{raceWeather.maxTemp}°C - {raceWeather.condition}</div>
+                        <div className="text-sm text-[#A9A9B8]">Humidity: {raceWeather.humidity}%</div>
                       </div>
                     </div>
                   )}
                 </div>
                 
                 {/* Race Calories Summary */}
-                <div className="mt-4 p-4 bg-gradient-to-r from-orange-50 to-slate-50 dark:from-orange-950/20 dark:to-slate-900/50 rounded-lg border border-orange-200 dark:border-orange-900/30">
+                <div className="mt-4 p-4 bg-orange-950/40 rounded-lg border border-orange-800">
                   <div className="grid sm:grid-cols-3 gap-4 text-center">
                     <div>
-                      <div className="text-sm text-slate-600 dark:text-slate-400">Estimated Race Calories</div>
-                      <div className="text-2xl font-bold text-orange-600 dark:text-orange-400">{raceCalories.raceCalories} kcal</div>
+                      <div className="text-sm text-[#A9A9B8]">Estimated Race Calories</div>
+                      <div className="text-2xl font-bold text-[#FFCE34]">{raceCalories.raceCalories} kcal</div>
                     </div>
                     <div>
-                      <div className="text-sm text-slate-600 dark:text-slate-400">Carbs Required ({fuelStrategy})</div>
-                      <div className="text-2xl font-bold text-orange-600 dark:text-orange-400">{adjustedCarbsNeeded} g</div>
+                      <div className="text-sm text-[#A9A9B8]">Carbs Required ({fuelStrategy})</div>
+                      <div className="text-2xl font-bold text-[#FFCE34]">{adjustedCarbsNeeded} g</div>
                     </div>
                     <div>
-                      <div className="text-sm text-slate-600 dark:text-slate-400">Total Daily (Rest + Race)</div>
-                      <div className="text-2xl font-bold text-orange-600 dark:text-orange-400">{raceCalories.totalCalories} kcal</div>
+                      <div className="text-sm text-[#A9A9B8]">Total Daily (Rest + Race)</div>
+                      <div className="text-2xl font-bold text-[#FFCE34]">{raceCalories.totalCalories} kcal</div>
                     </div>
                   </div>
                 </div>
@@ -2146,16 +2152,17 @@ export default function App(){
                   <div>
                     <Label>Sweat Rate</Label>
                     <select 
-                      className="w-full mt-1 border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 rounded-lg px-3 py-2 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-orange-500"
+                      className="w-full mt-1 border border-[#2A2A35] bg-[#24242A] rounded-lg px-3 py-2 text-[#FFFFFF] focus:ring-2 focus:ring-[#FFCE34]"
                       value={raceSweatCategory}
                       onChange={(e) => setRaceSweatCategory(e.target.value)}
+                      style={{ color: '#FFFFFF' }}
                     >
-                      <option>Low</option>
-                      <option>Medium</option>
-                      <option>High</option>
-                      <option>Very High</option>
+                      <option style={{ background: '#24242A', color: '#FFFFFF' }}>Low</option>
+                      <option style={{ background: '#24242A', color: '#FFFFFF' }}>Medium</option>
+                      <option style={{ background: '#24242A', color: '#FFFFFF' }}>High</option>
+                      <option style={{ background: '#24242A', color: '#FFFFFF' }}>Very High</option>
                     </select>
-                    <div className="text-xs text-slate-500 mt-1">
+                    <div className="text-xs text-[#A9A9B8] mt-1">
                       {raceSweatCategory === 'Low' ? '0.7 L/hr' :
                        raceSweatCategory === 'Medium' ? '1.2 L/hr' :
                        raceSweatCategory === 'High' ? '1.7 L/hr' : '2.3 L/hr'}
@@ -2164,16 +2171,17 @@ export default function App(){
                   <div>
                     <Label>Sodium Loss</Label>
                     <select 
-                      className="w-full mt-1 border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 rounded-lg px-3 py-2 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-orange-500"
+                      className="w-full mt-1 border border-[#2A2A35] bg-[#24242A] rounded-lg px-3 py-2 text-[#FFFFFF] focus:ring-2 focus:ring-[#FFCE34]"
                       value={raceSaltinessCategory}
                       onChange={(e) => setRaceSaltinessCategory(e.target.value)}
+                      style={{ color: '#FFFFFF' }}
                     >
-                      <option>Low</option>
-                      <option>Medium</option>
-                      <option>High</option>
-                      <option>Very High</option>
+                      <option style={{ background: '#24242A', color: '#FFFFFF' }}>Low</option>
+                      <option style={{ background: '#24242A', color: '#FFFFFF' }}>Medium</option>
+                      <option style={{ background: '#24242A', color: '#FFFFFF' }}>High</option>
+                      <option style={{ background: '#24242A', color: '#FFFFFF' }}>Very High</option>
                     </select>
-                    <div className="text-xs text-slate-500 mt-1">
+                    <div className="text-xs text-[#A9A9B8] mt-1">
                       {raceSaltinessCategory === 'Low' ? '500 mg/L' :
                        raceSaltinessCategory === 'Medium' ? '900 mg/L' :
                        raceSaltinessCategory === 'High' ? '1300 mg/L' : '1800 mg/L'}
@@ -2182,19 +2190,20 @@ export default function App(){
                   <div>
                     <Label>Heat Acclimation</Label>
                     <select 
-                      className="w-full mt-1 border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 rounded-lg px-3 py-2 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-orange-500"
+                      className="w-full mt-1 border border-[#2A2A35] bg-[#24242A] rounded-lg px-3 py-2 text-[#FFFFFF] focus:ring-2 focus:ring-[#FFCE34]"
                       value={raceHeatAcclimation}
                       onChange={(e) => setRaceHeatAcclimation(e.target.value)}
+                      style={{ color: '#FFFFFF' }}
                     >
-                      <option>Not acclimated</option>
-                      <option>Partially acclimated</option>
-                      <option>Well acclimated</option>
+                      <option style={{ background: '#24242A', color: '#FFFFFF' }}>Not acclimated</option>
+                      <option style={{ background: '#24242A', color: '#FFFFFF' }}>Partially acclimated</option>
+                      <option style={{ background: '#24242A', color: '#FFFFFF' }}>Well acclimated</option>
                     </select>
-                    <div className="text-xs text-slate-500 mt-1">
+                    <div className="text-xs text-[#A9A9B8] mt-1">
                       {raceHeatAcclimation === 'Not acclimated' ? '100% sodium' :
                        raceHeatAcclimation === 'Partially acclimated' ? '85% sodium' : '70% sodium'}
                       {raceHydration && (
-                        <span className="ml-2 text-orange-600 dark:text-orange-400">
+                        <span className="ml-2 text-[#FFCE34]">
                           → Lost {raceHydration.totalSweatLossMg}mg / Replace {raceHydration.sodiumLowerReplace}–{raceHydration.sodiumUpperReplace}mg
                         </span>
                       )}
@@ -2202,8 +2211,8 @@ export default function App(){
                   </div>
                 </div>
                 {!raceWeather && (
-                  <div className="mt-4 p-3 bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-900/30 rounded-lg">
-                    <div className="text-sm text-amber-800 dark:text-amber-200">
+                  <div className="mt-4 p-3 bg-amber-950/40 border border-amber-800 rounded-lg">
+                    <div className="text-sm text-amber-200">
                       ⚠️ Please enter a race location and fetch weather to calculate race day hydration and sodium needs.
                     </div>
                   </div>
@@ -2219,29 +2228,29 @@ export default function App(){
                       initial={{opacity:0,x:-10}}
                       animate={{opacity:1,x:0}}
                       transition={{delay:d.dayNumber*0.05}}
-                      className={`border-2 rounded-xl p-4 transition-all ${
+                      className={`border-2 rounded-card p-4 transition-all ${
                         d.isRaceDay 
-                          ? 'border-orange-500 bg-orange-50 dark:bg-orange-950/30 shadow-lg' 
+                          ? 'border-orange-500 bg-orange-950/40 shadow-lg' 
                           : d.isCarbLoading 
-                            ? 'border-orange-300 dark:border-orange-900 bg-orange-50/50 dark:bg-orange-950/20'
-                            : 'border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800'
+                            ? 'border-orange-800 bg-orange-950/40'
+                            : 'border-[#2A2A35] bg-[#24242A]'
                       }`}
                     >
                       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-3">
                         <div className="flex items-center gap-3">
                           <div className={`w-12 h-12 rounded-full flex items-center justify-center font-bold text-lg ${
                             d.isRaceDay 
-                              ? 'bg-orange-500 text-white' 
-                              : 'bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300'
+                              ? 'bg-[#FFCE34] text-white' 
+                              : 'bg-[#2A2A35] text-[#FFFFFF]'
                           }`}>
                             {d.dayNumber}
                           </div>
                           <div>
-                            <div className="font-bold text-slate-900 dark:text-slate-100">
+                            <div className="font-bold text-[#FFFFFF]">
                               {d.isRaceDay ? '🏁 Race Day!' : `Day ${d.dayNumber} Before Race`}
                             </div>
                             <div className={`text-sm font-medium ${
-                              d.isCarbLoading ? 'text-orange-600 dark:text-orange-400' : 'text-slate-500'
+                              d.isCarbLoading ? 'text-[#FFCE34]' : 'text-[#A9A9B8]'
                             }`}>
                               {d.isCarbLoading && '🔥 '}
                               {d.isCarbLoading ? 'Carb Loading Day' : 'Normal Training'}
@@ -2251,28 +2260,28 @@ export default function App(){
                         </div>
                         <div className="grid grid-cols-3 sm:grid-cols-3 gap-3 text-center sm:text-right">
                           <div>
-                            <div className="text-xs text-slate-500 mb-1">Carbohydrate</div>
-                            <div className="text-lg font-bold text-orange-600 dark:text-orange-400">{d.carbsG} g</div>
+                            <div className="text-xs text-[#A9A9B8] mb-1">Carbohydrate</div>
+                            <div className="text-lg font-bold text-[#FFCE34]">{d.carbsG} g</div>
                           </div>
                           <div>
-                            <div className="text-xs text-slate-500 mb-1">Protein</div>
-                            <div className="text-lg font-bold text-slate-700 dark:text-slate-300">{Math.round(weightKg * 1.8)} g</div>
+                            <div className="text-xs text-[#A9A9B8] mb-1">Protein</div>
+                            <div className="text-lg font-bold text-[#FFFFFF]">{Math.round(weightKg * 1.8)} g</div>
                           </div>
                           <div>
-                            <div className="text-xs text-slate-500 mb-1">Fat</div>
-                            <div className="text-lg font-bold text-slate-700 dark:text-slate-300">{Math.round(weightKg * 1.2)} g</div>
+                            <div className="text-xs text-[#A9A9B8] mb-1">Fat</div>
+                            <div className="text-lg font-bold text-[#FFFFFF]">{Math.round(weightKg * 1.2)} g</div>
                           </div>
                         </div>
                       </div>
                       
                       {/* Tips for each day */}
                       {d.isCarbLoading && !d.isFiberCaution && (
-                        <div className="mt-3 p-3 bg-orange-50 dark:bg-orange-950/30 border border-orange-200 dark:border-orange-900/50 rounded-lg">
+                        <div className="mt-3 p-3 bg-orange-950/40 border border-orange-800 rounded-lg">
                           <div className="flex items-start gap-2 text-sm">
-                            <span className="text-orange-600 dark:text-orange-400">🔥</span>
+                            <span className="text-[#FFCE34]">🔥</span>
                             <div>
-                              <strong className="text-orange-800 dark:text-orange-300">Carb Loading Tips:</strong>
-                              <ul className="mt-1 text-slate-700 dark:text-slate-300 space-y-1">
+                              <strong className="text-orange-300">Carb Loading Tips:</strong>
+                              <ul className="mt-1 text-[#FFFFFF] space-y-1">
                                 <li>• Eat 5-6 small meals throughout the day</li>
                                 <li>• Focus on simple carbs: white rice, pasta, bread</li>
                                 <li>• Drink extra fluids with electrolytes</li>
@@ -2283,12 +2292,12 @@ export default function App(){
                         </div>
                       )}
                       {d.isFiberCaution && (
-                        <div className="mt-3 p-3 bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-900/50 rounded-lg">
+                        <div className="mt-3 p-3 bg-amber-950/50 border border-amber-800 rounded-lg">
                           <div className="flex items-start gap-2 text-sm">
-                            <span className="text-amber-600 dark:text-amber-400">⚠️</span>
+                            <span className="text-amber-400">⚠️</span>
                             <div>
-                              <strong className="text-amber-800 dark:text-amber-300">Fiber Caution:</strong>
-                              <ul className="mt-1 text-slate-700 dark:text-slate-300 space-y-1">
+                              <strong className="text-amber-300">Fiber Caution:</strong>
+                              <ul className="mt-1 text-amber-200 space-y-1">
                                 <li>• Avoid beans, lentils, bran, cruciferous vegetables</li>
                                 <li>• Choose white rice, pasta, white bread</li>
                                 <li>• Bananas, sports drinks, crackers are excellent choices</li>
@@ -2299,7 +2308,7 @@ export default function App(){
                         </div>
                       )}
                       {d.isRaceDay && (
-                        <div className="mt-3 p-3 bg-gradient-to-r from-orange-500 to-orange-600 rounded-lg text-white">
+                        <div className="mt-3 p-3 bg-[#FFCE34] rounded-lg text-white">
                           <div className="flex items-start gap-2 text-sm">
                             <span>🏁</span>
                             <div>
@@ -2320,7 +2329,7 @@ export default function App(){
               </Card>
 
               {/* Race Day Fueling Timeline - Made Prominent */}
-              <Card className="border-2 border-orange-300 dark:border-orange-700 bg-gradient-to-br from-orange-50 to-white dark:from-orange-950/20 dark:to-slate-900">
+              <Card className="border-2 border-orange-800 bg-gradient-to-br from-orange-950/40 to-[#24242A]">
                 <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
                   <div>
                     <SectionTitle title="⏱️ Race Day Fueling Strategy" subtitle="Personalized race timeline with weather-adaptive fueling" />
@@ -2333,7 +2342,7 @@ export default function App(){
                         className={`px-4 py-2 rounded-lg font-medium text-sm transition-all ${
                           fuelStrategy === 'aggressive'
                             ? 'bg-red-500 text-white shadow-md'
-                            : 'bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-300'
+                            : 'bg-[#24242A] border border-[#2A2A35] text-[#FFFFFF]'
                         }`}
                       >
                         Aggressive
@@ -2343,7 +2352,7 @@ export default function App(){
                         className={`px-4 py-2 rounded-lg font-medium text-sm transition-all ${
                           fuelStrategy === 'optimal'
                             ? 'bg-green-500 text-white shadow-md'
-                            : 'bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-300'
+                            : 'bg-[#24242A] border border-[#2A2A35] text-[#FFFFFF]'
                         }`}
                       >
                         Optimal
@@ -2353,7 +2362,7 @@ export default function App(){
                         className={`px-4 py-2 rounded-lg font-medium text-sm transition-all ${
                           fuelStrategy === 'safe'
                             ? 'bg-blue-500 text-white shadow-md'
-                            : 'bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-300'
+                            : 'bg-[#24242A] border border-[#2A2A35] text-[#FFFFFF]'
                         }`}
                       >
                         Safe
@@ -2362,24 +2371,24 @@ export default function App(){
                   </div>
                 </div>
 
-                <div className="bg-white dark:bg-slate-800 rounded-xl p-6 border-2 border-slate-200 dark:border-slate-700">
+                <div className="bg-[#24242A] rounded-card p-6 border-2 border-[#2A2A35]">
                   {fuelStrategy === 'aggressive' && (
-                    <div className="mb-4 p-3 bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-900/30 rounded-lg">
-                      <div className="text-sm text-red-800 dark:text-red-200">
+                    <div className="mb-4 p-3 bg-red-950/40 border border-red-800 rounded-lg">
+                      <div className="text-sm text-red-200">
                         <strong>🔥 Aggressive Strategy:</strong> Higher carbohydrate intake for maximal performance. Best for experienced racers with well-trained gut. Takes risks for speed.
                       </div>
                     </div>
                   )}
                   {fuelStrategy === 'optimal' && (
-                    <div className="mb-4 p-3 bg-green-50 dark:bg-green-950/20 border border-green-200 dark:border-green-900/30 rounded-lg">
-                      <div className="text-sm text-green-800 dark:text-green-200">
+                    <div className="mb-4 p-3 bg-green-950/40 border border-green-800 rounded-lg">
+                      <div className="text-sm text-green-200">
                         <strong>✅ Optimal Strategy:</strong> Balanced approach for most athletes. Provides adequate fuel without overwhelming the gut.
                       </div>
                     </div>
                   )}
                   {fuelStrategy === 'safe' && (
-                    <div className="mb-4 p-3 bg-blue-50 dark:bg-blue-950/20 border border-blue-200 dark:border-blue-900/30 rounded-lg">
-                      <div className="text-sm text-blue-800 dark:text-blue-200">
+                    <div className="mb-4 p-3 bg-blue-950/40 border border-blue-800 rounded-lg">
+                      <div className="text-sm text-blue-200">
                         <strong>🛡️ Safe Strategy:</strong> Conservative fueling reduces gut distress risk. Best for first-time racers or those with sensitive stomachs.
                       </div>
                     </div>
@@ -2400,40 +2409,40 @@ export default function App(){
                             {/* Time marker */}
                             <div className="flex-shrink-0">
                               <div className={`w-12 h-12 rounded-full flex items-center justify-center font-bold text-base ${
-                                item.time === 0 ? 'bg-orange-500 text-white shadow-lg' :
+                                item.time === 0 ? 'bg-[#FFCE34] text-white shadow-lg' :
                                 item.time === totalMinutes ? 'bg-emerald-500 text-white shadow-lg' :
-                                'bg-white dark:bg-slate-800 border-2 border-orange-400 dark:border-orange-700 text-orange-700 dark:text-orange-400'
+                                'bg-[#24242A] border-2 border-orange-400 dark:border-orange-700 text-orange-300'
                               }`}>
                                 {item.time}
                               </div>
-                              <div className="text-xs text-center mt-1 text-slate-500">min</div>
+                              <div className="text-xs text-center mt-1 text-[#A9A9B8]">min</div>
                             </div>
                             
                             {/* Content */}
-                            <div className="flex-1 bg-slate-50 dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-700 p-4">
+                            <div className="flex-1 bg-[#2A2A35] rounded-lg border border-[#2A2A35] p-4">
                               <div className="flex justify-between items-start mb-3">
-                                <div className="font-semibold text-lg text-slate-900 dark:text-slate-100">{item.label}</div>
-                                <div className="text-sm text-slate-500 whitespace-nowrap ml-2">
+                                <div className="font-semibold text-lg text-[#FFFFFF]">{item.label}</div>
+                                <div className="text-sm text-[#A9A9B8] whitespace-nowrap ml-2">
                                   {item.time === 0 ? 'Start' : item.time === totalMinutes ? 'Finish' : `${Math.round((item.time / totalMinutes) * 100)}%`}
                                 </div>
                               </div>
                               
                               <div className="grid grid-cols-3 gap-4 mb-3">
-                                <div className="bg-orange-50 dark:bg-orange-950/20 rounded-lg p-2">
-                                  <div className="text-xs text-slate-600 dark:text-slate-400 mb-1">Carbohydrates</div>
-                                  <div className="text-lg font-bold text-orange-600 dark:text-orange-400">{item.carbs}</div>
+                                <div className="bg-orange-950/40 rounded-lg p-2">
+                                  <div className="text-xs text-[#A9A9B8] mb-1">Carbohydrates</div>
+                                  <div className="text-lg font-bold text-[#FFCE34]">{item.carbs}</div>
                                 </div>
-                                <div className="bg-blue-50 dark:bg-blue-950/20 rounded-lg p-2">
-                                  <div className="text-xs text-slate-600 dark:text-slate-400 mb-1">Fluid Intake</div>
-                                  <div className="text-lg font-bold text-blue-600 dark:text-blue-400">{item.fluid}</div>
+                                <div className="bg-blue-950/40 rounded-lg p-2">
+                                  <div className="text-xs text-[#A9A9B8] mb-1">Fluid Intake</div>
+                                  <div className="text-lg font-bold text-blue-300">{item.fluid}</div>
                                 </div>
-                                <div className="bg-purple-50 dark:bg-purple-950/20 rounded-lg p-2">
-                                  <div className="text-xs text-slate-600 dark:text-slate-400 mb-1">Sodium</div>
-                                  <div className="text-lg font-bold text-purple-600 dark:text-purple-400">{item.sodium}</div>
+                                <div className="bg-purple-950/40 rounded-lg p-2">
+                                  <div className="text-xs text-[#A9A9B8] mb-1">Sodium</div>
+                                  <div className="text-lg font-bold text-purple-300">{item.sodium}</div>
                                 </div>
                               </div>
                               
-                              <div className="text-sm text-slate-700 dark:text-slate-300 italic">
+                              <div className="text-sm text-[#FFFFFF] italic">
                                 💡 {item.notes}
                               </div>
                             </div>
@@ -2444,7 +2453,7 @@ export default function App(){
                   </div>
                   
                   {/* Race Totals Summary */}
-                  <div className="mt-6 p-6 bg-gradient-to-r from-orange-500 to-orange-600 rounded-xl text-white">
+                  <div className="mt-6 p-6 bg-[#FFCE34] rounded-card text-white">
                     <div className="text-center mb-4">
                       <div className="text-lg font-semibold mb-2">📊 Race Totals - What You Need</div>
                       <div className="text-sm opacity-90">Total amounts for the entire race</div>
@@ -2500,14 +2509,14 @@ export default function App(){
                   </div>
                   
                   <div className="space-y-3 mt-6">
-                    <div className="p-4 bg-gradient-to-r from-purple-100 to-slate-100 dark:from-purple-950/30 dark:to-slate-900 border border-purple-200 dark:border-purple-900/30 rounded-lg">
-                      <div className="text-sm text-slate-700 dark:text-slate-300">
+                    <div className="p-4 bg-gradient-to-r from-purple-950/40 to-[#24242A] border border-purple-800 rounded-lg">
+                      <div className="text-sm text-[#FFFFFF]">
                         <strong>🧂 Sodium & Fluid:</strong> Based on your sweat rate ({raceHydration?.effectiveSweatRate} L/h) and race weather ({raceWeather?.temp}°C). 
                         All recommendations adjust with your {fuelStrategy} fuel strategy (×{strategyMultiplier[fuelStrategy]}). Timeline split into {totalHours < 4 ? '30-minute' : '60-minute'} buckets.
                       </div>
                     </div>
-                    <div className="p-4 bg-gradient-to-r from-orange-100 to-slate-100 dark:from-orange-950/30 dark:to-slate-900 border border-orange-200 dark:border-orange-900/30 rounded-lg">
-                      <div className="text-sm text-slate-700 dark:text-slate-300">
+                    <div className="p-4 bg-gradient-to-r from-orange-950/40 to-[#24242A] border border-orange-800 rounded-lg">
+                      <div className="text-sm text-[#FFFFFF]">
                         <strong>🌍 Weather-Adaptive:</strong> Fluid recommendations adjust for temperature. Hot days ({raceWeather?.temp > 25 ? '↑ Increased' : raceWeather?.temp < 15 ? '↓ Reduced' : 'Normal'} intake) to match your sweat rate.
                       </div>
                     </div>
@@ -2530,17 +2539,17 @@ export default function App(){
                       const color = percent >= -5 && percent <= 10 ? 'green' : percent < -20 ? 'red' : 'orange';
                       
                       return (
-                        <div key={metric} className="bg-slate-50 dark:bg-slate-900 rounded-xl p-4 border-2 border-slate-200 dark:border-slate-700">
-                          <div className="text-sm text-slate-600 dark:text-slate-400 mb-2 capitalize">{metric}</div>
+                        <div key={metric} className="bg-[#2A2A35] rounded-card p-4 border-2 border-[#2A2A35]">
+                          <div className="text-sm text-[#A9A9B8] mb-2 capitalize">{metric}</div>
                           <div className="flex items-center gap-2">
-                            <div className="text-2xl font-bold text-slate-900 dark:text-slate-100">
+                            <div className="text-2xl font-bold text-[#FFFFFF]">
                               {metric === 'carbs' ? plan : metric === 'fluid' ? plan : plan}
                             </div>
-                            <div className={`px-2 py-1 rounded text-xs font-bold ${color === 'green' ? 'bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300' : color === 'red' ? 'bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-300' : 'bg-orange-100 text-orange-700 dark:bg-orange-900 dark:text-orange-300'}`}>
+                            <div className={`px-2 py-1 rounded text-xs font-bold ${color === 'green' ? 'bg-green-950/40 text-green-300' : color === 'red' ? 'bg-red-950/40 text-red-300' : 'bg-orange-950/40 text-orange-300'}`}>
                               {percent > 0 ? '+' : ''}{percent}%
                             </div>
                           </div>
-                          <div className="text-xs text-slate-500 mt-1">
+                          <div className="text-xs text-[#A9A9B8] mt-1">
                             Target: {target}{metric === 'carbs' ? 'g' : metric === 'fluid' ? 'ml' : 'mg'}
                           </div>
                         </div>
@@ -2552,13 +2561,13 @@ export default function App(){
                   <div className="overflow-x-auto -mx-2 px-2">
                     <table className="w-full text-xs sm:text-sm min-w-[600px]">
                       <thead>
-                        <tr className="border-b border-slate-200 dark:border-slate-700">
-                          <th className="text-left py-3 px-2 font-semibold text-slate-700 dark:text-slate-300">Product</th>
-                          <th className="text-center py-3 px-2 font-semibold text-slate-700 dark:text-slate-300">Carbs/unit</th>
-                          <th className="text-center py-3 px-2 font-semibold text-slate-700 dark:text-slate-300">Fluid/unit</th>
-                          <th className="text-center py-3 px-2 font-semibold text-slate-700 dark:text-slate-300">Sodium/unit</th>
-                          <th className="text-center py-3 px-2 font-semibold text-slate-700 dark:text-slate-300">Quantity</th>
-                          <th className="text-right py-3 px-2 font-semibold text-slate-700 dark:text-slate-300">Contribution</th>
+                        <tr className="border-b border-[#2A2A35]">
+                          <th className="text-left py-3 px-2 font-semibold text-[#FFFFFF]">Product</th>
+                          <th className="text-center py-3 px-2 font-semibold text-[#FFFFFF]">Carbs/unit</th>
+                          <th className="text-center py-3 px-2 font-semibold text-[#FFFFFF]">Fluid/unit</th>
+                          <th className="text-center py-3 px-2 font-semibold text-[#FFFFFF]">Sodium/unit</th>
+                          <th className="text-center py-3 px-2 font-semibold text-[#FFFFFF]">Quantity</th>
+                          <th className="text-right py-3 px-2 font-semibold text-[#FFFFFF]">Contribution</th>
                         </tr>
                       </thead>
                       <tbody>
@@ -2569,25 +2578,25 @@ export default function App(){
                           const sodium = p.sodium * count;
                           
                           return (
-                            <tr key={p.id} className="border-b border-slate-100 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-900">
-                              <td className="py-3 px-2 font-medium text-slate-900 dark:text-slate-100 break-words">{p.name}</td>
-                              <td className="text-center py-3 px-2 text-slate-600 dark:text-slate-400">{p.carbs}g</td>
-                              <td className="text-center py-3 px-2 text-slate-600 dark:text-slate-400">{p.fluid}ml</td>
-                              <td className="text-center py-3 px-2 text-slate-600 dark:text-slate-400">{p.sodium}mg</td>
+                            <tr key={p.id} className="border-b border-[#2A2A35] hover:bg-[#2A2A35]">
+                              <td className="py-3 px-2 font-medium text-[#FFFFFF] break-words">{p.name}</td>
+                              <td className="text-center py-3 px-2 text-[#A9A9B8]">{p.carbs}g</td>
+                              <td className="text-center py-3 px-2 text-[#A9A9B8]">{p.fluid}ml</td>
+                              <td className="text-center py-3 px-2 text-[#A9A9B8]">{p.sodium}mg</td>
                               <td className="py-3 px-2">
                                 <div className="flex items-center justify-center gap-1 sm:gap-2">
                                   <button
                                     onClick={() => setProductCounts(prev => ({...prev, [p.id]: Math.max(0, (prev[p.id] || 0) - 1)}))}
-                                    className="w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center rounded-lg bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-300 dark:hover:bg-slate-600 font-bold text-sm"
+                                    className="w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center rounded-lg bg-[#2A2A35] text-[#FFFFFF] hover:bg-[#3A3A45] font-bold text-sm"
                                     aria-label={`Decrease ${p.name}`}
                                     tabIndex={0}
                                   >
                                     −
                                   </button>
-                                  <div className="w-10 sm:w-12 text-center font-bold text-slate-900 dark:text-slate-100">{count}</div>
+                                  <div className="w-10 sm:w-12 text-center font-bold text-[#FFFFFF]">{count}</div>
                                   <button
                                     onClick={() => setProductCounts(prev => ({...prev, [p.id]: ((prev[p.id] || 0) + 1)}))}
-                                    className="w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center rounded-lg bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-300 dark:hover:bg-slate-600 font-bold text-sm"
+                                    className="w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center rounded-lg bg-[#2A2A35] text-[#FFFFFF] hover:bg-[#3A3A45] font-bold text-sm"
                                     aria-label={`Increase ${p.name}`}
                                     tabIndex={0}
                                   >
@@ -2595,7 +2604,7 @@ export default function App(){
                                   </button>
                                 </div>
                               </td>
-                              <td className="text-right py-3 px-2 text-slate-600 dark:text-slate-400 text-xs sm:text-sm break-words">
+                              <td className="text-right py-3 px-2 text-[#A9A9B8] text-xs sm:text-sm break-words">
                                 {carbs}g / {fluid}ml / {sodium}mg
                               </td>
                             </tr>
@@ -2609,21 +2618,21 @@ export default function App(){
                   <div className="mt-4 flex gap-3">
                     <button
                       onClick={() => setProductCounts(optimalCounts)}
-                      className="px-4 py-2 bg-gradient-to-r from-orange-500 to-orange-600 text-white rounded-lg font-medium hover:from-orange-600 hover:to-orange-700 transition-all"
+                      className="px-4 py-2 bg-[#FFCE34] text-white rounded-lg font-medium hover:from-orange-600 hover:to-orange-700 transition-all"
                       aria-label="Auto-optimize product mix"
                     >
                       Auto-Optimize Mix
                     </button>
                     <button
                       onClick={() => setProductCounts({})}
-                      className="px-4 py-2 bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-lg font-medium hover:bg-slate-300 dark:hover:bg-slate-600 transition-all"
+                      className="px-4 py-2 bg-[#2A2A35] text-[#FFFFFF] rounded-lg font-medium hover:bg-[#3A3A45] transition-all"
                     >
                       Clear All
                     </button>
                   </div>
                   
                   {/* Product Library Management */}
-                  <div className="mt-6 pt-6 border-t border-slate-200 dark:border-slate-700">
+                  <div className="mt-6 pt-6 border-t border-[#2A2A35]">
                     <div className="flex justify-between items-center mb-4">
                       <SectionTitle title="📚 Product Library" subtitle="Manage your custom products" />
                       <button
@@ -2639,22 +2648,22 @@ export default function App(){
                     </div>
                     
                     {/* Column Headers */}
-                    <div className="hidden sm:grid grid-cols-12 gap-2 mb-2 pb-2 border-b border-slate-300 dark:border-slate-600">
-                      <div className="col-span-3 font-semibold text-xs sm:text-sm text-slate-700 dark:text-slate-300">Product</div>
-                      <div className="col-span-2 font-semibold text-xs sm:text-sm text-slate-700 dark:text-slate-300">Carbs (g)</div>
-                      <div className="col-span-2 font-semibold text-xs sm:text-sm text-slate-700 dark:text-slate-300">Fluid (ml)</div>
-                      <div className="col-span-2 font-semibold text-xs sm:text-sm text-slate-700 dark:text-slate-300">Sodium (mg)</div>
+                    <div className="hidden sm:grid grid-cols-12 gap-2 mb-2 pb-2 border-b border-[#2A2A35]">
+                      <div className="col-span-3 font-semibold text-xs sm:text-sm text-[#FFFFFF]">Product</div>
+                      <div className="col-span-2 font-semibold text-xs sm:text-sm text-[#FFFFFF]">Carbs (g)</div>
+                      <div className="col-span-2 font-semibold text-xs sm:text-sm text-[#FFFFFF]">Fluid (ml)</div>
+                      <div className="col-span-2 font-semibold text-xs sm:text-sm text-[#FFFFFF]">Sodium (mg)</div>
                       <div className="col-span-3"></div>
                     </div>
                     
                     <div className="space-y-3">
                       {products.map(p => (
-                        <div key={p.id} className="flex flex-col sm:grid sm:grid-cols-12 gap-2 p-3 bg-slate-50 dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-700">
+                        <div key={p.id} className="flex flex-col sm:grid sm:grid-cols-12 gap-2 p-3 bg-[#2A2A35] rounded-lg border border-[#2A2A35]">
                           <input
                             type="text"
                             value={p.name}
                             onChange={e => setProducts(prev => prev.map(prod => prod.id === p.id ? {...prod, name: e.target.value} : prod))}
-                            className="col-span-12 sm:col-span-3 border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 rounded px-2 py-1 text-xs sm:text-sm"
+                            className="col-span-12 sm:col-span-3 border border-[#2A2A35] bg-[#24242A] rounded px-2 py-1 text-xs sm:text-sm"
                             placeholder="Product name"
                           />
                           <div className="col-span-12 sm:col-span-2">
@@ -2662,7 +2671,7 @@ export default function App(){
                               type="number"
                               value={p.carbs}
                               onChange={e => setProducts(prev => prev.map(prod => prod.id === p.id ? {...prod, carbs: parseInt(e.target.value) || 0} : prod))}
-                              className="w-full border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 rounded px-2 py-1 text-xs sm:text-sm"
+                              className="w-full border border-[#2A2A35] bg-[#24242A] rounded px-2 py-1 text-xs sm:text-sm"
                               placeholder="Carbs (g)"
                             />
                           </div>
@@ -2671,7 +2680,7 @@ export default function App(){
                               type="number"
                               value={p.fluid}
                               onChange={e => setProducts(prev => prev.map(prod => prod.id === p.id ? {...prod, fluid: parseInt(e.target.value) || 0} : prod))}
-                              className="w-full border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 rounded px-2 py-1 text-xs sm:text-sm"
+                              className="w-full border border-[#2A2A35] bg-[#24242A] rounded px-2 py-1 text-xs sm:text-sm"
                               placeholder="Fluid (ml)"
                             />
                           </div>
@@ -2680,7 +2689,7 @@ export default function App(){
                               type="number"
                               value={p.sodium}
                               onChange={e => setProducts(prev => prev.map(prod => prod.id === p.id ? {...prod, sodium: parseInt(e.target.value) || 0} : prod))}
-                              className="w-full border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 rounded px-2 py-1 text-xs sm:text-sm"
+                              className="w-full border border-[#2A2A35] bg-[#24242A] rounded px-2 py-1 text-xs sm:text-sm"
                               placeholder="Sodium (mg)"
                             />
                           </div>
@@ -2702,8 +2711,8 @@ export default function App(){
                 <SectionTitle title="Fiber Caution Foods" subtitle="Smart food choices for race week" />
                 <div className="grid sm:grid-cols-2 gap-4">
                   <div>
-                    <h4 className="text-sm font-semibold mb-2 text-orange-700 dark:text-orange-300">✅ Best Options (Low Fiber)</h4>
-                    <div className="space-y-2 text-sm">
+                    <h4 className="text-sm font-semibold mb-2 text-[#FFCE34]">✅ Best Options (Low Fiber)</h4>
+                    <div className="space-y-2 text-sm text-[#FFFFFF]">
                       <div>🍚 White rice (cooked): 55g/cup</div>
                       <div>🍝 White pasta (cooked): 45g/cup</div>
                       <div>🍞 White bread (2 slices): 30g</div>
@@ -2712,8 +2721,8 @@ export default function App(){
                     </div>
                   </div>
                   <div>
-                    <h4 className="text-sm font-semibold mb-2 text-red-700 dark:text-red-300">❌ Foods to Avoid</h4>
-                    <div className="space-y-2 text-sm">
+                    <h4 className="text-sm font-semibold mb-2 text-red-300">❌ Foods to Avoid</h4>
+                    <div className="space-y-2 text-sm text-[#FFFFFF]">
                       <div>• High-fiber foods (beans, lentils, bran)</div>
                       <div>• Cruciferous vegetables</div>
                       <div>• High-fat meals</div>
@@ -2729,45 +2738,45 @@ export default function App(){
             <motion.div key="hydration" initial={{opacity:0,y:8}} animate={{opacity:1,y:0}} exit={{opacity:0,y:-8}} transition={{duration:0.25}} className="space-y-4 sm:space-y-6">
               {/* Help Modal */}
               {showHydrationHelp && (
-                <div className="mb-6 p-4 sm:p-6 bg-gradient-to-br from-orange-50 to-blue-50 dark:from-slate-800 dark:to-slate-900 border-2 border-orange-300 dark:border-orange-700 rounded-xl space-y-4 overflow-hidden">
+                <div className="mb-6 p-4 sm:p-6 bg-[#24242A] border-2 border-[#FFCE34] rounded-card space-y-4 overflow-hidden">
                   <div className="flex items-center justify-between">
-                    <h3 className="text-lg sm:text-xl font-bold text-slate-900 dark:text-slate-100">📚 How to Use Hydration Planning</h3>
+                    <h3 className="text-lg sm:text-xl font-bold text-[#FFFFFF]">📚 How to Use Hydration Planning</h3>
                     <button
                       onClick={() => setShowHydrationHelp(false)}
-                      className="text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200 text-2xl font-bold flex-shrink-0 ml-2"
+                      className="text-[#A9A9B8] hover:text-[#FFFFFF] text-2xl font-bold flex-shrink-0 ml-2"
                     >
                       ×
                     </button>
                   </div>
                   
-                  <div className="space-y-3 text-xs sm:text-sm text-slate-700 dark:text-slate-300 break-words">
+                  <div className="space-y-3 text-xs sm:text-sm text-[#FFFFFF] break-words">
                     <div>
-                      <strong className="text-orange-600 dark:text-orange-400">1️⃣ Location & Weather:</strong>
+                      <strong className="text-[#FFCE34]">1️⃣ Location & Weather:</strong>
                       <p>Enter your training location and week start date, then click "Fetch Weather" to get accurate temperature and humidity data for your calculations.</p>
                     </div>
                     
                     <div>
-                      <strong className="text-orange-600 dark:text-orange-400">2️⃣ Session Details:</strong>
+                      <strong className="text-[#FFCE34]">2️⃣ Session Details:</strong>
                       <p>Enter your training duration and time of day. Longer sessions and hotter times require more hydration.</p>
                     </div>
                     
                     <div>
-                      <strong className="text-orange-600 dark:text-orange-400">3️⃣ Sweat Rate:</strong>
+                      <strong className="text-[#FFCE34]">3️⃣ Sweat Rate:</strong>
                       <p>Select your sweat rate category (Low to Very High). This affects how much fluid you lose during training.</p>
                     </div>
                     
                     <div>
-                      <strong className="text-orange-600 dark:text-orange-400">4️⃣ Sodium Loss:</strong>
+                      <strong className="text-[#FFCE34]">4️⃣ Sodium Loss:</strong>
                       <p>Choose your saltiness category (Low to Very High). Saltier sweat means you need more sodium replacement.</p>
                     </div>
                     
                     <div>
-                      <strong className="text-orange-600 dark:text-orange-400">5️⃣ Heat Acclimation:</strong>
+                      <strong className="text-[#FFCE34]">5️⃣ Heat Acclimation:</strong>
                       <p>Select your heat adaptation level. Well-acclimated athletes lose less sodium and need less replacement.</p>
                     </div>
                     
                     <div>
-                      <strong className="text-orange-600 dark:text-orange-400">6️⃣ Daily Schedule:</strong>
+                      <strong className="text-[#FFCE34]">6️⃣ Daily Schedule:</strong>
                       <p>View your personalized hydration and calorie targets for each day of the week based on weather and training.</p>
                     </div>
                   </div>
@@ -2780,7 +2789,7 @@ export default function App(){
                   <SectionTitle title="Location & Weather" subtitle="Get forecast for your training week" />
                   <button
                     onClick={() => setShowHydrationHelp(!showHydrationHelp)}
-                    className="w-8 h-8 rounded-full bg-orange-500 text-white flex items-center justify-center hover:bg-orange-600 transition-all text-sm font-bold flex-shrink-0"
+                    className="w-8 h-8 rounded-full bg-[#FFCE34] text-white flex items-center justify-center hover:bg-[#FFD966] transition-all text-sm font-bold flex-shrink-0"
                     aria-label="Help"
                   >
                     ?
@@ -2791,7 +2800,7 @@ export default function App(){
                     <Label>Week Start Date</Label>
                     <input
                       type="date"
-                      className="w-full mt-1 border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 rounded-xl px-4 py-2 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-orange-500"
+                      className="w-full mt-1 border border-[#2A2A35] bg-[#24242A] rounded-card px-4 py-2 text-[#FFFFFF] focus:ring-2 focus:ring-[#FFCE34]"
                       value={weekStartDate}
                       onChange={(e) => setWeekStartDate(e.target.value)}
                     />
@@ -2802,7 +2811,7 @@ export default function App(){
                       <input
                         type="text"
                         placeholder="Enter city name (e.g., London, New York)"
-                        className="flex-1 border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 rounded-xl px-4 py-2 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-orange-500"
+                        className="flex-1 border border-[#2A2A35] bg-[#24242A] rounded-card px-4 py-2 text-[#FFFFFF] focus:ring-2 focus:ring-[#FFCE34]"
                         value={location}
                         onChange={(e) => setLocation(e.target.value)}
                         onKeyPress={(e) => e.key === 'Enter' && fetchWeather(location)}
@@ -2810,7 +2819,7 @@ export default function App(){
                       <button
                         onClick={() => fetchWeather(location)}
                         disabled={loadingWeather || !location}
-                        className="px-6 py-2 bg-gradient-to-r from-orange-500 to-orange-600 text-white rounded-xl font-medium hover:from-orange-600 hover:to-orange-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="px-6 py-2 bg-[#FFCE34] text-white rounded-card font-medium hover:from-orange-600 hover:to-orange-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                       >
                         {loadingWeather ? 'Loading...' : 'Get Weather'}
                       </button>
@@ -2818,15 +2827,15 @@ export default function App(){
                   </div>
                 </div>
                 {currentWeather && (
-                  <div className="flex items-center gap-4 p-4 bg-slate-50 dark:bg-slate-800 rounded-xl">
+                  <div className="flex items-center gap-4 p-4 bg-[#24242A] rounded-card">
                     <div className="text-5xl">🌤️</div>
                     <div>
                       <div className="text-xl font-bold">{currentWeather.city}, {currentWeather.country}</div>
-                      <div className="text-sm text-slate-600 dark:text-slate-400 capitalize">{currentWeather.description}</div>
+                      <div className="text-sm text-[#A9A9B8] capitalize">{currentWeather.description}</div>
                     </div>
                     <div className="ml-auto text-right">
                       <div className="text-3xl font-bold">{Math.round(currentWeather.temp)}°C</div>
-                      <div className="text-sm text-slate-600 dark:text-slate-400">Humidity: {currentWeather.humidity}%</div>
+                      <div className="text-sm text-[#A9A9B8]">Humidity: {currentWeather.humidity}%</div>
                     </div>
                   </div>
                 )}
@@ -2838,7 +2847,7 @@ export default function App(){
                   <div>
                     <SectionTitle title="🧂 Premium Sodium Calculator" subtitle="Advanced sodium loss estimation (auto-synced with training log & weather)" />
                   </div>
-                  <span className="px-3 py-1 bg-gradient-to-r from-orange-500 to-orange-600 text-white text-xs font-bold rounded-full">
+                  <span className="px-3 py-1 bg-[#FFCE34] text-white text-xs font-bold rounded-full">
                     PREMIUM
                   </span>
                 </div>
@@ -2849,12 +2858,12 @@ export default function App(){
                       <Label>Saltiness Category</Label>
                       <div className="group relative inline-block">
                         <div 
-                          className="w-5 h-5 rounded-full bg-orange-500 text-white text-xs font-bold cursor-pointer flex items-center justify-center hover:bg-orange-600 active:bg-orange-700 transition-colors"
+                          className="w-5 h-5 rounded-full bg-[#FFCE34] text-white text-xs font-bold cursor-pointer flex items-center justify-center hover:bg-[#FFD966] active:bg-orange-700 transition-colors"
                           onClick={() => setShowSaltinessTooltip(!showSaltinessTooltip)}
                         >
                           ?
                         </div>
-                        <div className={`absolute left-0 bottom-full mb-2 w-80 bg-slate-900 dark:bg-slate-800 text-white text-xs rounded-lg shadow-xl p-3 transition-all duration-200 z-50 pointer-events-none ${showSaltinessTooltip ? 'opacity-100 visible' : 'opacity-0 invisible group-hover:opacity-100 group-hover:visible'}`}>
+                        <div className={`absolute left-0 bottom-full mb-2 w-80 bg-[#24242A] text-white text-xs rounded-lg shadow-xl p-3 transition-all duration-200 z-50 pointer-events-none ${showSaltinessTooltip ? 'opacity-100 visible' : 'opacity-0 invisible group-hover:opacity-100 group-hover:visible'}`}>
                           <div className="font-semibold mb-2 text-orange-300">Saltiness Category Guide:</div>
                           <div className="space-y-1.5">
                             <div><span className="text-orange-400 font-semibold">Low</span> (500 mg/L): Rare white marks on skin or clothing.</div>
@@ -2866,14 +2875,15 @@ export default function App(){
                       </div>
                     </div>
                     <select 
-                      className="w-full mt-1 border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 rounded-xl px-3 py-2 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-orange-500"
+                      className="w-full mt-1 border border-[#2A2A35] bg-[#24242A] rounded-card px-3 py-2 text-[#FFFFFF] focus:ring-2 focus:ring-[#FFCE34]"
                       value={saltinessCategory}
                       onChange={(e) => setSaltinessCategory(e.target.value)}
+                      style={{ color: '#FFFFFF' }}
                     >
-                      <option value="Low">Low (500 mg/L)</option>
-                      <option value="Medium">Medium (900 mg/L)</option>
-                      <option value="High">High (1,300 mg/L)</option>
-                      <option value="Very High">Very High (1,800 mg/L)</option>
+                      <option value="Low" style={{ background: '#24242A', color: '#FFFFFF' }}>Low (500 mg/L)</option>
+                      <option value="Medium" style={{ background: '#24242A', color: '#FFFFFF' }}>Medium (900 mg/L)</option>
+                      <option value="High" style={{ background: '#24242A', color: '#FFFFFF' }}>High (1,300 mg/L)</option>
+                      <option value="Very High" style={{ background: '#24242A', color: '#FFFFFF' }}>Very High (1,800 mg/L)</option>
                     </select>
                   </div>
                   
@@ -2882,12 +2892,12 @@ export default function App(){
                       <Label>Heat Acclimation Status</Label>
                       <div className="group relative inline-block">
                         <div 
-                          className="w-5 h-5 rounded-full bg-orange-500 text-white text-xs font-bold cursor-pointer flex items-center justify-center hover:bg-orange-600 active:bg-orange-700 transition-colors"
+                          className="w-5 h-5 rounded-full bg-[#FFCE34] text-white text-xs font-bold cursor-pointer flex items-center justify-center hover:bg-[#FFD966] active:bg-orange-700 transition-colors"
                           onClick={() => setShowAcclimationTooltip(!showAcclimationTooltip)}
                         >
                           ?
                         </div>
-                        <div className={`absolute left-0 bottom-full mb-2 w-80 bg-slate-900 dark:bg-slate-800 text-white text-xs rounded-lg shadow-xl p-3 transition-all duration-200 z-50 pointer-events-none ${showAcclimationTooltip ? 'opacity-100 visible' : 'opacity-0 invisible group-hover:opacity-100 group-hover:visible'}`}>
+                        <div className={`absolute left-0 bottom-full mb-2 w-80 bg-[#24242A] text-white text-xs rounded-lg shadow-xl p-3 transition-all duration-200 z-50 pointer-events-none ${showAcclimationTooltip ? 'opacity-100 visible' : 'opacity-0 invisible group-hover:opacity-100 group-hover:visible'}`}>
                           <div className="font-semibold mb-2 text-orange-300">Heat Acclimation Guide:</div>
                           <div className="space-y-1.5">
                             <div><span className="text-orange-400 font-semibold">Not acclimated:</span> Heat feels harder, sweating less efficient.</div>
@@ -2898,34 +2908,35 @@ export default function App(){
                       </div>
                     </div>
                     <select 
-                      className="w-full mt-1 border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 rounded-xl px-3 py-2 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-orange-500"
+                      className="w-full mt-1 border border-[#2A2A35] bg-[#24242A] rounded-card px-3 py-2 text-[#FFFFFF] focus:ring-2 focus:ring-[#FFCE34]"
                       value={heatAcclimation}
                       onChange={(e) => setHeatAcclimation(e.target.value)}
+                      style={{ color: '#FFFFFF' }}
                     >
-                      <option value="Not acclimated">Not acclimated (1.00×)</option>
-                      <option value="Partial acclimated">Partial (0.85×)</option>
-                      <option value="Well acclimated">Well acclimated (0.70×)</option>
+                      <option value="Not acclimated" style={{ background: '#24242A', color: '#FFFFFF' }}>Not acclimated (1.00×)</option>
+                      <option value="Partial acclimated" style={{ background: '#24242A', color: '#FFFFFF' }}>Partial (0.85×)</option>
+                      <option value="Well acclimated" style={{ background: '#24242A', color: '#FFFFFF' }}>Well acclimated (0.70×)</option>
                     </select>
                   </div>
                 </div>
                 
-                <div className="mt-4 p-4 bg-orange-50 dark:bg-orange-900/20 rounded-xl border-2 border-orange-200 dark:border-orange-800">
-                  <div className="text-sm font-semibold text-orange-800 dark:text-orange-200 mb-2">⚙️ Auto-Calculated Settings</div>
+                <div className="mt-4 p-4 bg-orange-950/40 rounded-card border-2 border-orange-800">
+                  <div className="text-sm font-semibold text-[#FFCE34] mb-2">⚙️ Auto-Calculated Settings</div>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
                     <div>
-                      <div className="text-slate-600 dark:text-slate-400">Intensity Modifier</div>
-                      <div className="font-mono font-semibold text-orange-700 dark:text-orange-300">Sweat: {intensitySweatMultiplier.toFixed(2)}× Na: {intensityNaMultiplier.toFixed(2)}×</div>
-                      <div className="text-slate-500 text-[10px] mt-1">From training log intensity</div>
+                      <div className="text-[#A9A9B8]">Intensity Modifier</div>
+                      <div className="font-mono font-semibold text-[#FFCE34]">Sweat: {intensitySweatMultiplier.toFixed(2)}× Na: {intensityNaMultiplier.toFixed(2)}×</div>
+                      <div className="text-[#A9A9B8] text-[10px] mt-1">From training log intensity</div>
                     </div>
                     <div>
-                      <div className="text-slate-600 dark:text-slate-400">Temperature Modifier</div>
-                      <div className="font-mono font-semibold text-orange-700 dark:text-orange-300">{temperatureMultiplier.toFixed(2)}× @ {ambientC}°C</div>
-                      <div className="text-slate-500 text-[10px] mt-1">From weather API</div>
+                      <div className="text-[#A9A9B8]">Temperature Modifier</div>
+                      <div className="font-mono font-semibold text-[#FFCE34]">{temperatureMultiplier.toFixed(2)}× @ {ambientC}°C</div>
+                      <div className="text-[#A9A9B8] text-[10px] mt-1">From weather API</div>
                     </div>
                     <div>
-                      <div className="text-slate-600 dark:text-slate-400">Acclimation Modifier</div>
-                      <div className="font-mono font-semibold text-orange-700 dark:text-orange-300">{acclimationMultiplier.toFixed(2)}× Na</div>
-                      <div className="text-slate-500 text-[10px] mt-1">{heatAcclimation}</div>
+                      <div className="text-[#A9A9B8]">Acclimation Modifier</div>
+                      <div className="font-mono font-semibold text-[#FFCE34]">{acclimationMultiplier.toFixed(2)}× Na</div>
+                      <div className="text-[#A9A9B8] text-[10px] mt-1">{heatAcclimation}</div>
                     </div>
                   </div>
                 </div>
@@ -2936,11 +2947,11 @@ export default function App(){
                 <SectionTitle title="Weekly Hydration Schedule" subtitle="Training sessions + resting fluid needs" />
                 <div className="space-y-4">
                   {weeklyHydrationSchedule.map((day, index) => (
-                    <div key={day.day} className={`border rounded-xl p-4 ${day.hasTraining ? 'border-emerald-200 dark:border-emerald-800 bg-emerald-50 dark:bg-emerald-900/20' : 'border-slate-200 dark:border-slate-700'}`}>
+                    <div key={day.day} className={`border rounded-card p-4 ${day.hasTraining ? 'border-emerald-800 bg-emerald-900/20' : 'border-[#2A2A35]'}`}>
                       <div className="mb-3">
                         <div className="font-bold text-lg">{day.day}</div>
                         {day.forecastDate && (
-                          <div className="text-sm text-slate-500 dark:text-slate-400">{day.forecastDate}</div>
+                          <div className="text-sm text-[#A9A9B8]">{day.forecastDate}</div>
                         )}
                       </div>
                       
@@ -2948,32 +2959,32 @@ export default function App(){
                         <>
                           {/* Training Sessions */}
                           {day.sessions.map((session, idx) => (
-                            <div key={idx} className="mb-3 pb-3 border-b border-orange-200 dark:border-orange-700 last:border-0 last:pb-0 last:mb-0">
+                            <div key={idx} className="mb-3 pb-3 border-b border-orange-800 last:border-0 last:pb-0 last:mb-0">
                               <div className="flex items-center justify-between mb-2">
-                                <div className="font-semibold text-orange-700 dark:text-orange-300">
+                                <div className="font-semibold text-[#FFCE34]">
                                   {session.timeOfDay} Session • {session.type} • {session.duration} min
                                 </div>
-                                <div className="text-xs text-slate-500">
+                                <div className="text-xs text-[#A9A9B8]">
                                   {session.temp}°C • {session.humidity}% humidity
                                 </div>
                               </div>
                               <div className="grid grid-cols-2 gap-3 text-sm">
                                 <div>
-                                  <div className="text-slate-600 dark:text-slate-400 mb-1">Rate</div>
-                                  <div className="font-semibold text-orange-700 dark:text-orange-400">
-                                    <span className="text-slate-700 dark:text-slate-300">Fluid:</span> {session.fluidPerHour} ml/h
+                                  <div className="text-[#A9A9B8] mb-1">Rate</div>
+                                  <div className="font-semibold text-orange-300">
+                                    <span className="text-[#FFFFFF]">Fluid:</span> {session.fluidPerHour} ml/h
                                   </div>
-                                  <div className="font-semibold text-orange-700 dark:text-orange-400">
-                                    <span className="text-slate-700 dark:text-slate-300">Sodium:</span> {session.sodiumPerHour} mg/h
+                                  <div className="font-semibold text-orange-300">
+                                    <span className="text-[#FFFFFF]">Sodium:</span> {session.sodiumPerHour} mg/h
                                   </div>
                                 </div>
                                 <div>
-                                  <div className="text-slate-600 dark:text-slate-400 mb-1">Session Total</div>
-                                  <div className="font-semibold text-orange-700 dark:text-orange-400">
-                                    <span className="text-slate-700 dark:text-slate-300">Fluid:</span> {session.totalFluid} ml
+                                  <div className="text-[#A9A9B8] mb-1">Session Total</div>
+                                  <div className="font-semibold text-orange-300">
+                                    <span className="text-[#FFFFFF]">Fluid:</span> {session.totalFluid} ml
                                   </div>
-                                  <div className="font-semibold text-orange-700 dark:text-orange-400">
-                                    <span className="text-slate-700 dark:text-slate-300">Sodium:</span> Lost {session.totalSweatLossMg} mg / Replace {session.sodiumLowerReplace}–{session.sodiumUpperReplace} mg
+                                  <div className="font-semibold text-orange-300">
+                                    <span className="text-[#FFFFFF]">Sodium:</span> Lost {session.totalSweatLossMg} mg / Replace {session.sodiumLowerReplace}–{session.sodiumUpperReplace} mg
                                   </div>
                                 </div>
                               </div>
@@ -2981,36 +2992,36 @@ export default function App(){
                           ))}
                           
                           {/* Daily Summary */}
-                          <div className="mt-3 pt-3 border-t-2 border-slate-300 dark:border-slate-600">
+                          <div className="mt-3 pt-3 border-t-2 border-[#2A2A35]">
                             <div className="grid grid-cols-3 gap-3 text-sm">
                               <div>
-                                <div className="text-slate-600 dark:text-slate-400 mb-1">Training Total</div>
-                                <div className="font-bold text-orange-700 dark:text-orange-300">
-                                  <span className="text-slate-700 dark:text-slate-300 text-xs font-normal">Fluid:</span> {day.totalTrainingFluid} ml
+                                <div className="text-[#A9A9B8] mb-1">Training Total</div>
+                                <div className="font-bold text-[#FFCE34]">
+                                  <span className="text-[#FFFFFF] text-xs font-normal">Fluid:</span> {day.totalTrainingFluid} ml
                                 </div>
-                                <div className="text-xs text-slate-500">
+                                <div className="text-xs text-[#A9A9B8]">
                                   <span className="font-semibold">Sodium:</span> Lost {day.totalTrainingSweatLossMg} mg / Replace {day.totalTrainingLowerReplace}–{day.totalTrainingUpperReplace} mg
                                 </div>
                               </div>
                               <div>
-                                <div className="text-slate-600 dark:text-slate-400 mb-1">Total Fluid Intake (24h)</div>
-                                <div className="font-bold text-orange-700 dark:text-orange-300">
-                                  <span className="text-slate-700 dark:text-slate-300 text-xs font-normal">Fluid:</span> {day.dailyResting} ml
+                                <div className="text-[#A9A9B8] mb-1">Total Fluid Intake (24h)</div>
+                                <div className="font-bold text-[#FFCE34]">
+                                  <span className="text-[#FFFFFF] text-xs font-normal">Fluid:</span> {day.dailyResting} ml
                                 </div>
-                                <div className="text-xs text-slate-500">Background fluid</div>
+                                <div className="text-xs text-[#A9A9B8]">Background fluid</div>
                               </div>
                               <div>
-                                <div className="text-slate-600 dark:text-slate-400 mb-1">Daily Total</div>
-                                <div className="font-bold text-xl text-orange-800 dark:text-orange-200">
-                                  <span className="text-slate-700 dark:text-slate-300 text-sm font-normal">Fluid:</span> {day.totalDaily} ml
+                                <div className="text-[#A9A9B8] mb-1">Daily Total</div>
+                                <div className="font-bold text-xl text-[#FFCE34]">
+                                  <span className="text-[#FFFFFF] text-sm font-normal">Fluid:</span> {day.totalDaily} ml
                                 </div>
-                                <div className="text-xs text-slate-500">All fluids combined</div>
+                                <div className="text-xs text-[#A9A9B8]">All fluids combined</div>
                               </div>
                             </div>
                           </div>
                         </>
                       ) : (
-                        <div className="text-sm text-slate-500 dark:text-slate-400">
+                        <div className="text-sm text-[#A9A9B8]">
                           Rest day • {day.baseTemp}°C forecasted • {day.dailyResting} ml total fluid recommended
                         </div>
                       )}
@@ -3029,7 +3040,7 @@ export default function App(){
                       <Label>Body mass (kg)</Label>
                       <input 
                         type="number" 
-                        className="w-full mt-1 border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 rounded-xl px-3 py-2 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-orange-500" 
+                        className="w-full mt-1 border border-[#2A2A35] bg-[#24242A] rounded-card px-3 py-2 text-[#FFFFFF] focus:ring-2 focus:ring-[#FFCE34]" 
                         value={weightKg} 
                         onChange={e => setWeightKg(Number(e.target.value))}
                         min={35}
@@ -3041,7 +3052,7 @@ export default function App(){
                       <Label>Session duration (min)</Label>
                       <input 
                         type="number" 
-                        className="w-full mt-1 border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 rounded-xl px-3 py-2 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-orange-500" 
+                        className="w-full mt-1 border border-[#2A2A35] bg-[#24242A] rounded-card px-3 py-2 text-[#FFFFFF] focus:ring-2 focus:ring-[#FFCE34]" 
                         value={sessionMin} 
                         onChange={e => setSessionMin(Number(e.target.value))}
                         min={15}
@@ -3052,13 +3063,14 @@ export default function App(){
                     <div>
                       <Label>Intensity</Label>
                       <select 
-                        className="w-full mt-1 border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 rounded-xl px-3 py-2 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-orange-500"
+                        className="w-full mt-1 border border-[#2A2A35] bg-[#24242A] rounded-card px-3 py-2 text-[#FFFFFF] focus:ring-2 focus:ring-[#FFCE34]"
                         value={"easy"}
+                        style={{ color: '#FFFFFF' }}
                       >
-                        <option value="easy">Aerobic / Easy</option>
-                        <option value="tempo">Tempo / Threshold</option>
-                        <option value="vo2">VO₂ / Intervals</option>
-                        <option value="strength">Strength</option>
+                        <option value="easy" style={{ background: '#24242A', color: '#FFFFFF' }}>Aerobic / Easy</option>
+                        <option value="tempo" style={{ background: '#24242A', color: '#FFFFFF' }}>Tempo / Threshold</option>
+                        <option value="vo2" style={{ background: '#24242A', color: '#FFFFFF' }}>VO₂ / Intervals</option>
+                        <option value="strength" style={{ background: '#24242A', color: '#FFFFFF' }}>Strength</option>
                       </select>
                     </div>
 
@@ -3066,7 +3078,7 @@ export default function App(){
                       <Label>Ambient temperature (°C)</Label>
                       <input 
                         type="number" 
-                        className="w-full mt-1 border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 rounded-xl px-3 py-2 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-orange-500" 
+                        className="w-full mt-1 border border-[#2A2A35] bg-[#24242A] rounded-card px-3 py-2 text-[#FFFFFF] focus:ring-2 focus:ring-[#FFCE34]" 
                         value={ambientC} 
                         onChange={e => setAmbientC(Number(e.target.value))}
                         min={-10}
@@ -3074,9 +3086,9 @@ export default function App(){
                       />
                     </div>
 
-                    <div className="col-span-1 md:col-span-2 p-3 bg-orange-50 dark:bg-orange-900/20 border border-orange-200 dark:border-orange-800 rounded-lg">
-                      <div className="text-sm font-semibold text-orange-800 dark:text-orange-200 mb-1">ℹ️ Hydration Settings</div>
-                      <div className="text-xs text-orange-700 dark:text-orange-300">
+                    <div className="col-span-1 md:col-span-2 p-3 bg-orange-950/40 border border-orange-800 rounded-lg">
+                      <div className="text-sm font-semibold text-[#FFCE34] mb-1">ℹ️ Hydration Settings</div>
+                      <div className="text-xs text-[#FFCE34]">
                         Sweat rate category is set in the Daily tab. Intensity automatically matches your training log.
                       </div>
                     </div>
@@ -3085,21 +3097,21 @@ export default function App(){
                       <Label>Estimated sweat sodium (mg/L)</Label>
                       <input 
                         type="number" 
-                        className="w-full mt-1 border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 rounded-xl px-3 py-2 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-orange-500" 
+                        className="w-full mt-1 border border-[#2A2A35] bg-[#24242A] rounded-card px-3 py-2 text-[#FFFFFF] focus:ring-2 focus:ring-[#FFCE34]" 
                         value={Math.round(sweatNaMgPerL)} 
                         onChange={e => {}}
                         readOnly
                         min={300}
                         max={1500}
                       />
-                      <p className="text-xs text-slate-500 mt-1">Auto-calculated from ambient temp. Typical 500–1000 mg/L.</p>
+                      <p className="text-xs text-[#A9A9B8] mt-1">Auto-calculated from ambient temp. Typical 500–1000 mg/L.</p>
                     </div>
                   </div>
 
                   <div className="mt-4 flex flex-wrap gap-2">
-                    <span className="px-3 py-1 text-xs font-semibold bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-lg">Env index: {Math.round(envIndex)}</span>
-                    <span className="px-3 py-1 text-xs font-semibold bg-emerald-100 dark:bg-emerald-900/30 text-orange-700 dark:text-orange-300 rounded-lg">Fluid rate: {fluidPerHour} ml/h</span>
-                    <span className="px-3 py-1 text-xs font-semibold bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-300 rounded-lg">Sodium: {recSodiumPerHr} mg/h</span>
+                    <span className="px-3 py-1 text-xs font-semibold bg-[#2A2A35] text-[#FFFFFF] rounded-lg">Env index: {Math.round(envIndex)}</span>
+                    <span className="px-3 py-1 text-xs font-semibold bg-emerald-950/40 text-emerald-300 rounded-lg">Fluid rate: {fluidPerHour} ml/h</span>
+                    <span className="px-3 py-1 text-xs font-semibold bg-orange-950/40 text-orange-300 rounded-lg">Sodium: {recSodiumPerHr} mg/h</span>
                   </div>
                 </Card>
 
@@ -3108,31 +3120,31 @@ export default function App(){
                   <Card>
                     <SectionTitle title="Session Plan" subtitle="Targets per hour and totals for the session" />
                     <div className="grid grid-cols-2 gap-3 mb-4">
-                      <div className="rounded-xl border border-slate-200 dark:border-slate-700 p-4">
-                        <div className="text-xs text-slate-500 dark:text-slate-400 mb-1">Per hour</div>
-                        <div className="text-2xl font-bold text-orange-700 dark:text-orange-300">{fluidPerHour} ml</div>
-                        <div className="text-sm text-slate-600 dark:text-slate-400 mt-1">Sodium: {recSodiumPerHr} mg</div>
+                      <div className="rounded-card border border-[#2A2A35] p-4">
+                        <div className="text-xs text-[#A9A9B8] mb-1">Per hour</div>
+                        <div className="text-2xl font-bold text-[#FFCE34]">{fluidPerHour} ml</div>
+                        <div className="text-sm text-[#A9A9B8] mt-1">Sodium: {recSodiumPerHr} mg</div>
                       </div>
-                      <div className="rounded-xl border border-slate-200 dark:border-slate-700 p-4">
-                        <div className="text-xs text-slate-500 dark:text-slate-400 mb-1">Total this session</div>
-                        <div className="text-2xl font-bold text-orange-700 dark:text-orange-300">{totalFluidMl} ml</div>
-                        <div className="text-sm text-slate-600 dark:text-slate-400 mt-1">
+                      <div className="rounded-card border border-[#2A2A35] p-4">
+                        <div className="text-xs text-[#A9A9B8] mb-1">Total this session</div>
+                        <div className="text-2xl font-bold text-[#FFCE34]">{totalFluidMl} ml</div>
+                        <div className="text-sm text-[#A9A9B8] mt-1">
                           Sodium: Lost {totalSweatLossMg} mg / Replace {sodiumLowerReplace}–{sodiumUpperReplace} mg
                         </div>
                       </div>
                     </div>
 
-                    <div className="rounded-xl border border-slate-200 dark:border-slate-700 p-4 bg-emerald-50 dark:bg-emerald-900/20">
-                      <div className="text-sm font-semibold text-orange-700 dark:text-orange-300 mb-2">Drink Sodium Concentration</div>
-                      <div className="text-sm text-slate-700 dark:text-slate-300">
-                        Your drink should contain approximately <span className="font-bold text-orange-700 dark:text-orange-300">{drinkNaMgPerL} mg/L</span> sodium to meet your needs.
+                    <div className="rounded-card border border-[#2A2A35] p-4 bg-emerald-900/20">
+                      <div className="text-sm font-semibold text-[#FFCE34] mb-2">Drink Sodium Concentration</div>
+                      <div className="text-sm text-[#FFFFFF]">
+                        Your drink should contain approximately <span className="font-bold text-[#FFCE34]">{drinkNaMgPerL} mg/L</span> sodium to meet your needs.
                       </div>
                     </div>
                   </Card>
 
                   <Card>
                     <SectionTitle title="Notes & Safeguards" />
-                    <ul className="text-sm text-slate-700 dark:text-slate-300 space-y-2">
+                    <ul className="text-sm text-[#FFFFFF] space-y-2">
                       <li>These are planning targets. Adjust by thirst, gut comfort, and weigh-in feedback.</li>
                       <li>Aim to limit body mass loss to ~2% in most events. Consider gut training for higher rates.</li>
                       <li>Use higher drink sodium in heavy sweaters or very hot/humid conditions.</li>
@@ -3148,24 +3160,24 @@ export default function App(){
               <Card>
                 <SectionTitle title="Athlete Profile" subtitle="Basic info for calorie and macro calculations" />
                 <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
-                  <div className="text-center p-3 bg-slate-50 dark:bg-slate-800 rounded-lg">
-                    <div className="text-xs text-slate-600 dark:text-slate-400">Weight</div>
-                    <div className="text-lg font-bold text-orange-700 dark:text-orange-300">{weightKg} kg</div>
+                  <div className="text-center p-3 bg-[#24242A] rounded-lg">
+                    <div className="text-xs text-[#A9A9B8]">Weight</div>
+                    <div className="text-lg font-bold text-[#FFCE34]">{weightKg} kg</div>
                   </div>
-                  <div className="text-center p-3 bg-slate-50 dark:bg-slate-800 rounded-lg">
-                    <div className="text-xs text-slate-600 dark:text-slate-400">Height</div>
-                    <div className="text-lg font-bold text-orange-700 dark:text-orange-300">{heightCm} cm</div>
+                  <div className="text-center p-3 bg-[#24242A] rounded-lg">
+                    <div className="text-xs text-[#A9A9B8]">Height</div>
+                    <div className="text-lg font-bold text-[#FFCE34]">{heightCm} cm</div>
                   </div>
-                  <div className="text-center p-3 bg-slate-50 dark:bg-slate-800 rounded-lg">
-                    <div className="text-xs text-slate-600 dark:text-slate-400">BMR</div>
-                    <div className="text-lg font-bold text-orange-700 dark:text-orange-300">{bmr} kcal</div>
+                  <div className="text-center p-3 bg-[#24242A] rounded-lg">
+                    <div className="text-xs text-[#A9A9B8]">BMR</div>
+                    <div className="text-lg font-bold text-[#FFCE34]">{bmr} kcal</div>
                   </div>
-                  <div className="text-center p-3 bg-slate-50 dark:bg-slate-800 rounded-lg">
-                    <div className="text-xs text-slate-600 dark:text-slate-400">Base Activity</div>
-                    <div className="text-lg font-bold text-orange-700 dark:text-orange-300">{nonTraining} kcal</div>
+                  <div className="text-center p-3 bg-[#24242A] rounded-lg">
+                    <div className="text-xs text-[#A9A9B8]">Base Activity</div>
+                    <div className="text-lg font-bold text-[#FFCE34]">{nonTraining} kcal</div>
                   </div>
                 </div>
-                <p className="text-xs text-slate-500 dark:text-slate-400">
+                <p className="text-xs text-[#A9A9B8]">
                   Note: Update your weight, height, and activity level in the Daily tab to adjust calculations.
                 </p>
               </Card>
@@ -3199,13 +3211,13 @@ export default function App(){
                   <SectionTitle title="Daily Calories" subtitle="Total calories per day (resting + training)" />
                   <div className="space-y-2">
                     {['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'].map((day, index) => (
-                      <div key={day} className="flex justify-between items-center p-2 bg-slate-50 dark:bg-slate-800 rounded-lg">
+                      <div key={day} className="flex justify-between items-center p-2 bg-[#24242A] rounded-lg">
                         <span className="font-medium capitalize">{day}</span>
                         <div className="text-right">
-                          <div className="font-bold text-orange-700 dark:text-orange-300">
+                          <div className="font-bold text-[#FFCE34]">
                             {dailyTotalCalories[index]} kcal
                           </div>
-                          <div className="text-xs text-slate-500">
+                          <div className="text-xs text-[#A9A9B8]">
                             Training: {dailyTrainingCalories[index]} kcal
                           </div>
                         </div>
@@ -3217,13 +3229,13 @@ export default function App(){
                 <Card>
                   <SectionTitle title="Weekly Summary" subtitle="Total calories for the week" />
                   <div className="text-center">
-                    <div className="text-3xl font-bold text-orange-700 dark:text-orange-300 mb-2">
+                    <div className="text-3xl font-bold text-[#FFCE34] mb-2">
                       {weeklyTotalCalories} kcal
                     </div>
-                    <div className="text-sm text-slate-600 dark:text-slate-400">
+                    <div className="text-sm text-[#A9A9B8]">
                       Average: {Math.round(weeklyTotalCalories / 7)} kcal/day
                     </div>
-                    <div className="text-xs text-slate-500 mt-2">
+                    <div className="text-xs text-[#A9A9B8] mt-2">
                       Includes resting + training calories
                     </div>
                   </div>
@@ -3247,40 +3259,40 @@ export default function App(){
             <motion.div key="traininglog" initial={{opacity:0,y:8}} animate={{opacity:1,y:0}} exit={{opacity:0,y:-8}} transition={{duration:0.25}} className="space-y-4 sm:space-y-6">
               {/* Help Modal */}
               {showTrainingHelp && (
-                <div className="mb-6 p-4 sm:p-6 bg-gradient-to-br from-orange-50 to-blue-50 dark:from-slate-800 dark:to-slate-900 border-2 border-orange-300 dark:border-orange-700 rounded-xl space-y-4 overflow-hidden">
+                <div className="mb-6 p-4 sm:p-6 bg-[#24242A] border-2 border-[#FFCE34] rounded-card space-y-4 overflow-hidden">
                   <div className="flex items-center justify-between">
-                    <h3 className="text-lg sm:text-xl font-bold text-slate-900 dark:text-slate-100">📚 How to Use Training Log</h3>
+                    <h3 className="text-lg sm:text-xl font-bold text-[#FFFFFF]">📚 How to Use Training Log</h3>
                     <button
                       onClick={() => setShowTrainingHelp(false)}
-                      className="text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200 text-2xl font-bold flex-shrink-0 ml-2"
+                      className="text-[#A9A9B8] hover:text-[#FFFFFF] text-2xl font-bold flex-shrink-0 ml-2"
                     >
                       ×
                     </button>
                   </div>
                   
-                  <div className="space-y-3 text-xs sm:text-sm text-slate-700 dark:text-slate-300 break-words">
+                  <div className="space-y-3 text-xs sm:text-sm text-[#FFFFFF] break-words">
                     <div>
-                      <strong className="text-orange-600 dark:text-orange-400">1️⃣ Log Your Sessions:</strong>
+                      <strong className="text-[#FFCE34]">1️⃣ Log Your Sessions:</strong>
                       <p>For each day, enter your training duration (minutes), type (Run, Bike, Swim, Strength, Cross-Train, Rest), intensity (Aerobic, Threshold, VO2max), and time of day.</p>
                     </div>
                     
                     <div>
-                      <strong className="text-orange-600 dark:text-orange-400">2️⃣ Double Sessions:</strong>
+                      <strong className="text-[#FFCE34]">2️⃣ Double Sessions:</strong>
                       <p>Check "Add Second Session" to log two workouts in one day (e.g., morning run + afternoon strength).</p>
                     </div>
                     
                     <div>
-                      <strong className="text-orange-600 dark:text-orange-400">3️⃣ Daily Totals:</strong>
+                      <strong className="text-[#FFCE34]">3️⃣ Daily Totals:</strong>
                       <p>Each day shows your base calories (non-training), training calories, and macro targets (Carbs, Protein, Fat).</p>
                     </div>
                     
                     <div>
-                      <strong className="text-orange-600 dark:text-orange-400">4️⃣ View Reports:</strong>
+                      <strong className="text-[#FFCE34]">4️⃣ View Reports:</strong>
                       <p>Check the Reports tab to see your weekly intensity distribution, training volume, and coaching analysis.</p>
                     </div>
                     
                     <div>
-                      <strong className="text-orange-600 dark:text-orange-400">💡 Tip:</strong>
+                      <strong className="text-[#FFCE34]">💡 Tip:</strong>
                       <p>Consistent logging helps track your training load and optimize your nutrition accordingly.</p>
                     </div>
                   </div>
@@ -3292,7 +3304,7 @@ export default function App(){
                   <SectionTitle title="Daily Training Log" subtitle="Track your sessions and nutrition" />
                   <button
                     onClick={() => setShowTrainingHelp(!showTrainingHelp)}
-                    className="w-8 h-8 rounded-full bg-orange-500 text-white flex items-center justify-center hover:bg-orange-600 transition-all text-sm font-bold flex-shrink-0"
+                    className="w-8 h-8 rounded-full bg-[#FFCE34] text-white flex items-center justify-center hover:bg-[#FFD966] transition-all text-sm font-bold flex-shrink-0"
                     aria-label="Help"
                   >
                     ?
@@ -3326,45 +3338,45 @@ export default function App(){
             <motion.div key="coach" initial={{opacity:0,y:8}} animate={{opacity:1,y:0}} exit={{opacity:0,y:-8}} transition={{duration:0.25}} className="space-y-4 sm:space-y-6">
               {/* Help Modal */}
               {showCoachHelp && (
-                <div className="mb-6 p-4 sm:p-6 bg-gradient-to-br from-orange-50 to-blue-50 dark:from-slate-800 dark:to-slate-900 border-2 border-orange-300 dark:border-orange-700 rounded-xl space-y-4 overflow-hidden">
+                <div className="mb-6 p-4 sm:p-6 bg-[#24242A] border-2 border-[#FFCE34] rounded-card space-y-4 overflow-hidden">
                   <div className="flex items-center justify-between">
-                    <h3 className="text-lg sm:text-xl font-bold text-slate-900 dark:text-slate-100">📚 How to Use Coach Dashboard</h3>
+                    <h3 className="text-lg sm:text-xl font-bold text-[#FFFFFF]">📚 How to Use Coach Dashboard</h3>
                     <button
                       onClick={() => setShowCoachHelp(false)}
-                      className="text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200 text-2xl font-bold flex-shrink-0 ml-2"
+                      className="text-[#A9A9B8] hover:text-[#FFFFFF] text-2xl font-bold flex-shrink-0 ml-2"
                     >
                       ×
                     </button>
                   </div>
                   
-                  <div className="space-y-3 text-xs sm:text-sm text-slate-700 dark:text-slate-300 break-words">
+                  <div className="space-y-3 text-xs sm:text-sm text-[#FFFFFF] break-words">
                     <div>
-                      <strong className="text-orange-600 dark:text-orange-400">1️⃣ Athlete Profile:</strong>
+                      <strong className="text-[#FFCE34]">1️⃣ Athlete Profile:</strong>
                       <p>View your current athlete profile showing weight, height, BMR, and base activity level at the top of the page.</p>
                     </div>
                     
                     <div>
-                      <strong className="text-orange-600 dark:text-orange-400">2️⃣ Manage Athletes:</strong>
+                      <strong className="text-[#FFCE34]">2️⃣ Manage Athletes:</strong>
                       <p>Add up to 5 athletes to track their individual nutrition and training programs. Click "+ Add Athlete" to create profiles.</p>
                     </div>
                     
                     <div>
-                      <strong className="text-orange-600 dark:text-orange-400">3️⃣ Training Programs:</strong>
+                      <strong className="text-[#FFCE34]">3️⃣ Training Programs:</strong>
                       <p>Build customized training programs for each athlete based on their goals, fitness level, and schedule.</p>
                     </div>
                     
                     <div>
-                      <strong className="text-orange-600 dark:text-orange-400">4️⃣ Nutrition Plans:</strong>
+                      <strong className="text-[#FFCE34]">4️⃣ Nutrition Plans:</strong>
                       <p>Create personalized nutrition plans tailored to each athlete's training load, body composition goals, and dietary preferences.</p>
                     </div>
                     
                     <div>
-                      <strong className="text-orange-600 dark:text-orange-400">5️⃣ Progress Tracking:</strong>
+                      <strong className="text-[#FFCE34]">5️⃣ Progress Tracking:</strong>
                       <p>Monitor athlete progress over time with detailed reports and analytics.</p>
                     </div>
                     
                     <div>
-                      <strong className="text-orange-600 dark:text-orange-400">💡 Note:</strong>
+                      <strong className="text-[#FFCE34]">💡 Note:</strong>
                       <p>This feature is coming soon. For now, focus on your own training in the Training Log tab.</p>
                     </div>
                   </div>
@@ -3383,7 +3395,7 @@ export default function App(){
                   <SectionTitle title="Coach Dashboard" subtitle="Manage athletes and training programs" />
                   <button
                     onClick={() => setShowCoachHelp(!showCoachHelp)}
-                    className="w-8 h-8 rounded-full bg-orange-500 text-white flex items-center justify-center hover:bg-orange-600 transition-all text-sm font-bold flex-shrink-0"
+                    className="w-8 h-8 rounded-full bg-[#FFCE34] text-white flex items-center justify-center hover:bg-[#FFD966] transition-all text-sm font-bold flex-shrink-0"
                     aria-label="Help"
                   >
                     ?
@@ -3392,14 +3404,14 @@ export default function App(){
                 <div className="space-y-4">
                   <div className="flex justify-between items-center">
                     <h3 className="text-lg font-semibold">Athletes (0/5)</h3>
-                    <button className="px-4 py-2 bg-gradient-to-r from-orange-500 to-orange-600 text-white rounded-lg hover:from-orange-600 hover:to-orange-700">
+                    <button className="px-4 py-2 bg-[#FFCE34] text-white rounded-lg hover:from-orange-600 hover:to-orange-700">
                       + Add Athlete
                     </button>
                   </div>
-                  <div className="border-2 border-dashed border-slate-300 dark:border-slate-700 rounded-lg p-8 text-center">
+                  <div className="border-2 border-dashed border-[#2A2A35] rounded-lg p-8 text-center">
                     <div className="text-4xl mb-3">🏋️</div>
-                    <h4 className="font-semibold text-slate-700 dark:text-slate-300 mb-2">No athletes yet</h4>
-                    <p className="text-sm text-slate-500 dark:text-slate-400">Add up to 5 athletes to track their nutrition and training</p>
+                    <h4 className="font-semibold text-[#FFFFFF] mb-2">No athletes yet</h4>
+                    <p className="text-sm text-[#A9A9B8]">Add up to 5 athletes to track their nutrition and training</p>
                   </div>
                 </div>
               </Card>
@@ -3410,25 +3422,25 @@ export default function App(){
             <motion.div key="reports" initial={{opacity:0,y:8}} animate={{opacity:1,y:0}} exit={{opacity:0,y:-8}} transition={{duration:0.25}} className="space-y-4 sm:space-y-6">
               {/* Help Modal */}
               {showReportsHelp && (
-                <div className="mb-6 p-4 sm:p-6 bg-gradient-to-br from-orange-50 to-blue-50 dark:from-slate-800 dark:to-slate-900 border-2 border-orange-300 dark:border-orange-700 rounded-xl space-y-4 overflow-hidden">
+                <div className="mb-6 p-4 sm:p-6 bg-[#24242A] border-2 border-[#FFCE34] rounded-card space-y-4 overflow-hidden">
                   <div className="flex items-center justify-between">
-                    <h3 className="text-lg sm:text-xl font-bold text-slate-900 dark:text-slate-100">📚 How to Use Reports</h3>
+                    <h3 className="text-lg sm:text-xl font-bold text-[#FFFFFF]">📚 How to Use Reports</h3>
                     <button
                       onClick={() => setShowReportsHelp(false)}
-                      className="text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200 text-2xl font-bold flex-shrink-0 ml-2"
+                      className="text-[#A9A9B8] hover:text-[#FFFFFF] text-2xl font-bold flex-shrink-0 ml-2"
                     >
                       ×
                     </button>
                   </div>
                   
-                  <div className="space-y-3 text-xs sm:text-sm text-slate-700 dark:text-slate-300 break-words">
+                  <div className="space-y-3 text-xs sm:text-sm text-[#FFFFFF] break-words">
                     <div>
-                      <strong className="text-orange-600 dark:text-orange-400">1️⃣ Weekly Summary:</strong>
+                      <strong className="text-[#FFCE34]">1️⃣ Weekly Summary:</strong>
                       <p>View your training snapshot showing daily calories, training time, and energy breakdown. See your weekly totals and averages.</p>
                     </div>
                     
                     <div>
-                      <strong className="text-orange-600 dark:text-orange-400">2️⃣ Intensity Distribution Analysis:</strong>
+                      <strong className="text-[#FFCE34]">2️⃣ Intensity Distribution Analysis:</strong>
                       <p>Comprehensive analysis including:</p>
                       <ul className="list-disc list-inside ml-4 mt-1 space-y-1">
                         <li><strong>Grade:</strong> Overall week quality (A-D)</li>
@@ -3440,12 +3452,12 @@ export default function App(){
                     </div>
                     
                     <div>
-                      <strong className="text-orange-600 dark:text-orange-400">3️⃣ Daily Hydration Schedule:</strong>
+                      <strong className="text-[#FFCE34]">3️⃣ Daily Hydration Schedule:</strong>
                       <p>View your daily hydration and calorie targets with weather-based adjustments for each day of the week.</p>
                     </div>
                     
                     <div>
-                      <strong className="text-orange-600 dark:text-orange-400">💡 Tip:</strong>
+                      <strong className="text-[#FFCE34]">💡 Tip:</strong>
                       <p>Use the intensity distribution analysis to ensure balanced training with proper recovery spacing.</p>
                     </div>
                   </div>
@@ -3455,12 +3467,12 @@ export default function App(){
               <Card>
                 <div className="flex items-start justify-between mb-4">
                   <div>
-                    <h2 className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-slate-100 mb-1">Weekly Summary</h2>
-                    <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400">Compare your weekly calorie targets</p>
+                    <h2 className="text-xl sm:text-2xl font-bold text-[#FFFFFF] mb-1">Weekly Summary</h2>
+                    <p className="text-xs sm:text-sm text-[#A9A9B8]">Compare your weekly calorie targets</p>
                   </div>
                   <button
                     onClick={() => setShowReportsHelp(!showReportsHelp)}
-                    className="w-8 h-8 rounded-full bg-orange-500 text-white flex items-center justify-center hover:bg-orange-600 transition-all text-sm font-bold flex-shrink-0"
+                    className="w-8 h-8 rounded-full bg-[#FFCE34] text-white flex items-center justify-center hover:bg-[#FFD966] transition-all text-sm font-bold flex-shrink-0"
                     aria-label="Help"
                   >
                     ?
@@ -3697,50 +3709,50 @@ export default function App(){
                     <SectionTitle title="Intensity Distribution Analysis" subtitle="Advanced breakdown of training intensities" />
                     <div className="space-y-6">
                       {/* Grade Card */}
-                      <div className="bg-gradient-to-br from-emerald-50 to-emerald-100 dark:from-emerald-900/20 dark:to-emerald-800/20 rounded-2xl p-6 border-2 border-emerald-300 dark:border-emerald-700">
+                      <div className="bg-gradient-to-br from-emerald-950/40 to-emerald-950/50 rounded-card p-6 border-2 border-emerald-800">
                         <div className="flex items-center justify-between mb-2">
                           <div>
-                            <div className="text-lg sm:text-xl font-bold text-emerald-900 dark:text-emerald-100 mb-1">
+                            <div className="text-lg sm:text-xl font-bold text-emerald-100 mb-1">
                               Grade {grade} / {gradeNumber}
                             </div>
-                            <div className="text-sm text-emerald-700 dark:text-emerald-300">{verdict}</div>
+                            <div className="text-sm text-emerald-300">{verdict}</div>
                           </div>
-                          <div className="text-6xl font-bold text-emerald-400 dark:text-emerald-500">{grade}</div>
+                          <div className="text-6xl font-bold text-emerald-400">{grade}</div>
                         </div>
                       </div>
                       
                       {/* Polarization Score */}
-                      <div className="bg-slate-50 dark:bg-slate-800 rounded-xl p-4 border border-slate-200 dark:border-slate-700">
+                      <div className="bg-[#24242A] rounded-card p-4 border border-[#2A2A35]">
                         <div className="flex items-center justify-between mb-2">
-                          <div className="text-sm font-semibold text-slate-900 dark:text-slate-100">
+                          <div className="text-sm font-semibold text-[#FFFFFF]">
                             Polarization Score: {ps.toFixed(1)}
                           </div>
-                          <div className="text-xs text-slate-600 dark:text-slate-400">
+                          <div className="text-xs text-[#A9A9B8]">
                             {ps >= 2.5 && ps <= 4.0 ? 'Ideal' : ps < 2.0 ? 'Too Intense' : 'Too Easy'}
                           </div>
                         </div>
-                        <div className="h-2 bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden">
+                        <div className="h-2 bg-[#2A2A35] rounded-full overflow-hidden">
                           <div 
                             className="h-full bg-gradient-to-r from-emerald-500 to-emerald-600 transition-all"
                             style={{ width: `${Math.min(100, (ps / 6) * 100)}%` }}
                           />
                         </div>
-                        <div className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+                        <div className="text-xs text-[#A9A9B8] mt-1">
                           Target: 2.5–4.0 (easy minutes / hard minutes)
                         </div>
                       </div>
                       
                       {/* Stacked Time-in-Zone Bars */}
                       <div>
-                        <div className="text-sm font-semibold text-slate-900 dark:text-slate-100 mb-3">Time in Zones</div>
+                        <div className="text-sm font-semibold text-[#FFFFFF] mb-3">Time in Zones</div>
                         <div className="space-y-3">
                           {/* Aerobic */}
                           <div>
                             <div className="flex justify-between text-xs mb-1">
-                              <span className="text-blue-700 dark:text-blue-300 font-medium">Aerobic</span>
-                              <span className="text-slate-600 dark:text-slate-400">{zoneMinutes.aerobic} min ({zonePercents.aerobic}%)</span>
+                              <span className="text-blue-300 font-medium">Aerobic</span>
+                              <span className="text-[#A9A9B8]">{zoneMinutes.aerobic} min ({zonePercents.aerobic}%)</span>
                             </div>
-                            <div className="h-6 bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden">
+                            <div className="h-6 bg-[#2A2A35] rounded-full overflow-hidden">
                               <div 
                                 className="h-full bg-gradient-to-r from-blue-400 to-blue-500"
                                 style={{ width: `${zonePercents.aerobic}%` }}
@@ -3751,10 +3763,10 @@ export default function App(){
                           {/* Threshold */}
                           <div>
                             <div className="flex justify-between text-xs mb-1">
-                              <span className="text-orange-700 dark:text-orange-300 font-medium">Threshold</span>
-                              <span className="text-slate-600 dark:text-slate-400">{zoneMinutes.threshold} min ({zonePercents.threshold}%)</span>
+                              <span className="text-[#FFCE34] font-medium">Threshold</span>
+                              <span className="text-[#A9A9B8]">{zoneMinutes.threshold} min ({zonePercents.threshold}%)</span>
                             </div>
-                            <div className="h-6 bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden">
+                            <div className="h-6 bg-[#2A2A35] rounded-full overflow-hidden">
                               <div 
                                 className="h-full bg-gradient-to-r from-orange-400 to-orange-500"
                                 style={{ width: `${zonePercents.threshold}%` }}
@@ -3765,10 +3777,10 @@ export default function App(){
                           {/* VO2max */}
                           <div>
                             <div className="flex justify-between text-xs mb-1">
-                              <span className="text-red-700 dark:text-red-300 font-medium">VO2max</span>
-                              <span className="text-slate-600 dark:text-slate-400">{zoneMinutes.vo2max} min ({zonePercents.vo2max}%)</span>
+                              <span className="text-red-300 font-medium">VO2max</span>
+                              <span className="text-[#A9A9B8]">{zoneMinutes.vo2max} min ({zonePercents.vo2max}%)</span>
                             </div>
-                            <div className="h-6 bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden">
+                            <div className="h-6 bg-[#2A2A35] rounded-full overflow-hidden">
                               <div 
                                 className="h-full bg-gradient-to-r from-red-400 to-red-500"
                                 style={{ width: `${zonePercents.vo2max}%` }}
@@ -3779,10 +3791,10 @@ export default function App(){
                           {/* Strength */}
                           <div>
                             <div className="flex justify-between text-xs mb-1">
-                              <span className="text-purple-700 dark:text-purple-300 font-medium">Strength</span>
-                              <span className="text-slate-600 dark:text-slate-400">{zoneMinutes.strength} min • {zoneCounts.strength} sessions</span>
+                              <span className="text-purple-300 font-medium">Strength</span>
+                              <span className="text-[#A9A9B8]">{zoneMinutes.strength} min • {zoneCounts.strength} sessions</span>
                             </div>
-                            <div className="h-6 bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden">
+                            <div className="h-6 bg-[#2A2A35] rounded-full overflow-hidden">
                               <div 
                                 className="h-full bg-gradient-to-r from-purple-400 to-purple-500"
                                 style={{ width: zoneMinutes.strength > 0 ? `${Math.min(100, (zoneMinutes.strength / totalAll) * 100)}%` : '0%' }}
@@ -3794,7 +3806,7 @@ export default function App(){
                       
                       {/* Hard-Day Placement Strip */}
                       <div>
-                        <div className="text-sm font-semibold text-slate-900 dark:text-slate-100 mb-2">Hard-Day Placement</div>
+                        <div className="text-sm font-semibold text-[#FFFFFF] mb-2">Hard-Day Placement</div>
                         <div className="flex gap-1 mb-2">
                           {dayNamesShort.map(label => {
                             const hardDay = hardDays.find(d => d.label === label);
@@ -3803,20 +3815,20 @@ export default function App(){
                             const isPurple = hardDay && hardDay.type === 'strength';
                             
                             return (
-                              <div key={label} className="flex-1 flex flex-col items-center p-2 bg-slate-50 dark:bg-slate-800 rounded-lg border-2 border-transparent">
-                                <div className="text-xs font-semibold text-slate-700 dark:text-slate-300 mb-2">{label}</div>
+                              <div key={label} className="flex-1 flex flex-col items-center p-2 bg-[#24242A] rounded-lg border-2 border-transparent">
+                                <div className="text-xs font-semibold text-[#FFFFFF] mb-2">{label}</div>
                                 {isHard && (
                                   <div className={`w-6 h-6 rounded-full ${isRed ? 'bg-red-500' : 'bg-purple-500'} shadow-sm`} />
                                 )}
                                 {!isHard && (
-                                  <div className="w-6 h-6 rounded-full bg-slate-300 dark:bg-slate-600" />
+                                  <div className="w-6 h-6 rounded-full bg-[#3A3A45]" />
                                 )}
                               </div>
                             );
                           })}
                         </div>
-                        <div className="text-xs text-slate-600 dark:text-slate-400 mb-2">{spacingInfo}</div>
-                        <div className="text-xs text-slate-500 dark:text-slate-500 flex gap-4">
+                        <div className="text-xs text-[#A9A9B8] mb-2">{spacingInfo}</div>
+                        <div className="text-xs text-[#A9A9B8] dark:text-[#A9A9B8] flex gap-4">
                           <div className="flex items-center gap-1">
                             <div className="w-3 h-3 bg-red-500 rounded-full" />
                             <span>Threshold/VO2</span>
@@ -3830,40 +3842,40 @@ export default function App(){
                       
                       {/* Metrics Summary */}
                       <div className="grid grid-cols-2 gap-3">
-                        <div className="bg-slate-50 dark:bg-slate-800 rounded-lg p-3 border border-slate-200 dark:border-slate-700">
-                          <div className="text-xs text-slate-600 dark:text-slate-400 mb-1">Hard Days</div>
-                          <div className="text-lg font-bold text-emerald-700 dark:text-emerald-300">{hardDayCount}</div>
+                        <div className="bg-[#24242A] rounded-lg p-3 border border-[#2A2A35]">
+                          <div className="text-xs text-[#A9A9B8] mb-1">Hard Days</div>
+                          <div className="text-lg font-bold text-emerald-300">{hardDayCount}</div>
                         </div>
-                        <div className="bg-slate-50 dark:bg-slate-800 rounded-lg p-3 border border-slate-200 dark:border-slate-700">
-                          <div className="text-xs text-slate-600 dark:text-slate-400 mb-1">Intensity Density</div>
-                          <div className="text-lg font-bold text-orange-700 dark:text-orange-300">{intensityDensity} min/day</div>
+                        <div className="bg-[#24242A] rounded-lg p-3 border border-[#2A2A35]">
+                          <div className="text-xs text-[#A9A9B8] mb-1">Intensity Density</div>
+                          <div className="text-lg font-bold text-[#FFCE34]">{intensityDensity} min/day</div>
                         </div>
-                        <div className="bg-slate-50 dark:bg-slate-800 rounded-lg p-3 border border-slate-200 dark:border-slate-700">
-                          <div className="text-xs text-slate-600 dark:text-slate-400 mb-1">Training Days</div>
-                          <div className="text-lg font-bold text-blue-700 dark:text-blue-300">{trainingDays}</div>
+                        <div className="bg-[#24242A] rounded-lg p-3 border border-[#2A2A35]">
+                          <div className="text-xs text-[#A9A9B8] mb-1">Training Days</div>
+                          <div className="text-lg font-bold text-blue-300">{trainingDays}</div>
                         </div>
-                        <div className="bg-slate-50 dark:bg-slate-800 rounded-lg p-3 border border-slate-200 dark:border-slate-700">
-                          <div className="text-xs text-slate-600 dark:text-slate-400 mb-1">Total Volume</div>
-                          <div className="text-lg font-bold text-slate-900 dark:text-slate-100">{totalAll} min</div>
+                        <div className="bg-[#24242A] rounded-lg p-3 border border-[#2A2A35]">
+                          <div className="text-xs text-[#A9A9B8] mb-1">Total Volume</div>
+                          <div className="text-lg font-bold text-[#FFFFFF]">{totalAll} min</div>
                         </div>
                       </div>
                       
                       {/* Coaching Recommendations */}
                       {recommendations.length > 0 && (
                         <div>
-                          <div className="text-sm font-semibold text-slate-900 dark:text-slate-100 mb-2">Coaching Recommendations</div>
+                          <div className="text-sm font-semibold text-[#FFFFFF] mb-2">Coaching Recommendations</div>
                           <div className="space-y-2">
                             {recommendations.map((rec, idx) => (
                               <div 
                                 key={idx} 
                                 className={`flex items-start gap-2 p-3 rounded-lg border ${
                                   rec.type === 'warning' 
-                                    ? 'bg-orange-50 dark:bg-orange-900/20 border-orange-200 dark:border-orange-800' 
-                                    : 'bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800'
+                                    ? 'bg-orange-950/40 border-orange-800' 
+                                    : 'bg-blue-950/40 border-blue-800'
                                 }`}
                               >
                                 <span className="text-sm">{rec.type === 'warning' ? '⚠️' : '💡'}</span>
-                                <span className="text-xs text-slate-700 dark:text-slate-300">{rec.text}</span>
+                                <span className="text-xs text-[#FFFFFF]">{rec.text}</span>
                               </div>
                             ))}
                           </div>
@@ -3881,20 +3893,20 @@ export default function App(){
                   {weeklyHydrationSchedule.map((day, index) => {
                     const dailyCalories = dailyTotalCalories[index];
                     return (
-                      <div key={index} className="border border-slate-200 dark:border-slate-700 rounded-xl p-3 sm:p-4">
+                      <div key={index} className="border border-[#2A2A35] rounded-card p-3 sm:p-4">
                         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-3 gap-2">
                           <div className="flex-1">
                             <div className="font-bold text-base sm:text-lg">{day.day}</div>
-                            <div className="text-xs text-slate-500 dark:text-slate-400">
+                            <div className="text-xs text-[#A9A9B8]">
                               {day.forecastDate}
                               {day.hasTraining && ` • ${day.totalTrainingMins} min training`}
                             </div>
                           </div>
                           <div className="text-left sm:text-right flex-shrink-0">
-                            <div className="font-bold text-lg sm:text-xl text-orange-700 dark:text-orange-300">
+                            <div className="font-bold text-lg sm:text-xl text-[#FFCE34]">
                               {dailyCalories} kcal
                             </div>
-                            <div className="text-xs text-slate-500 dark:text-slate-400">
+                            <div className="text-xs text-[#A9A9B8]">
                               {day.totalDaily} ml fluid
                             </div>
                           </div>
@@ -3902,37 +3914,37 @@ export default function App(){
 
                         <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 sm:gap-3 text-sm">
                           {/* Energy Breakdown */}
-                          <div className="bg-slate-50 dark:bg-slate-800 rounded-lg p-3 sm:p-4 border-2 border-orange-200 dark:border-orange-800">
-                            <div className="text-xs sm:text-sm font-bold uppercase tracking-wide text-orange-700 dark:text-orange-300 mb-1.5 sm:mb-2 flex items-center gap-1 sm:gap-2">
+                          <div className="bg-[#24242A] rounded-lg p-3 sm:p-4 border-2 border-orange-800">
+                            <div className="text-xs sm:text-sm font-bold uppercase tracking-wide text-[#FFCE34] mb-1.5 sm:mb-2 flex items-center gap-1 sm:gap-2">
                               ⚡ Energy
                             </div>
-                            <div className="font-semibold text-slate-800 dark:text-slate-200">
+                            <div className="font-semibold text-[#FFFFFF]">
                               <div className="text-base sm:text-lg font-bold">Total: {dailyCalories} kcal</div>
-                              <div className="text-xs text-slate-500 mt-0.5 sm:mt-1">
+                              <div className="text-xs text-[#A9A9B8] mt-0.5 sm:mt-1">
                                 Training: {day.hasTraining ? dailyTrainingCalories[index] : 0} kcal
                               </div>
                             </div>
                           </div>
 
                           {/* Hydration Breakdown */}
-                          <div className="bg-slate-50 dark:bg-slate-800 rounded-lg p-3 sm:p-4 border-2 border-blue-200 dark:border-blue-800">
-                            <div className="text-xs sm:text-sm font-bold uppercase tracking-wide text-blue-700 dark:text-blue-300 mb-1.5 sm:mb-2 flex items-center gap-1 sm:gap-2">
+                          <div className="bg-[#24242A] rounded-lg p-3 sm:p-4 border-2 border-blue-800">
+                            <div className="text-xs sm:text-sm font-bold uppercase tracking-wide text-blue-300 mb-1.5 sm:mb-2 flex items-center gap-1 sm:gap-2">
                               💧 Hydration
                             </div>
-                            <div className="font-semibold text-slate-800 dark:text-slate-200">
+                            <div className="font-semibold text-[#FFFFFF]">
                               <div className="text-base sm:text-lg font-bold">Total: {day.totalDaily} ml</div>
-                              <div className="text-xs text-slate-500 mt-0.5 sm:mt-1">
+                              <div className="text-xs text-[#A9A9B8] mt-0.5 sm:mt-1">
                                 Training: {day.totalTrainingFluid} ml
                               </div>
                             </div>
                           </div>
 
                           {/* Sodium */}
-                          <div className="bg-slate-50 dark:bg-slate-800 rounded-lg p-3 sm:p-4 border-2 border-purple-200 dark:border-purple-800">
-                            <div className="text-xs sm:text-sm font-bold uppercase tracking-wide text-purple-700 dark:text-purple-300 mb-1.5 sm:mb-2 flex items-center gap-1 sm:gap-2">
+                          <div className="bg-[#24242A] rounded-lg p-3 sm:p-4 border-2 border-purple-200 dark:border-purple-800">
+                            <div className="text-xs sm:text-sm font-bold uppercase tracking-wide text-purple-300 mb-1.5 sm:mb-2 flex items-center gap-1 sm:gap-2">
                               🧂 Sodium
                             </div>
-                            <div className="font-semibold text-slate-800 dark:text-slate-200">
+                            <div className="font-semibold text-[#FFFFFF]">
                               <div className="text-sm font-bold">
                                 {day.hasTraining ? (
                                   <>Lost: {day.totalTrainingSweatLossMg} mg<br/>Replace: {day.totalTrainingLowerReplace}–{day.totalTrainingUpperReplace} mg</>
@@ -3940,7 +3952,7 @@ export default function App(){
                                   <>Rest day</>
                                 )}
                               </div>
-                              <div className="text-xs text-slate-500 mt-0.5 sm:mt-1">
+                              <div className="text-xs text-[#A9A9B8] mt-0.5 sm:mt-1">
                                 {day.hasTraining ? 'During session' : 'No training'}
                               </div>
                             </div>
@@ -3949,60 +3961,60 @@ export default function App(){
 
                         {/* Fuel Status Boxes */}
                         <div className="mt-4">
-                          <div className="text-xs sm:text-sm font-bold uppercase tracking-wide text-slate-700 dark:text-slate-300 mb-2">
+                          <div className="text-xs sm:text-sm font-bold uppercase tracking-wide text-[#FFFFFF] mb-2">
                             Daily Calories
                           </div>
                           <div className="grid grid-cols-3 gap-1.5 sm:gap-2">
-                          <div className="border-2 border-red-500 bg-red-50 dark:bg-red-900/20 rounded-lg p-1.5 sm:p-2 text-center">
-                            <div className="text-[10px] sm:text-xs font-semibold text-red-700 dark:text-red-300 mb-0.5 sm:mb-1 leading-tight">Under</div>
-                            <div className="text-xs sm:text-sm font-bold text-red-800 dark:text-red-200">
+                          <div className="border-2 border-red-500 bg-red-950/40 rounded-lg p-1.5 sm:p-2 text-center">
+                            <div className="text-[10px] sm:text-xs font-semibold text-red-300 mb-0.5 sm:mb-1 leading-tight">Under</div>
+                            <div className="text-xs sm:text-sm font-bold text-red-200">
                               {Math.round(dailyCalories * 0.85)} kcal
                             </div>
-                            <div className="text-[9px] sm:text-xs text-red-600 dark:text-red-400 mt-0.5">&lt;85%</div>
+                            <div className="text-[9px] sm:text-xs text-red-300 mt-0.5">&lt;85%</div>
                           </div>
-                          <div className="border-2 border-green-500 bg-green-50 dark:bg-green-900/20 rounded-lg p-1.5 sm:p-2 text-center">
-                            <div className="text-[10px] sm:text-xs font-semibold text-green-700 dark:text-green-300 mb-0.5 sm:mb-1 leading-tight">Optimal</div>
-                            <div className="text-xs sm:text-sm font-bold text-green-800 dark:text-green-200">
+                          <div className="border-2 border-green-500 bg-green-950/40 rounded-lg p-1.5 sm:p-2 text-center">
+                            <div className="text-[10px] sm:text-xs font-semibold text-green-300 mb-0.5 sm:mb-1 leading-tight">Optimal</div>
+                            <div className="text-xs sm:text-sm font-bold text-green-200">
                               {dailyCalories} kcal
                             </div>
-                            <div className="text-[9px] sm:text-xs text-green-600 dark:text-green-400 mt-0.5">100%</div>
+                            <div className="text-[9px] sm:text-xs text-green-300 mt-0.5">100%</div>
                           </div>
-                          <div className="border-2 border-orange-500 bg-orange-50 dark:bg-orange-900/20 rounded-lg p-1.5 sm:p-2 text-center">
-                            <div className="text-[10px] sm:text-xs font-semibold text-orange-700 dark:text-orange-300 mb-0.5 sm:mb-1 leading-tight">Over</div>
-                            <div className="text-xs sm:text-sm font-bold text-orange-800 dark:text-orange-200">
+                          <div className="border-2 border-orange-500 bg-orange-950/40 rounded-lg p-1.5 sm:p-2 text-center">
+                            <div className="text-[10px] sm:text-xs font-semibold text-[#FFCE34] mb-0.5 sm:mb-1 leading-tight">Over</div>
+                            <div className="text-xs sm:text-sm font-bold text-[#FFCE34]">
                               {Math.round(dailyCalories * 1.1)} kcal
                             </div>
-                            <div className="text-[9px] sm:text-xs text-orange-600 dark:text-orange-400 mt-0.5">&gt;110%</div>
+                            <div className="text-[9px] sm:text-xs text-[#FFCE34] mt-0.5">&gt;110%</div>
                           </div>
                           </div>
                         </div>
 
                         {/* Hydration Status Boxes */}
                         <div className="mt-4">
-                          <div className="text-xs sm:text-sm font-bold uppercase tracking-wide text-slate-700 dark:text-slate-300 mb-2">
+                          <div className="text-xs sm:text-sm font-bold uppercase tracking-wide text-[#FFFFFF] mb-2">
                             Daily Hydration
                           </div>
                           <div className="grid grid-cols-3 gap-1.5 sm:gap-2">
-                          <div className="border-2 border-red-500 bg-red-50 dark:bg-red-900/20 rounded-lg p-1.5 sm:p-2 text-center">
-                            <div className="text-[10px] sm:text-xs font-semibold text-red-700 dark:text-red-300 mb-0.5 sm:mb-1 leading-tight">Under</div>
-                            <div className="text-xs sm:text-sm font-bold text-red-800 dark:text-red-200">
+                          <div className="border-2 border-red-500 bg-red-950/40 rounded-lg p-1.5 sm:p-2 text-center">
+                            <div className="text-[10px] sm:text-xs font-semibold text-red-300 mb-0.5 sm:mb-1 leading-tight">Under</div>
+                            <div className="text-xs sm:text-sm font-bold text-red-200">
                               {Math.round(day.totalDaily * 0.85)} ml
                             </div>
-                            <div className="text-[9px] sm:text-xs text-red-600 dark:text-red-400 mt-0.5">&lt;85%</div>
+                            <div className="text-[9px] sm:text-xs text-red-300 mt-0.5">&lt;85%</div>
                           </div>
-                          <div className="border-2 border-green-500 bg-green-50 dark:bg-green-900/20 rounded-lg p-1.5 sm:p-2 text-center">
-                            <div className="text-[10px] sm:text-xs font-semibold text-green-700 dark:text-green-300 mb-0.5 sm:mb-1 leading-tight">Optimal</div>
-                            <div className="text-xs sm:text-sm font-bold text-green-800 dark:text-green-200">
+                          <div className="border-2 border-green-500 bg-green-950/40 rounded-lg p-1.5 sm:p-2 text-center">
+                            <div className="text-[10px] sm:text-xs font-semibold text-green-300 mb-0.5 sm:mb-1 leading-tight">Optimal</div>
+                            <div className="text-xs sm:text-sm font-bold text-green-200">
                               {day.totalDaily} ml
                             </div>
-                            <div className="text-[9px] sm:text-xs text-green-600 dark:text-green-400 mt-0.5">100%</div>
+                            <div className="text-[9px] sm:text-xs text-green-300 mt-0.5">100%</div>
                           </div>
-                          <div className="border-2 border-orange-500 bg-orange-50 dark:bg-orange-900/20 rounded-lg p-1.5 sm:p-2 text-center">
-                            <div className="text-[10px] sm:text-xs font-semibold text-orange-700 dark:text-orange-300 mb-0.5 sm:mb-1 leading-tight">Over</div>
-                            <div className="text-xs sm:text-sm font-bold text-orange-800 dark:text-orange-200">
+                          <div className="border-2 border-orange-500 bg-orange-950/40 rounded-lg p-1.5 sm:p-2 text-center">
+                            <div className="text-[10px] sm:text-xs font-semibold text-[#FFCE34] mb-0.5 sm:mb-1 leading-tight">Over</div>
+                            <div className="text-xs sm:text-sm font-bold text-[#FFCE34]">
                               {Math.round(day.totalDaily * 1.1)} ml
                             </div>
-                            <div className="text-[9px] sm:text-xs text-orange-600 dark:text-orange-400 mt-0.5">&gt;110%</div>
+                            <div className="text-[9px] sm:text-xs text-[#FFCE34] mt-0.5">&gt;110%</div>
                           </div>
                           </div>
                         </div>
@@ -4015,7 +4027,7 @@ export default function App(){
           )}
         </AnimatePresence>
 
-        <div className="text-xs text-slate-500 dark:text-slate-400 mt-6">
+        <div className="text-xs text-[#A9A9B8] mt-6">
           Disclaimer: Educational tool; individual needs vary. Consult a sports dietitian for medical conditions.
         </div>
       </main>
@@ -4025,9 +4037,9 @@ export default function App(){
 
 function KV({ label, value, big }){
   return (
-    <div className={`flex justify-between items-center ${big?"text-lg sm:text-xl lg:text-2xl font-bold text-orange-700 dark:text-orange-300":"text-sm sm:text-base lg:text-lg"}`}>
+    <div className={`flex justify-between items-center ${big?"text-lg sm:text-xl lg:text-2xl font-bold text-[#FFCE34]":"text-sm sm:text-base lg:text-lg"}`}>
       <span className="text-slate-600 dark:text-slate-300 font-semibold text-left pr-2">{label}</span>
-      <span className="font-bold text-orange-700 dark:text-orange-300 text-right whitespace-nowrap">{value}</span>
+      <span className="font-bold text-[#FFCE34] text-right whitespace-nowrap">{value}</span>
     </div>
   );
 }

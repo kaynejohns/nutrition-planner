@@ -35,27 +35,27 @@ const WeeklySummary: React.FC<WeeklySummaryProps> = ({
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-slate-100 mb-1">Weekly Summary</h2>
-        <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400">Compare your weekly calorie targets</p>
+        <h2 className="text-xl sm:text-2xl font-bold text-[#FFFFFF] mb-1 uppercase tracking-tight">WEEKLY SUMMARY</h2>
+        <p className="text-xs sm:text-sm text-[#A9A9B8]">Compare your weekly calorie targets</p>
       </div>
       
       {/* Training Snapshot */}
       <div>
-        <h3 className="text-base sm:text-lg font-bold mb-3 text-slate-900 dark:text-slate-100">Training Snapshot</h3>
+        <h3 className="text-base sm:text-lg font-bold mb-3 text-[#FFFFFF] uppercase">Training Snapshot</h3>
         <div className="overflow-x-auto -mx-2 px-2">
           <div className="grid grid-cols-7 gap-2 mb-4 min-w-[560px]">
             {dayNames.map((day, index) => {
               const hasTraining = dailyTrainingCalories[index] > 0;
               return (
-                <div key={day} className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg p-2 text-center">
-                  <div className="text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">{day}</div>
-                  <div className="text-xs text-slate-500 dark:text-slate-400 mb-1">
+                <div key={day} className="bg-[#24242A] border border-[#2A2A35] rounded-card p-2 text-center">
+                  <div className="text-xs font-semibold text-[#FFFFFF] mb-1">{day}</div>
+                  <div className="text-xs text-[#A9A9B8] mb-1">
                     {hasTraining ? 'Key' : 'Rest'}
                   </div>
-                  <div className="text-xs text-emerald-600 dark:text-emerald-400 font-medium">
+                  <div className="text-xs text-emerald-400 font-medium">
                     {dailyCalories[index]} kcal
                   </div>
-                  <div className="text-xs text-slate-500 dark:text-slate-400">
+                  <div className="text-xs text-[#A9A9B8]">
                     T: {dailyTrainingCalories[index]} kcal
                   </div>
                 </div>
@@ -65,50 +65,50 @@ const WeeklySummary: React.FC<WeeklySummaryProps> = ({
         </div>
         
         <div className="grid sm:grid-cols-3 gap-3">
-          <div className="bg-slate-50 dark:bg-slate-800 rounded-lg p-3">
-            <div className="text-xs text-slate-600 dark:text-slate-400 mb-1">Total Training Time</div>
-            <div className="text-lg font-bold text-emerald-700 dark:text-emerald-300">{totalTrainingTime} min</div>
+          <div className="bg-[#24242A] rounded-card p-3 border border-[#2A2A35]">
+            <div className="text-xs text-[#A9A9B8] mb-1">Total Training Time</div>
+            <div className="text-lg font-bold text-emerald-300">{totalTrainingTime} min</div>
           </div>
-          <div className="bg-slate-50 dark:bg-slate-800 rounded-lg p-3">
-            <div className="text-xs text-slate-600 dark:text-slate-400 mb-1">Training Days</div>
-            <div className="text-lg font-bold text-emerald-700 dark:text-emerald-300">{trainingDays} days</div>
+          <div className="bg-[#24242A] rounded-card p-3 border border-[#2A2A35]">
+            <div className="text-xs text-[#A9A9B8] mb-1">Training Days</div>
+            <div className="text-lg font-bold text-emerald-300">{trainingDays} days</div>
           </div>
-          <div className="bg-slate-50 dark:bg-slate-800 rounded-lg p-3">
-            <div className="text-xs text-slate-600 dark:text-slate-400 mb-1">Double Days</div>
-            <div className="text-lg font-bold text-emerald-700 dark:text-emerald-300">{doubleDays} days</div>
+          <div className="bg-[#24242A] rounded-card p-3 border border-[#2A2A35]">
+            <div className="text-xs text-[#A9A9B8] mb-1">Double Days</div>
+            <div className="text-lg font-bold text-emerald-300">{doubleDays} days</div>
           </div>
         </div>
       </div>
       
       {/* Training Load & Distribution */}
       <div>
-        <h3 className="text-base sm:text-lg font-bold mb-3 text-slate-900 dark:text-slate-100">Weekly Energy Summary</h3>
+        <h3 className="text-base sm:text-lg font-bold mb-3 text-[#FFFFFF] uppercase">Weekly Energy Summary</h3>
         <div className="grid sm:grid-cols-3 gap-3 mb-4">
-          <div className="bg-slate-50 dark:bg-slate-800 rounded-lg p-3">
-            <div className="text-xs text-slate-600 dark:text-slate-400 mb-1">Weekly Total</div>
-            <div className="text-lg font-bold text-emerald-700 dark:text-emerald-300">{weekTotal.toLocaleString()} kcal</div>
+          <div className="bg-[#24242A] rounded-card p-3 border border-[#2A2A35]">
+            <div className="text-xs text-[#A9A9B8] mb-1">Weekly Total</div>
+            <div className="text-lg font-bold text-emerald-300">{weekTotal.toLocaleString()} kcal</div>
           </div>
-          <div className="bg-slate-50 dark:bg-slate-800 rounded-lg p-3">
-            <div className="text-xs text-slate-600 dark:text-slate-400 mb-1">Daily Average</div>
-            <div className="text-lg font-bold text-emerald-700 dark:text-emerald-300">{avgDaily} kcal</div>
+          <div className="bg-[#24242A] rounded-card p-3 border border-[#2A2A35]">
+            <div className="text-xs text-[#A9A9B8] mb-1">Daily Average</div>
+            <div className="text-lg font-bold text-emerald-300">{avgDaily} kcal</div>
           </div>
-          <div className="bg-slate-50 dark:bg-slate-800 rounded-lg p-3">
-            <div className="text-xs text-slate-600 dark:text-slate-400 mb-1">Peak Day</div>
-            <div className="text-lg font-bold text-emerald-700 dark:text-emerald-300">{peakDay} kcal</div>
+          <div className="bg-[#24242A] rounded-card p-3 border border-[#2A2A35]">
+            <div className="text-xs text-[#A9A9B8] mb-1">Peak Day</div>
+            <div className="text-lg font-bold text-emerald-300">{peakDay} kcal</div>
           </div>
         </div>
         
         {/* Breakdown */}
         <div className="grid sm:grid-cols-2 gap-3 mb-4">
-          <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-3">
-            <div className="text-xs text-slate-600 dark:text-slate-400 mb-1">Resting Energy (Non-Training)</div>
-            <div className="text-2xl font-bold text-blue-700 dark:text-blue-300">{totalResting.toLocaleString()} kcal</div>
-            <div className="text-xs text-slate-500 dark:text-slate-400 mt-1">Average: {Math.round(totalResting / 7)} kcal/day</div>
+          <div className="bg-blue-900/20 border border-blue-800 rounded-card p-3">
+            <div className="text-xs text-[#A9A9B8] mb-1">Resting Energy (Non-Training)</div>
+            <div className="text-2xl font-bold text-blue-300">{totalResting.toLocaleString()} kcal</div>
+            <div className="text-xs text-[#A9A9B8] mt-1">Average: {Math.round(totalResting / 7)} kcal/day</div>
           </div>
-          <div className="bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-800 rounded-lg p-3">
-            <div className="text-xs text-slate-600 dark:text-slate-400 mb-1">Training Energy</div>
-            <div className="text-2xl font-bold text-emerald-700 dark:text-emerald-300">{totalTraining.toLocaleString()} kcal</div>
-            <div className="text-xs text-slate-500 dark:text-slate-400 mt-1">Average: {Math.round(totalTraining / 7)} kcal/day</div>
+          <div className="bg-emerald-900/20 border border-emerald-800 rounded-card p-3">
+            <div className="text-xs text-[#A9A9B8] mb-1">Training Energy</div>
+            <div className="text-2xl font-bold text-emerald-300">{totalTraining.toLocaleString()} kcal</div>
+            <div className="text-xs text-[#A9A9B8] mt-1">Average: {Math.round(totalTraining / 7)} kcal/day</div>
           </div>
         </div>
         
@@ -121,14 +121,14 @@ const WeeklySummary: React.FC<WeeklySummaryProps> = ({
             
             return (
               <div key={day} className="flex items-center gap-2">
-                <div className="w-12 text-xs font-medium text-slate-700 dark:text-slate-300">{day}</div>
-                <div className="flex-1 h-6 bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden">
+                <div className="w-12 text-xs font-medium text-[#FFFFFF]">{day}</div>
+                <div className="flex-1 h-6 bg-[#2A2A35] rounded-full overflow-hidden">
                   <div 
                     className="h-full bg-gradient-to-r from-emerald-500 to-emerald-600 rounded-full transition-all"
                     style={{ width: `${width}%` }}
                   />
                 </div>
-                <div className="w-16 text-xs text-right text-slate-600 dark:text-slate-400">{load} kcal</div>
+                <div className="w-16 text-xs text-right text-[#A9A9B8]">{load} kcal</div>
               </div>
             );
           })}

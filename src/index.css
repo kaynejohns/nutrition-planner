@@ -12,52 +12,37 @@
   -moz-osx-font-smoothing: grayscale;
   -webkit-text-size-adjust: 100%;
   
-  /* TweakCN-inspired color palette */
-  --background: 0 0% 100%;
-  --foreground: 222 47% 11%;
+  /* New Dark Theme Color Palette */
+  /* Background: #1A1A1E, Surface: #24242A, Primary Text: #FFFFFF, Secondary Text: #A9A9B8 */
+  /* Accent: #FFCE34 (Yellow), Secondary Accent: #6B6BFF (Purple) */
   
-  --primary: 225 89% 60%;
-  --primary-foreground: 0 0% 100%;
+  --background: 240 10% 10%; /* #1A1A1E */
+  --foreground: 0 0% 100%; /* #FFFFFF */
   
-  --secondary: 217 32% 17%;
-  --secondary-foreground: 210 40% 98%;
+  --primary: 48 100% 60%; /* #FFCE34 Yellow */
+  --primary-foreground: 240 10% 10%; /* Near black for text on yellow */
   
-  --accent: 274 83% 67%;
-  --accent-foreground: 210 40% 98%;
+  --secondary: 240 10% 15%; /* #24242A Surface/Card */
+  --secondary-foreground: 240 8% 70%; /* #A9A9B8 Secondary text */
   
-  --muted: 210 12% 92%;
-  --muted-foreground: 215 16% 46%;
+  --accent: 240 100% 70%; /* #6B6BFF Purple */
+  --accent-foreground: 0 0% 100%; /* White */
+  
+  --muted: 240 10% 15%; /* Card surface */
+  --muted-foreground: 240 8% 70%; /* Secondary text */
   
   --destructive: 0 84% 60%;
   --destructive-foreground: 0 0% 100%;
   
-  --border: 214 14% 89%;
-  --input: 214 14% 89%;
-  --ring: 225 89% 60%;
+  --border: 240 10% 25%;
+  --input: 240 10% 20%;
+  --ring: 48 100% 60%; /* Yellow accent */
 }
 
-.dark {
-  --background: 224 47% 7%;
-  --foreground: 210 40% 98%;
-  
-  --primary: 225 89% 75%;
-  --primary-foreground: 210 40% 98%;
-  
-  --secondary: 217 32% 12%;
-  --secondary-foreground: 210 40% 98%;
-  
-  --accent: 274 83% 70%;
-  --accent-foreground: 210 40% 98%;
-  
-  --muted: 220 15% 16%;
-  --muted-foreground: 218 10% 65%;
-  
-  --destructive: 0 62% 55%;
-  --destructive-foreground: 210 40% 98%;
-  
-  --border: 217 32% 17%;
-  --input: 217 32% 20%;
-  --ring: 225 89% 75%;
+/* Force dark theme as default */
+body {
+  background: #1A1A1E !important;
+  color: #FFFFFF !important;
 }
 
 * {
@@ -68,8 +53,32 @@ body {
   margin: 0;
   min-width: 320px;
   min-height: 100vh;
-  background: hsl(var(--background));
-  color: hsl(var(--foreground));
+  background: #1A1A1E;
+  color: #FFFFFF;
+  font-weight: 400;
+}
+
+/* Typography Styles */
+h1, h2, h3, h4, h5, h6 {
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: #FFFFFF;
+}
+
+.headline-bold {
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.body-text {
+  font-weight: 400;
+  color: #FFFFFF;
+  line-height: 1.6;
+}
+
+.secondary-text {
+  color: #A9A9B8;
+  font-weight: 400;
 }
 
 #root {

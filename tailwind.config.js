@@ -11,31 +11,29 @@ export default {
         sans: ['Inter', 'system-ui', 'sans-serif'],
       },
       colors: {
-        background: 'hsl(var(--background))',
-        foreground: 'hsl(var(--foreground))',
+        background: '#1A1A1E',
+        surface: '#24242A',
+        foreground: '#FFFFFF',
+        'text-primary': '#FFFFFF',
+        'text-secondary': '#A9A9B8',
+        accent: '#FFCE34',
+        'accent-secondary': '#6B6BFF',
+        // Keep hsl for compatibility
         primary: {
-          DEFAULT: 'hsl(var(--primary))',
-          foreground: 'hsl(var(--primary-foreground))',
+          DEFAULT: '#FFCE34',
+          foreground: '#1A1A1E',
         },
         secondary: {
-          DEFAULT: 'hsl(var(--secondary))',
-          foreground: 'hsl(var(--secondary-foreground))',
+          DEFAULT: '#24242A',
+          foreground: '#A9A9B8',
         },
-        accent: {
-          DEFAULT: 'hsl(var(--accent))',
-          foreground: 'hsl(var(--accent-foreground))',
-        },
-        muted: {
-          DEFAULT: 'hsl(var(--muted))',
-          foreground: 'hsl(var(--muted-foreground))',
-        },
-        destructive: {
-          DEFAULT: 'hsl(var(--destructive))',
-          foreground: 'hsl(var(--destructive-foreground))',
-        },
-        border: 'hsl(var(--border))',
-        input: 'hsl(var(--input))',
-        ring: 'hsl(var(--ring))',
+      },
+      borderRadius: {
+        'card': '20px',
+      },
+      boxShadow: {
+        'soft': '0 2px 8px rgba(0, 0, 0, 0.15)',
+        'elevated': '0 4px 12px rgba(0, 0, 0, 0.2)',
       },
     },
   },

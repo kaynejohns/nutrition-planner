@@ -101,30 +101,30 @@ const DayCard: React.FC<DayCardProps> = ({
   }, [notifyParent]);
 
   return (
-    <div className="bg-white rounded-xl shadow-md p-4 border border-slate-200 dark:border-slate-700">
+    <div className="bg-[#24242A] rounded-card shadow-elevated p-4 border border-[#2A2A35]">
       {/* Header */}
       <div className="space-y-3 sm:space-y-0 mb-4">
         <div className="flex flex-wrap items-center gap-2 sm:gap-4">
-          <h3 className="text-lg font-bold text-slate-800 dark:text-slate-200 capitalize">
+          <h3 className="text-lg font-bold text-[#FFFFFF] capitalize">
             {day}
           </h3>
           <div className="flex flex-wrap gap-2">
-            <span className="px-2 py-1 text-xs font-medium bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 rounded">
+            <span className="px-2 py-1 text-xs font-medium bg-[#2A2A35] text-[#FFFFFF] rounded">
               {baseCalories} kcal
             </span>
-            <span className="px-2 py-1 text-xs font-medium bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300 rounded">
+            <span className="px-2 py-1 text-xs font-medium bg-emerald-900/30 text-emerald-300 rounded">
               Training: {trainingCalories}
             </span>
           </div>
         </div>
         <div className="flex flex-wrap gap-2">
-          <span className="px-2 py-1 text-xs font-medium bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 rounded">
+          <span className="px-2 py-1 text-xs font-medium bg-green-900/30 text-green-300 rounded">
             C:{carbs}g
           </span>
-          <span className="px-2 py-1 text-xs font-medium bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 rounded">
+          <span className="px-2 py-1 text-xs font-medium bg-blue-900/30 text-blue-300 rounded">
             P:{protein}g
           </span>
-          <span className="px-2 py-1 text-xs font-medium bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-300 rounded">
+          <span className="px-2 py-1 text-xs font-medium bg-[#FFCE34]/20 text-[#FFCE34] rounded">
             F:{fat}g
           </span>
         </div>
@@ -135,7 +135,7 @@ const DayCard: React.FC<DayCardProps> = ({
         {/* First Session */}
         <div className="grid grid-cols-1 sm:grid-cols-5 gap-2">
           <div>
-            <label className="text-xs font-medium text-slate-600 dark:text-slate-400 uppercase tracking-wide mb-1 block">
+            <label className="text-xs font-medium text-[#A9A9B8] uppercase tracking-wide mb-1 block">
               MIN
             </label>
             <input
@@ -147,17 +147,17 @@ const DayCard: React.FC<DayCardProps> = ({
               min="0"
               max="300"
               placeholder="0"
-              className="w-full border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 rounded-lg px-2 py-1.5 text-sm"
+              className="w-full border border-[#2A2A35] bg-[#24242A] rounded-card px-2 py-1.5 text-sm"
             />
           </div>
           <div>
-            <label className="text-xs font-medium text-slate-600 dark:text-slate-400 uppercase tracking-wide mb-1 block">
+            <label className="text-xs font-medium text-[#A9A9B8] uppercase tracking-wide mb-1 block">
               TYPE
             </label>
             <select
               value={type}
               onChange={(e) => setType(e.target.value)}
-              className="w-full border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 rounded-lg px-2 py-1.5 text-sm"
+              className="w-full border border-[#2A2A35] bg-[#24242A] rounded-card px-2 py-1.5 text-sm"
             >
               <option>Run</option>
               <option>Bike</option>
@@ -169,13 +169,13 @@ const DayCard: React.FC<DayCardProps> = ({
           </div>
           {type.toLowerCase() !== 'strength' && (
             <div>
-              <label className="text-xs font-medium text-slate-600 dark:text-slate-400 uppercase tracking-wide mb-1 block">
+              <label className="text-xs font-medium text-[#A9A9B8] uppercase tracking-wide mb-1 block">
                 INTENSITY
               </label>
               <select
                 value={intensity}
                 onChange={(e) => setIntensity(e.target.value)}
-                className="w-full border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 rounded-lg px-2 py-1.5 text-sm"
+                className="w-full border border-[#2A2A35] bg-[#24242A] rounded-card px-2 py-1.5 text-sm"
               >
                 <option>Aerobic</option>
                 <option>Threshold</option>
@@ -185,13 +185,13 @@ const DayCard: React.FC<DayCardProps> = ({
           )}
           {type.toLowerCase() === 'strength' && <div></div>}
           <div>
-            <label className="text-xs font-medium text-slate-600 dark:text-slate-400 uppercase tracking-wide mb-1 block">
+            <label className="text-xs font-medium text-[#A9A9B8] uppercase tracking-wide mb-1 block">
               TIME
             </label>
             <select
               value={timeOfDay}
               onChange={(e) => setTimeOfDay(e.target.value)}
-              className="w-full border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 rounded-lg px-2 py-1.5 text-sm"
+              className="w-full border border-[#2A2A35] bg-[#24242A] rounded-card px-2 py-1.5 text-sm"
             >
               <option>Morning</option>
               <option>Lunchtime</option>
@@ -207,7 +207,7 @@ const DayCard: React.FC<DayCardProps> = ({
                 onChange={(e) => setSecondSession(e.target.checked)}
                 className="w-4 h-4 text-emerald-600 bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 rounded focus:ring-emerald-500"
               />
-              <span className="text-slate-700 dark:text-slate-300">Add Second Session</span>
+              <span className="text-[#FFFFFF]">Add Second Session</span>
             </label>
           </div>
         </div>
@@ -220,7 +220,7 @@ const DayCard: React.FC<DayCardProps> = ({
             {/* Second Session */}
             <div className="grid grid-cols-1 sm:grid-cols-4 gap-2">
               <div>
-                <label className="text-xs font-medium text-slate-600 dark:text-slate-400 uppercase tracking-wide mb-1 block">
+                <label className="text-xs font-medium text-[#A9A9B8] uppercase tracking-wide mb-1 block">
                   MIN
                 </label>
                 <input
@@ -232,17 +232,17 @@ const DayCard: React.FC<DayCardProps> = ({
                   min="0"
                   max="300"
                   placeholder="0"
-                  className="w-full border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 rounded-lg px-2 py-1.5 text-sm"
+                  className="w-full border border-[#2A2A35] bg-[#24242A] rounded-card px-2 py-1.5 text-sm"
                 />
               </div>
               <div>
-                <label className="text-xs font-medium text-slate-600 dark:text-slate-400 uppercase tracking-wide mb-1 block">
+                <label className="text-xs font-medium text-[#A9A9B8] uppercase tracking-wide mb-1 block">
                   TYPE
                 </label>
                 <select
                   value={type2}
                   onChange={(e) => setType2(e.target.value)}
-                  className="w-full border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 rounded-lg px-2 py-1.5 text-sm"
+                  className="w-full border border-[#2A2A35] bg-[#24242A] rounded-card px-2 py-1.5 text-sm"
                 >
                   <option>Run</option>
                   <option>Bike</option>
@@ -254,13 +254,13 @@ const DayCard: React.FC<DayCardProps> = ({
               </div>
               {type2.toLowerCase() !== 'strength' && (
                 <div>
-                  <label className="text-xs font-medium text-slate-600 dark:text-slate-400 uppercase tracking-wide mb-1 block">
+                  <label className="text-xs font-medium text-[#A9A9B8] uppercase tracking-wide mb-1 block">
                     INTENSITY
                   </label>
                   <select
                     value={intensity2}
                     onChange={(e) => setIntensity2(e.target.value)}
-                    className="w-full border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 rounded-lg px-2 py-1.5 text-sm"
+                    className="w-full border border-[#2A2A35] bg-[#24242A] rounded-card px-2 py-1.5 text-sm"
                   >
                     <option>Aerobic</option>
                     <option>Threshold</option>
@@ -270,13 +270,13 @@ const DayCard: React.FC<DayCardProps> = ({
               )}
               {type2.toLowerCase() === 'strength' && <div></div>}
               <div>
-                <label className="text-xs font-medium text-slate-600 dark:text-slate-400 uppercase tracking-wide mb-1 block">
+                <label className="text-xs font-medium text-[#A9A9B8] uppercase tracking-wide mb-1 block">
                   TIME
                 </label>
                 <select
                   value={timeOfDay2}
                   onChange={(e) => setTimeOfDay2(e.target.value)}
-                  className="w-full border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 rounded-lg px-2 py-1.5 text-sm"
+                  className="w-full border border-[#2A2A35] bg-[#24242A] rounded-card px-2 py-1.5 text-sm"
                 >
                   <option>Morning</option>
                   <option>Lunchtime</option>

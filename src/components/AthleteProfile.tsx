@@ -6,9 +6,9 @@ interface StatCardProps {
 }
 
 const StatCard: React.FC<StatCardProps> = ({ label, value }) => (
-  <div className="text-center p-3 bg-slate-50 dark:bg-slate-800 rounded-lg">
-    <div className="text-xs text-slate-600 dark:text-slate-400 mb-1">{label}</div>
-    <div className="text-lg sm:text-xl font-bold text-emerald-700 dark:text-emerald-300">{value}</div>
+  <div className="text-center p-3 bg-[#24242A] rounded-card border border-[#2A2A35]">
+    <div className="text-xs text-[#A9A9B8] mb-1">{label}</div>
+    <div className="text-lg sm:text-xl font-bold text-emerald-300">{value}</div>
   </div>
 );
 
@@ -23,8 +23,8 @@ const AthleteProfile: React.FC<AthleteProfileProps> = ({ weightKg, heightCm, bmr
   return (
     <div className="space-y-4">
       <div>
-        <h2 className="text-2xl font-bold text-slate-900 dark:text-slate-100 mb-1">Athlete Profile</h2>
-        <p className="text-sm text-slate-600 dark:text-slate-400">Basic info for calorie and macro calculations</p>
+        <h2 className="text-2xl font-bold text-[#FFFFFF] mb-1 uppercase tracking-tight">ATHLETE PROFILE</h2>
+        <p className="text-sm text-[#A9A9B8]">Basic info for calorie and macro calculations</p>
       </div>
       
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -34,7 +34,7 @@ const AthleteProfile: React.FC<AthleteProfileProps> = ({ weightKg, heightCm, bmr
         <StatCard label="Base Activity" value={`${baseActivity} kcal`} />
       </div>
       
-      <p className="text-xs text-slate-500 dark:text-slate-400">
+      <p className="text-xs text-[#A9A9B8]">
         Note: Update your weight, height, and activity level in the Daily tab to adjust calculations.
       </p>
     </div>
