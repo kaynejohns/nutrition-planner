@@ -1182,11 +1182,23 @@ export default function App(){
     if (!city) return;
     setLoadingRaceWeather(true);
     try {
-      const [current, forecast] = await Promise.all([
-        fetch(`/api/weather/current.json?q=${encodeURIComponent(city)}&aqi=no`)
-          .then(r => r.ok ? r.json() : null),
-        fetch(`/api/weather/forecast.json?q=${encodeURIComponent(city)}&days=14&aqi=no`)
-          .then(r => r.ok ? r.json() : null)
+      // Use utility functions that handle both dev and prod environments
+      const [currentData, forecastData] = await Promise.all([
+        fetchWeatherByCity(city),
+        (async () => {
+          try {
+            const url = import.meta.env.PROD
+              ? `/.netlify/functions/weather?path=forecast.json&q=${encodeURIComponent(city)}&days=14&aqi=no`
+              : `/api/weather/forecast.json?q=${encodeURIComponent(city)}&days=14&aqi=no`;
+            
+            const response = await fetch(url);
+            if (!response.ok) throw new Error('Forecast fetch failed');
+            return await response.json();
+          } catch (error) {
+            console.error('Forecast fetch error:', error);
+            return null;
+          }
+        })()
       ]);
       
       // Find forecasted weather for race date
@@ -1194,8 +1206,8 @@ export default function App(){
       const raceDayStr = raceDay.toISOString().split('T')[0];
       let forecastedWeather = null;
       
-      if (forecast?.forecast?.forecastday) {
-        forecastedWeather = forecast.forecast.forecastday.find(
+      if (forecastData?.forecast?.forecastday) {
+        forecastedWeather = forecastData.forecast.forecastday.find(
           day => day.date === raceDayStr
         );
       }
@@ -1208,14 +1220,16 @@ export default function App(){
           condition: forecastedWeather.day.condition.text,
           icon: forecastedWeather.day.condition.icon
         });
-      } else if (current) {
+      } else if (currentData) {
         setRaceWeather({
-          temp: current.current.temp_c,
-          maxTemp: current.current.temp_c,
-          humidity: current.current.humidity,
-          condition: current.current.condition.text,
-          icon: current.current.condition.icon
+          temp: currentData.temp,
+          maxTemp: currentData.temp,
+          humidity: currentData.humidity,
+          condition: currentData.description,
+          icon: currentData.icon
         });
+      } else {
+        setRaceWeather(null);
       }
     } catch (error) {
       console.error('Race weather error:', error);
