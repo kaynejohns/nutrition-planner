@@ -35,31 +35,33 @@ const WeeklySummary: React.FC<WeeklySummaryProps> = ({
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-2xl font-bold text-slate-900 dark:text-slate-100 mb-1">Weekly Summary</h2>
-        <p className="text-sm text-slate-600 dark:text-slate-400">Compare your weekly calorie targets</p>
+        <h2 className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-slate-100 mb-1">Weekly Summary</h2>
+        <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400">Compare your weekly calorie targets</p>
       </div>
       
       {/* Training Snapshot */}
       <div>
-        <h3 className="text-lg font-bold mb-3 text-slate-900 dark:text-slate-100">Training Snapshot</h3>
-        <div className="grid grid-cols-7 gap-2 mb-4">
-          {dayNames.map((day, index) => {
-            const hasTraining = dailyTrainingCalories[index] > 0;
-            return (
-              <div key={day} className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg p-2 text-center">
-                <div className="text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">{day}</div>
-                <div className="text-xs text-slate-500 dark:text-slate-400 mb-1">
-                  {hasTraining ? 'Key' : 'Rest'}
+        <h3 className="text-base sm:text-lg font-bold mb-3 text-slate-900 dark:text-slate-100">Training Snapshot</h3>
+        <div className="overflow-x-auto -mx-2 px-2">
+          <div className="grid grid-cols-7 gap-2 mb-4 min-w-[560px]">
+            {dayNames.map((day, index) => {
+              const hasTraining = dailyTrainingCalories[index] > 0;
+              return (
+                <div key={day} className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg p-2 text-center">
+                  <div className="text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">{day}</div>
+                  <div className="text-xs text-slate-500 dark:text-slate-400 mb-1">
+                    {hasTraining ? 'Key' : 'Rest'}
+                  </div>
+                  <div className="text-xs text-emerald-600 dark:text-emerald-400 font-medium">
+                    {dailyCalories[index]} kcal
+                  </div>
+                  <div className="text-xs text-slate-500 dark:text-slate-400">
+                    T: {dailyTrainingCalories[index]} kcal
+                  </div>
                 </div>
-                <div className="text-xs text-emerald-600 dark:text-emerald-400 font-medium">
-                  Total: {dailyCalories[index]} kcal
-                </div>
-                <div className="text-xs text-slate-500 dark:text-slate-400">
-                  Train: {dailyTrainingCalories[index]} kcal
-                </div>
-              </div>
-            );
-          })}
+              );
+            })}
+          </div>
         </div>
         
         <div className="grid sm:grid-cols-3 gap-3">
@@ -80,7 +82,7 @@ const WeeklySummary: React.FC<WeeklySummaryProps> = ({
       
       {/* Training Load & Distribution */}
       <div>
-        <h3 className="text-lg font-bold mb-3 text-slate-900 dark:text-slate-100">Weekly Energy Summary</h3>
+        <h3 className="text-base sm:text-lg font-bold mb-3 text-slate-900 dark:text-slate-100">Weekly Energy Summary</h3>
         <div className="grid sm:grid-cols-3 gap-3 mb-4">
           <div className="bg-slate-50 dark:bg-slate-800 rounded-lg p-3">
             <div className="text-xs text-slate-600 dark:text-slate-400 mb-1">Weekly Total</div>
@@ -135,7 +137,7 @@ const WeeklySummary: React.FC<WeeklySummaryProps> = ({
       
       {/* Intensity Distribution (80/20 Model) */}
       <div>
-        <h3 className="text-lg font-bold mb-3 text-slate-900 dark:text-slate-100">Intensity Distribution (80/20 Model)</h3>
+        <h3 className="text-base sm:text-lg font-bold mb-3 text-slate-900 dark:text-slate-100">Intensity Distribution</h3>
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
           <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg p-3">
             <div className="flex items-center gap-2 mb-1">

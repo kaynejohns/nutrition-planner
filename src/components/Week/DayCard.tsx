@@ -103,12 +103,12 @@ const DayCard: React.FC<DayCardProps> = ({
   return (
     <div className="bg-white rounded-xl shadow-md p-4 border border-slate-200 dark:border-slate-700">
       {/* Header */}
-      <div className="flex items-center justify-between mb-4">
-        <div className="flex items-center gap-4">
+      <div className="space-y-3 sm:space-y-0 mb-4">
+        <div className="flex flex-wrap items-center gap-2 sm:gap-4">
           <h3 className="text-lg font-bold text-slate-800 dark:text-slate-200 capitalize">
             {day}
           </h3>
-          <div className="flex gap-2">
+          <div className="flex flex-wrap gap-2">
             <span className="px-2 py-1 text-xs font-medium bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 rounded">
               {baseCalories} kcal
             </span>
@@ -117,7 +117,7 @@ const DayCard: React.FC<DayCardProps> = ({
             </span>
           </div>
         </div>
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2">
           <span className="px-2 py-1 text-xs font-medium bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 rounded">
             C:{carbs}g
           </span>

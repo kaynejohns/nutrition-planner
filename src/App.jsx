@@ -1562,29 +1562,27 @@ export default function App(){
           </div>
         </div>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 pb-3 sm:pb-4">
-          <div className="overflow-x-auto scrollbar-hide">
-            <div className="inline-flex min-w-max rounded-2xl border border-slate-200 dark:border-slate-700 overflow-hidden shadow-sm">
-              {[
-                {id:"daily",label:"Daily", icon:"📊", premium:false},
-                {id:"traininglog",label:"Training", icon:"🏃", premium:true},
-                {id:"race",label:"Race Week", icon:"🏁", premium:true},
-                {id:"hydration",label:"Hydration", icon:"💧", premium:true},
-                {id:"coach",label:"Coach", icon:"💡", premium:true},
-                {id:"reports",label:"Reports", icon:"📈", premium:true},
-              ].filter(t => t.id === 'daily' || isPremium || !t.premium).map(t => (
-                <button 
-                  key={t.id} 
-                  onClick={()=>setTab(t.id)} 
-                  className={`px-3 sm:px-4 py-2 text-xs sm:text-sm font-medium transition-all whitespace-nowrap ${
-                    tab===t.id
-                      ? "bg-gradient-to-r from-orange-500 to-orange-600 text-white shadow-sm" 
-                      : "bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700"
-                  }`}
-                >
-                  <span className="hidden sm:inline">{t.icon} </span>{t.label}
-                </button>
-              ))}
-            </div>
+          <div className="flex flex-wrap gap-2">
+            {[
+              {id:"daily",label:"Daily", icon:"📊", premium:false},
+              {id:"traininglog",label:"Training", icon:"🏃", premium:true},
+              {id:"race",label:"Race Week", icon:"🏁", premium:true},
+              {id:"hydration",label:"Hydration", icon:"💧", premium:true},
+              {id:"coach",label:"Coach", icon:"💡", premium:true},
+              {id:"reports",label:"Reports", icon:"📈", premium:true},
+            ].filter(t => t.id === 'daily' || isPremium || !t.premium).map(t => (
+              <button 
+                key={t.id} 
+                onClick={()=>setTab(t.id)} 
+                className={`px-3 sm:px-4 py-2 text-xs sm:text-sm font-medium transition-all rounded-xl border-2 ${
+                  tab===t.id
+                    ? "bg-gradient-to-r from-orange-500 to-orange-600 text-white border-orange-500 shadow-sm" 
+                    : "bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border-slate-300 dark:border-slate-600 hover:bg-slate-50 dark:hover:bg-slate-700"
+                }`}
+              >
+                <span className="hidden sm:inline">{t.icon} </span>{t.label}
+              </button>
+            ))}
           </div>
         </div>
       </header>
