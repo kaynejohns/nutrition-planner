@@ -1585,12 +1585,22 @@ export default function App(){
     const hasTraining = session && session.duration > 0;
     const trainingCalories = hasTraining ? calculateSessionCalories(weightKg, session.duration, session.type, session.intensity) : 0;
     
-    // Calculate base carbs (resting needs based on activity)
-    let baseCarbsG = Math.round(weightKg * 5); // Normal training carbs
+    // Calculate base carbs (resting needs based on activity and training)
+    let baseCarbsG = Math.round(weightKg * 5); // Base normal training carbs
     
-    // Calculate carb loading additions
+    // Add carbs for training if there's a session
+    if (hasTraining && session) {
+      // Add training-related carbs based on intensity and duration
+      const trainingCarbsMultiplier = session.intensity === 'vo2max' ? 0.8 : 
+                                     session.intensity === 'threshold' ? 0.6 : 
+                                     0.4; // aerobic
+      const trainingCarbs = Math.round(trainingCalories * trainingCarbsMultiplier / 4); // 4 kcal per gram carb
+      baseCarbsG += trainingCarbs;
+    }
+    
+    // Calculate carb loading additions (but NOT on race day or day before race)
     let carbLoadCarbsG = 0;
-    if (carbLoadDay) {
+    if (carbLoadDay && daysOut > 2) { // Only carb load 2+ days before race
       const carbsIndex = carbPlan.days - daysOut;
       if (carbsIndex >= 0 && carbsIndex < carbPlan.carbs.length) {
         carbLoadCarbsG = Math.round((carbPlan.carbs[carbsIndex] - 5) * weightKg); // Extra on top of base
@@ -1600,9 +1610,28 @@ export default function App(){
     // Total carbs for the day
     const totalCarbsG = baseCarbsG + carbLoadCarbsG;
     
-    // Calculate total calories: resting + training + carb loading
+    // Calculate total calories: resting + training
     const restingCalories = nonTraining;
     const totalCalories = restingCalories + trainingCalories;
+    
+    // Calculate protein based on training (higher if strength or intense training)
+    const baseProteinG = Math.round(weightKg * 1.8);
+    let proteinG = baseProteinG;
+    if (hasTraining && session) {
+      if (session.type === 'strength') {
+        proteinG = Math.round(weightKg * 2.2); // Extra for strength
+      } else if (session.intensity === 'vo2max' || session.intensity === 'threshold') {
+        proteinG = Math.round(weightKg * 2.0); // Moderate extra for intense training
+      }
+    }
+    
+    // Calculate fat (inverse relationship with carbs)
+    const baseFatG = Math.round(weightKg * 1.2);
+    let fatG = baseFatG;
+    if (totalCarbsG > Math.round(weightKg * 7)) {
+      // If very high carbs, slightly reduce fat
+      fatG = Math.round(weightKg * 1.0);
+    }
     
     return {
       dayNumber: daysOut,
@@ -1611,7 +1640,9 @@ export default function App(){
       carbsG: totalCarbsG,
       baseCarbsG: baseCarbsG,
       carbLoadCarbsG: carbLoadCarbsG,
-      isCarbLoading: carbLoadDay,
+      proteinG: proteinG,
+      fatG: fatG,
+      isCarbLoading: carbLoadDay && daysOut > 2, // Only show as carb loading if more than 2 days out
       isFiberCaution: daysOut <= 2,
       isRaceDay: daysOut === 1,
       hasTraining: hasTraining,
@@ -2358,11 +2389,14 @@ export default function App(){
                           </div>
                           <div>
                             <div className="text-xs text-[#A9A9B8] mb-1">Protein</div>
-                            <div className="text-lg font-bold text-[#FFFFFF]">{Math.round(weightKg * 1.8)} g</div>
+                            <div className="text-lg font-bold text-[#FFFFFF]">{d.proteinG} g</div>
+                            {d.hasTraining && d.proteinG > Math.round(weightKg * 1.8) && (
+                              <div className="text-[10px] text-blue-400">+training</div>
+                            )}
                           </div>
                           <div>
                             <div className="text-xs text-[#A9A9B8] mb-1">Fat</div>
-                            <div className="text-lg font-bold text-[#FFFFFF]">{Math.round(weightKg * 1.2)} g</div>
+                            <div className="text-lg font-bold text-[#FFFFFF]">{d.fatG} g</div>
                           </div>
                           <div>
                             <div className="text-xs text-[#A9A9B8] mb-1">Calories</div>
