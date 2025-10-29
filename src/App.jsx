@@ -2663,7 +2663,7 @@ export default function App(){
                             type="text"
                             value={p.name}
                             onChange={e => setProducts(prev => prev.map(prod => prod.id === p.id ? {...prod, name: e.target.value} : prod))}
-                            className="col-span-12 sm:col-span-3 border border-[#2A2A35] bg-[#24242A] rounded px-2 py-1 text-xs sm:text-sm"
+                            className="col-span-12 sm:col-span-3 border border-[#2A2A35] bg-[#24242A] text-white rounded px-2 py-1 text-xs sm:text-sm"
                             placeholder="Product name"
                           />
                           <div className="col-span-12 sm:col-span-2">
@@ -2671,7 +2671,7 @@ export default function App(){
                               type="number"
                               value={p.carbs}
                               onChange={e => setProducts(prev => prev.map(prod => prod.id === p.id ? {...prod, carbs: parseInt(e.target.value) || 0} : prod))}
-                              className="w-full border border-[#2A2A35] bg-[#24242A] rounded px-2 py-1 text-xs sm:text-sm"
+                              className="w-full border border-[#2A2A35] bg-[#24242A] text-white rounded px-2 py-1 text-xs sm:text-sm"
                               placeholder="Carbs (g)"
                             />
                           </div>
@@ -2680,7 +2680,7 @@ export default function App(){
                               type="number"
                               value={p.fluid}
                               onChange={e => setProducts(prev => prev.map(prod => prod.id === p.id ? {...prod, fluid: parseInt(e.target.value) || 0} : prod))}
-                              className="w-full border border-[#2A2A35] bg-[#24242A] rounded px-2 py-1 text-xs sm:text-sm"
+                              className="w-full border border-[#2A2A35] bg-[#24242A] text-white rounded px-2 py-1 text-xs sm:text-sm"
                               placeholder="Fluid (ml)"
                             />
                           </div>
@@ -2689,7 +2689,7 @@ export default function App(){
                               type="number"
                               value={p.sodium}
                               onChange={e => setProducts(prev => prev.map(prod => prod.id === p.id ? {...prod, sodium: parseInt(e.target.value) || 0} : prod))}
-                              className="w-full border border-[#2A2A35] bg-[#24242A] rounded px-2 py-1 text-xs sm:text-sm"
+                              className="w-full border border-[#2A2A35] bg-[#24242A] text-white rounded px-2 py-1 text-xs sm:text-sm"
                               placeholder="Sodium (mg)"
                             />
                           </div>
