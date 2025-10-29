@@ -506,8 +506,19 @@ export default function App(){
   
   // Product Library State
   const [products, setProducts] = useState(() => {
-    const saved = localStorage.getItem('race_products');
-    return saved ? JSON.parse(saved) : [
+    try {
+      if (typeof window !== 'undefined') {
+        const saved = localStorage.getItem('race_products');
+        return saved ? JSON.parse(saved) : [
+          { id: 1, name: 'Energy Gel', carbs: 22, fluid: 30, sodium: 40, unit: 'pack' },
+          { id: 2, name: 'Sports Drink', carbs: 14, fluid: 500, sodium: 230, unit: '500ml' },
+          { id: 3, name: 'Electrolyte Tab', carbs: 0, fluid: 500, sodium: 500, unit: 'tab' }
+        ];
+      }
+    } catch (e) {
+      console.error('Error loading products:', e);
+    }
+    return [
       { id: 1, name: 'Energy Gel', carbs: 22, fluid: 30, sodium: 40, unit: 'pack' },
       { id: 2, name: 'Sports Drink', carbs: 14, fluid: 500, sodium: 230, unit: '500ml' },
       { id: 3, name: 'Electrolyte Tab', carbs: 0, fluid: 500, sodium: 500, unit: 'tab' }
@@ -515,8 +526,15 @@ export default function App(){
   });
   
   const [productCounts, setProductCounts] = useState(() => {
-    const saved = localStorage.getItem('race_product_counts');
-    return saved ? JSON.parse(saved) : {};
+    try {
+      if (typeof window !== 'undefined') {
+        const saved = localStorage.getItem('race_product_counts');
+        return saved ? JSON.parse(saved) : {};
+      }
+    } catch (e) {
+      console.error('Error loading product counts:', e);
+    }
+    return {};
   });
 
   // Persist dark mode to class on <html>
@@ -527,13 +545,23 @@ export default function App(){
   
   // Persist products to localStorage
   useEffect(() => {
-    localStorage.setItem('race_products', JSON.stringify(products));
+    try {
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('race_products', JSON.stringify(products));
+      }
+    } catch (e) {
+      console.error('Error saving products:', e);
+    }
   }, [products]);
   
   // Persist product counts to localStorage
   useEffect(() => {
-    if (Object.keys(productCounts).length > 0) {
-      localStorage.setItem('race_product_counts', JSON.stringify(productCounts));
+    try {
+      if (typeof window !== 'undefined' && Object.keys(productCounts).length > 0) {
+        localStorage.setItem('race_product_counts', JSON.stringify(productCounts));
+      }
+    } catch (e) {
+      console.error('Error saving product counts:', e);
     }
   }, [productCounts]);
   
