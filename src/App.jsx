@@ -640,6 +640,11 @@ export default function App(){
   const [showSaltinessTooltip, setShowSaltinessTooltip] = useState(false);
   const [showAcclimationTooltip, setShowAcclimationTooltip] = useState(false);
   const [showRaceHelp, setShowRaceHelp] = useState(false);
+  const [showDailyHelp, setShowDailyHelp] = useState(false);
+  const [showTrainingHelp, setShowTrainingHelp] = useState(false);
+  const [showHydrationHelp, setShowHydrationHelp] = useState(false);
+  const [showCoachHelp, setShowCoachHelp] = useState(false);
+  const [showReportsHelp, setShowReportsHelp] = useState(false);
   
   // Race Week states
   const [raceEvent, setRaceEvent] = useState('Marathon');
@@ -1592,10 +1597,61 @@ export default function App(){
         <AnimatePresence mode="wait">
           {tab === "daily" && (
             <motion.div key="daily" initial={{opacity:0,y:8}} animate={{opacity:1,y:0}} exit={{opacity:0,y:-8}} transition={{duration:0.25}}>
+              {/* Help Modal */}
+              {showDailyHelp && (
+                <Card className="mb-6">
+                  <div className="flex items-center justify-between mb-4">
+                    <h3 className="text-lg sm:text-xl font-bold text-slate-900 dark:text-slate-100">📚 How to Use Daily Nutrition</h3>
+                    <button
+                      onClick={() => setShowDailyHelp(false)}
+                      className="text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200 text-2xl font-bold flex-shrink-0 ml-2"
+                    >
+                      ×
+                    </button>
+                  </div>
+                  
+                  <div className="space-y-3 text-xs sm:text-sm text-slate-700 dark:text-slate-300 break-words">
+                    <div>
+                      <strong className="text-orange-600 dark:text-orange-400">1️⃣ Athlete Information:</strong>
+                      <p>Enter your sex, age, weight, height, and sweat rate category. This calculates your Basal Metabolic Rate (BMR) and daily calorie needs.</p>
+                    </div>
+                    
+                    <div>
+                      <strong className="text-orange-600 dark:text-orange-400">2️⃣ Activity Level:</strong>
+                      <p>Select your non-training activity level: Sedentary, Light, Moderate, or Very Active. This affects your daily calorie burn.</p>
+                    </div>
+                    
+                    <div>
+                      <strong className="text-orange-600 dark:text-orange-400">3️⃣ Macro Targets:</strong>
+                      <p>Set your carbohydrate, protein, and fat targets in grams per kilogram of body weight. These are your daily nutrition goals.</p>
+                    </div>
+                    
+                    <div>
+                      <strong className="text-orange-600 dark:text-orange-400">4️⃣ Daily Summary:</strong>
+                      <p>View your calculated daily calories, macros breakdown, and hydration targets based on your inputs.</p>
+                    </div>
+                    
+                    <div>
+                      <strong className="text-orange-600 dark:text-orange-400">5️⃣ Upgrade to Premium:</strong>
+                      <p>Access advanced features like Training Log, Race Week planning, Hydration analysis, Coach Reports, and more.</p>
+                    </div>
+                  </div>
+                </Card>
+              )}
+              
               {/* Inputs */}
               <div className="grid lg:grid-cols-2 gap-4 sm:gap-6 mb-6 sm:mb-8">
                 <Card>
-                  <SectionTitle title="Athlete" subtitle="Basics for BMR and per-kg macros" />
+                  <div className="flex items-start justify-between mb-4">
+                    <SectionTitle title="Athlete" subtitle="Basics for BMR and per-kg macros" />
+                    <button
+                      onClick={() => setShowDailyHelp(!showDailyHelp)}
+                      className="w-8 h-8 rounded-full bg-orange-500 text-white flex items-center justify-center hover:bg-orange-600 transition-all text-sm font-bold flex-shrink-0"
+                      aria-label="Help"
+                    >
+                      ?
+                    </button>
+                  </div>
                   <div className="space-y-4">
                     <InputRow label="Sex">
                       <div className="flex gap-2">
@@ -2612,9 +2668,65 @@ export default function App(){
 
           {tab === "hydration" && (
             <motion.div key="hydration" initial={{opacity:0,y:8}} animate={{opacity:1,y:0}} exit={{opacity:0,y:-8}} transition={{duration:0.25}} className="space-y-4 sm:space-y-6">
+              {/* Help Modal */}
+              {showHydrationHelp && (
+                <Card className="mb-6">
+                  <div className="flex items-center justify-between mb-4">
+                    <h3 className="text-lg sm:text-xl font-bold text-slate-900 dark:text-slate-100">📚 How to Use Hydration Planning</h3>
+                    <button
+                      onClick={() => setShowHydrationHelp(false)}
+                      className="text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200 text-2xl font-bold flex-shrink-0 ml-2"
+                    >
+                      ×
+                    </button>
+                  </div>
+                  
+                  <div className="space-y-3 text-xs sm:text-sm text-slate-700 dark:text-slate-300 break-words">
+                    <div>
+                      <strong className="text-orange-600 dark:text-orange-400">1️⃣ Location & Weather:</strong>
+                      <p>Enter your training location and week start date, then click "Fetch Weather" to get accurate temperature and humidity data for your calculations.</p>
+                    </div>
+                    
+                    <div>
+                      <strong className="text-orange-600 dark:text-orange-400">2️⃣ Session Details:</strong>
+                      <p>Enter your training duration and time of day. Longer sessions and hotter times require more hydration.</p>
+                    </div>
+                    
+                    <div>
+                      <strong className="text-orange-600 dark:text-orange-400">3️⃣ Sweat Rate:</strong>
+                      <p>Select your sweat rate category (Low to Very High). This affects how much fluid you lose during training.</p>
+                    </div>
+                    
+                    <div>
+                      <strong className="text-orange-600 dark:text-orange-400">4️⃣ Sodium Loss:</strong>
+                      <p>Choose your saltiness category (Low to Very High). Saltier sweat means you need more sodium replacement.</p>
+                    </div>
+                    
+                    <div>
+                      <strong className="text-orange-600 dark:text-orange-400">5️⃣ Heat Acclimation:</strong>
+                      <p>Select your heat adaptation level. Well-acclimated athletes lose less sodium and need less replacement.</p>
+                    </div>
+                    
+                    <div>
+                      <strong className="text-orange-600 dark:text-orange-400">6️⃣ Daily Schedule:</strong>
+                      <p>View your personalized hydration and calorie targets for each day of the week based on weather and training.</p>
+                    </div>
+                  </div>
+                </Card>
+              )}
+              
               {/* Location and Weather Section */}
               <Card>
-                <SectionTitle title="Location & Weather" subtitle="Get forecast for your training week" />
+                <div className="flex items-start justify-between mb-4">
+                  <SectionTitle title="Location & Weather" subtitle="Get forecast for your training week" />
+                  <button
+                    onClick={() => setShowHydrationHelp(!showHydrationHelp)}
+                    className="w-8 h-8 rounded-full bg-orange-500 text-white flex items-center justify-center hover:bg-orange-600 transition-all text-sm font-bold flex-shrink-0"
+                    aria-label="Help"
+                  >
+                    ?
+                  </button>
+                </div>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-4">
                   <div>
                     <Label>Week Start Date</Label>
@@ -3072,8 +3184,59 @@ export default function App(){
 
           {tab === "traininglog" && (
             <motion.div key="traininglog" initial={{opacity:0,y:8}} animate={{opacity:1,y:0}} exit={{opacity:0,y:-8}} transition={{duration:0.25}} className="space-y-4 sm:space-y-6">
+              {/* Help Modal */}
+              {showTrainingHelp && (
+                <Card className="mb-6">
+                  <div className="flex items-center justify-between mb-4">
+                    <h3 className="text-lg sm:text-xl font-bold text-slate-900 dark:text-slate-100">📚 How to Use Training Log</h3>
+                    <button
+                      onClick={() => setShowTrainingHelp(false)}
+                      className="text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200 text-2xl font-bold flex-shrink-0 ml-2"
+                    >
+                      ×
+                    </button>
+                  </div>
+                  
+                  <div className="space-y-3 text-xs sm:text-sm text-slate-700 dark:text-slate-300 break-words">
+                    <div>
+                      <strong className="text-orange-600 dark:text-orange-400">1️⃣ Log Your Sessions:</strong>
+                      <p>For each day, enter your training duration (minutes), type (Run, Bike, Swim, Strength, Cross-Train, Rest), intensity (Aerobic, Threshold, VO2max), and time of day.</p>
+                    </div>
+                    
+                    <div>
+                      <strong className="text-orange-600 dark:text-orange-400">2️⃣ Double Sessions:</strong>
+                      <p>Check "Add Second Session" to log two workouts in one day (e.g., morning run + afternoon strength).</p>
+                    </div>
+                    
+                    <div>
+                      <strong className="text-orange-600 dark:text-orange-400">3️⃣ Daily Totals:</strong>
+                      <p>Each day shows your base calories (non-training), training calories, and macro targets (Carbs, Protein, Fat).</p>
+                    </div>
+                    
+                    <div>
+                      <strong className="text-orange-600 dark:text-orange-400">4️⃣ View Reports:</strong>
+                      <p>Check the Reports tab to see your weekly intensity distribution, training volume, and coaching analysis.</p>
+                    </div>
+                    
+                    <div>
+                      <strong className="text-orange-600 dark:text-orange-400">💡 Tip:</strong>
+                      <p>Consistent logging helps track your training load and optimize your nutrition accordingly.</p>
+                    </div>
+                  </div>
+                </Card>
+              )}
+              
               <Card>
-                <SectionTitle title="Daily Training Log" subtitle="Track your sessions and nutrition" />
+                <div className="flex items-start justify-between mb-4">
+                  <SectionTitle title="Daily Training Log" subtitle="Track your sessions and nutrition" />
+                  <button
+                    onClick={() => setShowTrainingHelp(!showTrainingHelp)}
+                    className="w-8 h-8 rounded-full bg-orange-500 text-white flex items-center justify-center hover:bg-orange-600 transition-all text-sm font-bold flex-shrink-0"
+                    aria-label="Help"
+                  >
+                    ?
+                  </button>
+                </div>
                 <div className="space-y-4">
                   {['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'].map((day, index) => (
                     <DayCard 
@@ -3100,6 +3263,53 @@ export default function App(){
 
           {tab === "coach" && (
             <motion.div key="coach" initial={{opacity:0,y:8}} animate={{opacity:1,y:0}} exit={{opacity:0,y:-8}} transition={{duration:0.25}} className="space-y-4 sm:space-y-6">
+              {/* Help Modal */}
+              {showCoachHelp && (
+                <Card className="mb-6">
+                  <div className="flex items-center justify-between mb-4">
+                    <h3 className="text-lg sm:text-xl font-bold text-slate-900 dark:text-slate-100">📚 How to Use Coach Dashboard</h3>
+                    <button
+                      onClick={() => setShowCoachHelp(false)}
+                      className="text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200 text-2xl font-bold flex-shrink-0 ml-2"
+                    >
+                      ×
+                    </button>
+                  </div>
+                  
+                  <div className="space-y-3 text-xs sm:text-sm text-slate-700 dark:text-slate-300 break-words">
+                    <div>
+                      <strong className="text-orange-600 dark:text-orange-400">1️⃣ Athlete Profile:</strong>
+                      <p>View your current athlete profile showing weight, height, BMR, and base activity level at the top of the page.</p>
+                    </div>
+                    
+                    <div>
+                      <strong className="text-orange-600 dark:text-orange-400">2️⃣ Manage Athletes:</strong>
+                      <p>Add up to 5 athletes to track their individual nutrition and training programs. Click "+ Add Athlete" to create profiles.</p>
+                    </div>
+                    
+                    <div>
+                      <strong className="text-orange-600 dark:text-orange-400">3️⃣ Training Programs:</strong>
+                      <p>Build customized training programs for each athlete based on their goals, fitness level, and schedule.</p>
+                    </div>
+                    
+                    <div>
+                      <strong className="text-orange-600 dark:text-orange-400">4️⃣ Nutrition Plans:</strong>
+                      <p>Create personalized nutrition plans tailored to each athlete's training load, body composition goals, and dietary preferences.</p>
+                    </div>
+                    
+                    <div>
+                      <strong className="text-orange-600 dark:text-orange-400">5️⃣ Progress Tracking:</strong>
+                      <p>Monitor athlete progress over time with detailed reports and analytics.</p>
+                    </div>
+                    
+                    <div>
+                      <strong className="text-orange-600 dark:text-orange-400">💡 Note:</strong>
+                      <p>This feature is coming soon. For now, focus on your own training in the Training Log tab.</p>
+                    </div>
+                  </div>
+                </Card>
+              )}
+              
               <AthleteProfile 
                 weightKg={weightKg}
                 heightCm={heightCm}
@@ -3108,7 +3318,16 @@ export default function App(){
               />
               
               <Card>
-                <SectionTitle title="Coach Dashboard" subtitle="Manage athletes and training programs" />
+                <div className="flex items-start justify-between mb-4">
+                  <SectionTitle title="Coach Dashboard" subtitle="Manage athletes and training programs" />
+                  <button
+                    onClick={() => setShowCoachHelp(!showCoachHelp)}
+                    className="w-8 h-8 rounded-full bg-orange-500 text-white flex items-center justify-center hover:bg-orange-600 transition-all text-sm font-bold flex-shrink-0"
+                    aria-label="Help"
+                  >
+                    ?
+                  </button>
+                </div>
                 <div className="space-y-4">
                   <div className="flex justify-between items-center">
                     <h3 className="text-lg font-semibold">Athletes (0/5)</h3>
@@ -3128,7 +3347,64 @@ export default function App(){
 
           {tab === "reports" && (
             <motion.div key="reports" initial={{opacity:0,y:8}} animate={{opacity:1,y:0}} exit={{opacity:0,y:-8}} transition={{duration:0.25}} className="space-y-4 sm:space-y-6">
+              {/* Help Modal */}
+              {showReportsHelp && (
+                <Card className="mb-6">
+                  <div className="flex items-center justify-between mb-4">
+                    <h3 className="text-lg sm:text-xl font-bold text-slate-900 dark:text-slate-100">📚 How to Use Reports</h3>
+                    <button
+                      onClick={() => setShowReportsHelp(false)}
+                      className="text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200 text-2xl font-bold flex-shrink-0 ml-2"
+                    >
+                      ×
+                    </button>
+                  </div>
+                  
+                  <div className="space-y-3 text-xs sm:text-sm text-slate-700 dark:text-slate-300 break-words">
+                    <div>
+                      <strong className="text-orange-600 dark:text-orange-400">1️⃣ Weekly Summary:</strong>
+                      <p>View your training snapshot showing daily calories, training time, and energy breakdown. See your weekly totals and averages.</p>
+                    </div>
+                    
+                    <div>
+                      <strong className="text-orange-600 dark:text-orange-400">2️⃣ Intensity Distribution Analysis:</strong>
+                      <p>Comprehensive analysis including:</p>
+                      <ul className="list-disc list-inside ml-4 mt-1 space-y-1">
+                        <li><strong>Grade:</strong> Overall week quality (A-D)</li>
+                        <li><strong>Polarization Score:</strong> Ratio of easy to hard training</li>
+                        <li><strong>Time in Zones:</strong> Breakdown of aerobic, threshold, VO2max, and strength</li>
+                        <li><strong>Hard-Day Placement:</strong> Visual schedule showing intensity distribution</li>
+                        <li><strong>Coaching Recommendations:</strong> Personalized tips to improve your training structure</li>
+                      </ul>
+                    </div>
+                    
+                    <div>
+                      <strong className="text-orange-600 dark:text-orange-400">3️⃣ Daily Hydration Schedule:</strong>
+                      <p>View your daily hydration and calorie targets with weather-based adjustments for each day of the week.</p>
+                    </div>
+                    
+                    <div>
+                      <strong className="text-orange-600 dark:text-orange-400">💡 Tip:</strong>
+                      <p>Use the intensity distribution analysis to ensure balanced training with proper recovery spacing.</p>
+                    </div>
+                  </div>
+                </Card>
+              )}
+              
               <Card>
+                <div className="flex items-start justify-between mb-4">
+                  <div>
+                    <h2 className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-slate-100 mb-1">Weekly Summary</h2>
+                    <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400">Compare your weekly calorie targets</p>
+                  </div>
+                  <button
+                    onClick={() => setShowReportsHelp(!showReportsHelp)}
+                    className="w-8 h-8 rounded-full bg-orange-500 text-white flex items-center justify-center hover:bg-orange-600 transition-all text-sm font-bold flex-shrink-0"
+                    aria-label="Help"
+                  >
+                    ?
+                  </button>
+                </div>
                 <WeeklySummary 
                   dailyCalories={dailyTotalCalories}
                   dailyTrainingCalories={dailyTrainingCalories}
