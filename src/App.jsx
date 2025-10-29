@@ -2429,15 +2429,15 @@ export default function App(){
                               
                               <div className="grid grid-cols-3 gap-2 sm:gap-4 mb-3">
                                 <div className="bg-orange-950/40 rounded-lg p-2 sm:p-3">
-                                  <div className="text-[10px] sm:text-xs text-[#A9A9B8] mb-1">Carbohydrates</div>
+                                  <div className="text-[9px] sm:text-xs text-[#A9A9B8] mb-1 leading-tight">Carbs</div>
                                   <div className="text-sm sm:text-lg font-bold text-[#FFCE34]">{item.carbs}</div>
                                 </div>
                                 <div className="bg-blue-950/40 rounded-lg p-2 sm:p-3">
-                                  <div className="text-[10px] sm:text-xs text-[#A9A9B8] mb-1">Fluid Intake</div>
+                                  <div className="text-[9px] sm:text-xs text-[#A9A9B8] mb-1 leading-tight">Fluid</div>
                                   <div className="text-sm sm:text-lg font-bold text-blue-300">{item.fluid}</div>
                                 </div>
                                 <div className="bg-purple-950/40 rounded-lg p-2 sm:p-3">
-                                  <div className="text-[10px] sm:text-xs text-[#A9A9B8] mb-1">Sodium</div>
+                                  <div className="text-[9px] sm:text-xs text-[#A9A9B8] mb-1 leading-tight">Sodium</div>
                                   <div className="text-sm sm:text-lg font-bold text-purple-300">{item.sodium}</div>
                                 </div>
                               </div>
