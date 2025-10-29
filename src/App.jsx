@@ -2405,40 +2405,40 @@ export default function App(){
                           transition={{delay:idx*0.05}}
                           className="relative"
                         >
-                          <div className="flex gap-4 items-start">
+                          <div className="flex gap-2 sm:gap-4 items-start">
                             {/* Time marker */}
                             <div className="flex-shrink-0">
-                              <div className={`w-12 h-12 rounded-full flex items-center justify-center font-bold text-base ${
+                              <div className={`w-8 h-8 sm:w-12 sm:h-12 rounded-full flex items-center justify-center font-bold text-xs sm:text-base ${
                                 item.time === 0 ? 'bg-[#FFCE34] text-white shadow-lg' :
                                 item.time === totalMinutes ? 'bg-emerald-500 text-white shadow-lg' :
                                 'bg-[#24242A] border-2 border-orange-400 dark:border-orange-700 text-orange-300'
                               }`}>
                                 {item.time}
                               </div>
-                              <div className="text-xs text-center mt-1 text-[#A9A9B8]">min</div>
+                              <div className="text-[10px] sm:text-xs text-center mt-1 text-[#A9A9B8]">min</div>
                             </div>
                             
                             {/* Content */}
-                            <div className="flex-1 bg-[#2A2A35] rounded-lg border border-[#2A2A35] p-4">
+                            <div className="flex-1 bg-[#2A2A35] rounded-lg border border-[#2A2A35] p-3 sm:p-4">
                               <div className="flex justify-between items-start mb-3">
-                                <div className="font-semibold text-lg text-[#FFFFFF]">{item.label}</div>
-                                <div className="text-sm text-[#A9A9B8] whitespace-nowrap ml-2">
+                                <div className="font-semibold text-base sm:text-lg text-[#FFFFFF]">{item.label}</div>
+                                <div className="text-xs sm:text-sm text-[#A9A9B8] whitespace-nowrap ml-2">
                                   {item.time === 0 ? 'Start' : item.time === totalMinutes ? 'Finish' : `${Math.round((item.time / totalMinutes) * 100)}%`}
                                 </div>
                               </div>
                               
-                              <div className="grid grid-cols-3 gap-4 mb-3">
-                                <div className="bg-orange-950/40 rounded-lg p-2">
-                                  <div className="text-xs text-[#A9A9B8] mb-1">Carbohydrates</div>
-                                  <div className="text-lg font-bold text-[#FFCE34]">{item.carbs}</div>
+                              <div className="grid grid-cols-3 gap-2 sm:gap-4 mb-3">
+                                <div className="bg-orange-950/40 rounded-lg p-2 sm:p-3">
+                                  <div className="text-[10px] sm:text-xs text-[#A9A9B8] mb-1">Carbohydrates</div>
+                                  <div className="text-sm sm:text-lg font-bold text-[#FFCE34]">{item.carbs}</div>
                                 </div>
-                                <div className="bg-blue-950/40 rounded-lg p-2">
-                                  <div className="text-xs text-[#A9A9B8] mb-1">Fluid Intake</div>
-                                  <div className="text-lg font-bold text-blue-300">{item.fluid}</div>
+                                <div className="bg-blue-950/40 rounded-lg p-2 sm:p-3">
+                                  <div className="text-[10px] sm:text-xs text-[#A9A9B8] mb-1">Fluid Intake</div>
+                                  <div className="text-sm sm:text-lg font-bold text-blue-300">{item.fluid}</div>
                                 </div>
-                                <div className="bg-purple-950/40 rounded-lg p-2">
-                                  <div className="text-xs text-[#A9A9B8] mb-1">Sodium</div>
-                                  <div className="text-lg font-bold text-purple-300">{item.sodium}</div>
+                                <div className="bg-purple-950/40 rounded-lg p-2 sm:p-3">
+                                  <div className="text-[10px] sm:text-xs text-[#A9A9B8] mb-1">Sodium</div>
+                                  <div className="text-sm sm:text-lg font-bold text-purple-300">{item.sodium}</div>
                                 </div>
                               </div>
                               
