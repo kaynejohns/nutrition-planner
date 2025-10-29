@@ -1599,8 +1599,8 @@ export default function App(){
             <motion.div key="daily" initial={{opacity:0,y:8}} animate={{opacity:1,y:0}} exit={{opacity:0,y:-8}} transition={{duration:0.25}}>
               {/* Help Modal */}
               {showDailyHelp && (
-                <Card className="mb-6">
-                  <div className="flex items-center justify-between mb-4">
+                <div className="mb-6 p-4 sm:p-6 bg-gradient-to-br from-orange-50 to-blue-50 dark:from-slate-800 dark:to-slate-900 border-2 border-orange-300 dark:border-orange-700 rounded-xl space-y-4 overflow-hidden">
+                  <div className="flex items-center justify-between">
                     <h3 className="text-lg sm:text-xl font-bold text-slate-900 dark:text-slate-100">📚 How to Use Daily Nutrition</h3>
                     <button
                       onClick={() => setShowDailyHelp(false)}
@@ -1636,7 +1636,7 @@ export default function App(){
                       <p>Access advanced features like Training Log, Race Week planning, Hydration analysis, Coach Reports, and more.</p>
                     </div>
                   </div>
-                </Card>
+                </div>
               )}
               
               {/* Inputs */}
@@ -2670,8 +2670,8 @@ export default function App(){
             <motion.div key="hydration" initial={{opacity:0,y:8}} animate={{opacity:1,y:0}} exit={{opacity:0,y:-8}} transition={{duration:0.25}} className="space-y-4 sm:space-y-6">
               {/* Help Modal */}
               {showHydrationHelp && (
-                <Card className="mb-6">
-                  <div className="flex items-center justify-between mb-4">
+                <div className="mb-6 p-4 sm:p-6 bg-gradient-to-br from-orange-50 to-blue-50 dark:from-slate-800 dark:to-slate-900 border-2 border-orange-300 dark:border-orange-700 rounded-xl space-y-4 overflow-hidden">
+                  <div className="flex items-center justify-between">
                     <h3 className="text-lg sm:text-xl font-bold text-slate-900 dark:text-slate-100">📚 How to Use Hydration Planning</h3>
                     <button
                       onClick={() => setShowHydrationHelp(false)}
@@ -2712,7 +2712,7 @@ export default function App(){
                       <p>View your personalized hydration and calorie targets for each day of the week based on weather and training.</p>
                     </div>
                   </div>
-                </Card>
+                </div>
               )}
               
               {/* Location and Weather Section */}
@@ -3186,8 +3186,8 @@ export default function App(){
             <motion.div key="traininglog" initial={{opacity:0,y:8}} animate={{opacity:1,y:0}} exit={{opacity:0,y:-8}} transition={{duration:0.25}} className="space-y-4 sm:space-y-6">
               {/* Help Modal */}
               {showTrainingHelp && (
-                <Card className="mb-6">
-                  <div className="flex items-center justify-between mb-4">
+                <div className="mb-6 p-4 sm:p-6 bg-gradient-to-br from-orange-50 to-blue-50 dark:from-slate-800 dark:to-slate-900 border-2 border-orange-300 dark:border-orange-700 rounded-xl space-y-4 overflow-hidden">
+                  <div className="flex items-center justify-between">
                     <h3 className="text-lg sm:text-xl font-bold text-slate-900 dark:text-slate-100">📚 How to Use Training Log</h3>
                     <button
                       onClick={() => setShowTrainingHelp(false)}
@@ -3223,7 +3223,7 @@ export default function App(){
                       <p>Consistent logging helps track your training load and optimize your nutrition accordingly.</p>
                     </div>
                   </div>
-                </Card>
+                </div>
               )}
               
               <Card>
@@ -3265,8 +3265,8 @@ export default function App(){
             <motion.div key="coach" initial={{opacity:0,y:8}} animate={{opacity:1,y:0}} exit={{opacity:0,y:-8}} transition={{duration:0.25}} className="space-y-4 sm:space-y-6">
               {/* Help Modal */}
               {showCoachHelp && (
-                <Card className="mb-6">
-                  <div className="flex items-center justify-between mb-4">
+                <div className="mb-6 p-4 sm:p-6 bg-gradient-to-br from-orange-50 to-blue-50 dark:from-slate-800 dark:to-slate-900 border-2 border-orange-300 dark:border-orange-700 rounded-xl space-y-4 overflow-hidden">
+                  <div className="flex items-center justify-between">
                     <h3 className="text-lg sm:text-xl font-bold text-slate-900 dark:text-slate-100">📚 How to Use Coach Dashboard</h3>
                     <button
                       onClick={() => setShowCoachHelp(false)}
@@ -3307,7 +3307,7 @@ export default function App(){
                       <p>This feature is coming soon. For now, focus on your own training in the Training Log tab.</p>
                     </div>
                   </div>
-                </Card>
+                </div>
               )}
               
               <AthleteProfile 
@@ -3349,8 +3349,8 @@ export default function App(){
             <motion.div key="reports" initial={{opacity:0,y:8}} animate={{opacity:1,y:0}} exit={{opacity:0,y:-8}} transition={{duration:0.25}} className="space-y-4 sm:space-y-6">
               {/* Help Modal */}
               {showReportsHelp && (
-                <Card className="mb-6">
-                  <div className="flex items-center justify-between mb-4">
+                <div className="mb-6 p-4 sm:p-6 bg-gradient-to-br from-orange-50 to-blue-50 dark:from-slate-800 dark:to-slate-900 border-2 border-orange-300 dark:border-orange-700 rounded-xl space-y-4 overflow-hidden">
+                  <div className="flex items-center justify-between">
                     <h3 className="text-lg sm:text-xl font-bold text-slate-900 dark:text-slate-100">📚 How to Use Reports</h3>
                     <button
                       onClick={() => setShowReportsHelp(false)}
@@ -3388,7 +3388,7 @@ export default function App(){
                       <p>Use the intensity distribution analysis to ensure balanced training with proper recovery spacing.</p>
                     </div>
                   </div>
-                </Card>
+                </div>
               )}
               
               <Card>
