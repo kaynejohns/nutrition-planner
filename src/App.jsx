@@ -826,11 +826,15 @@ export default function App(){
   // Sodium calculations (using default intensity for manual calculator)
   const sweatNaMgPerL = useMemo(() => 500 + Math.max(0, ambientC - 15) * 20, [ambientC]); // Rough estimate based on temp
   const sweatNaLossPerHr = useMemo(() => baselineSweatRate * sweatNaMgPerL, [baselineSweatRate, sweatNaMgPerL]);
-  const recSodiumPerHr = useMemo(() => Math.round(sweatNaLossPerHr * 0.7), [sweatNaLossPerHr]); // 70% replacement
-  const totalSodiumMg = useMemo(() => {
+  const totalSweatLossMg = useMemo(() => {
     const hours = sessionMin / 60;
-    return Math.round(recSodiumPerHr * hours);
-  }, [recSodiumPerHr, sessionMin]);
+    return Math.round(sweatNaLossPerHr * hours);
+  }, [sweatNaLossPerHr, sessionMin]);
+  const sodiumLowerReplace = useMemo(() => Math.round(totalSweatLossMg * 0.4), [totalSweatLossMg]);
+  const sodiumUpperReplace = useMemo(() => Math.round(totalSweatLossMg * 0.7), [totalSweatLossMg]);
+  // Keep recSodiumPerHr for compatibility with drink concentration calculations
+  const recSodiumPerHr = useMemo(() => Math.round(sweatNaLossPerHr * 0.7), [sweatNaLossPerHr]); // 70% replacement
+  const totalSodiumMg = useMemo(() => sodiumUpperReplace, [sodiumUpperReplace]); // Use upper range as target
   
   // Drink sodium concentration
   const drinkNaMgPerL = useMemo(() => {
@@ -939,6 +943,10 @@ export default function App(){
         );
         
         
+        const totalSweatLossMg = Math.round(trainingHours * hydration.sodiumPerHour);
+        const sodiumLowerReplace = Math.round(totalSweatLossMg * 0.4);
+        const sodiumUpperReplace = Math.round(totalSweatLossMg * 0.7);
+        
         sessions.push({
           type: session.type,
           duration: session.duration,
@@ -948,7 +956,10 @@ export default function App(){
           fluidPerHour: hydration.fluidPerHour,
           totalFluid: Math.round(trainingHours * hydration.fluidPerHour),
           sodiumPerHour: hydration.sodiumPerHour,
-          totalSodium: Math.round(trainingHours * hydration.sodiumPerHour)
+          totalSweatLossMg: totalSweatLossMg,
+          sodiumLowerReplace: sodiumLowerReplace,
+          sodiumUpperReplace: sodiumUpperReplace,
+          totalSodium: sodiumUpperReplace // Use upper range for display compatibility
         });
       }
       
@@ -979,6 +990,10 @@ export default function App(){
           }
         );
         
+        const totalSweatLossMg2 = Math.round(trainingHours * hydration.sodiumPerHour);
+        const sodiumLowerReplace2 = Math.round(totalSweatLossMg2 * 0.4);
+        const sodiumUpperReplace2 = Math.round(totalSweatLossMg2 * 0.7);
+        
         sessions.push({
           type: session.secondSession.type,
           duration: session.secondSession.duration,
@@ -988,13 +1003,19 @@ export default function App(){
           fluidPerHour: hydration.fluidPerHour,
           totalFluid: Math.round(trainingHours * hydration.fluidPerHour),
           sodiumPerHour: hydration.sodiumPerHour,
-          totalSodium: Math.round(trainingHours * hydration.sodiumPerHour)
+          totalSweatLossMg: totalSweatLossMg2,
+          sodiumLowerReplace: sodiumLowerReplace2,
+          sodiumUpperReplace: sodiumUpperReplace2,
+          totalSodium: sodiumUpperReplace2 // Use upper range for display compatibility
         });
       }
       
       // Calculate totals
       const totalTrainingFluid = sessions.reduce((sum, s) => sum + s.totalFluid, 0);
       const totalTrainingSodium = sessions.reduce((sum, s) => sum + s.totalSodium, 0);
+      const totalTrainingSweatLossMg = sessions.reduce((sum, s) => sum + (s.totalSweatLossMg || 0), 0);
+      const totalTrainingLowerReplace = sessions.reduce((sum, s) => sum + (s.sodiumLowerReplace || 0), 0);
+      const totalTrainingUpperReplace = sessions.reduce((sum, s) => sum + (s.sodiumUpperReplace || 0), 0);
       const totalTrainingMins = sessions.reduce((sum, s) => sum + s.duration, 0);
       
       // Resting fluid for the day (24h worth, prorated)
@@ -1007,6 +1028,9 @@ export default function App(){
         sessions: sessions,
         totalTrainingFluid,
         totalTrainingSodium,
+        totalTrainingSweatLossMg,
+        totalTrainingLowerReplace,
+        totalTrainingUpperReplace,
         totalTrainingMins,
         dailyResting: dailyResting,
         totalDaily: totalTrainingFluid + dailyResting,
@@ -1356,13 +1380,18 @@ export default function App(){
     
     const effectiveNa = baselineNaPerL * intensityNaMult * acclimationMult;
     const sodiumPerHour = Math.round(effectiveSweatRate * effectiveNa);
-    const totalSodiumMg = Math.round(sodiumPerHour * hours);
+    const totalSweatLossMg = Math.round(sodiumPerHour * hours);
+    const sodiumLowerReplace = Math.round(totalSweatLossMg * 0.4);
+    const sodiumUpperReplace = Math.round(totalSweatLossMg * 0.7);
     
     return {
       fluidPerHour: fluidMlPerHour,
       totalFluidMl: totalFluidMl,
       sodiumPerHour: sodiumPerHour,
-      totalSodiumMg: totalSodiumMg,
+      totalSweatLossMg: totalSweatLossMg,
+      sodiumLowerReplace: sodiumLowerReplace,
+      sodiumUpperReplace: sodiumUpperReplace,
+      totalSodiumMg: sodiumUpperReplace, // Use upper range as target for compatibility
       effectiveSweatRate: effectiveSweatRate.toFixed(2)
     };
   };
@@ -1422,7 +1451,8 @@ export default function App(){
     
     // Calculate sodium needs from race hydration
     const hydrationInfo = calculateRaceDayHydration();
-    const sodiumPerMin = hydrationInfo ? hydrationInfo.sodiumPerHour / 60 : 0;
+    // Use replacement range (40-70% of loss) - calculate mid-range per interval
+    const sodiumReplacePerMin = hydrationInfo ? (hydrationInfo.sodiumPerHour * 0.55 / 60) : 0; // 55% = mid-range
     
     // Calculate fluid per bucket
     const totalFluidNeeded = hydrationInfo ? hydrationInfo.totalFluidMl : 0;
@@ -1436,7 +1466,8 @@ export default function App(){
       
       const carbs = carbDistribution[i] || 0;
       const fluid = Math.round(fluidPerBucket * weatherImpact * multiplier);
-      const sodium = Math.round(sodiumPerMin * timeBucket * multiplier);
+      // Sodium per interval uses replacement range (scaled with strategy)
+      const sodium = Math.round(sodiumReplacePerMin * timeBucket * multiplier);
       
       let label = '';
       let notes = '';
@@ -2150,7 +2181,7 @@ export default function App(){
                        raceHeatAcclimation === 'Partially acclimated' ? '85% sodium' : '70% sodium'}
                       {raceHydration && (
                         <span className="ml-2 text-orange-600 dark:text-orange-400">
-                          → {raceHydration.totalSodiumMg}mg total
+                          → Lost {raceHydration.totalSweatLossMg}mg / Replace {raceHydration.sodiumLowerReplace}–{raceHydration.sodiumUpperReplace}mg
                         </span>
                       )}
                     </div>
@@ -2424,13 +2455,27 @@ export default function App(){
                         <div className="text-sm opacity-80">Total Fluid</div>
                       </div>
                       <div className="text-center">
-                        <div className="text-3xl font-bold mb-1">
-                          {raceTimeline.reduce((sum, item) => {
-                            const sodium = item.sodium.replace('mg', '');
-                            return sum + (parseInt(sodium) || 0);
-                          }, 0)}mg
-                        </div>
-                        <div className="text-sm opacity-80">Total Sodium</div>
+                        {raceHydration ? (
+                          <>
+                            <div className="text-2xl font-bold mb-1">
+                              Lost {raceHydration.totalSweatLossMg}mg
+                            </div>
+                            <div className="text-xl font-semibold mb-1">
+                              Replace {raceHydration.sodiumLowerReplace}–{raceHydration.sodiumUpperReplace}mg
+                            </div>
+                            <div className="text-sm opacity-80">Total Sodium</div>
+                          </>
+                        ) : (
+                          <>
+                            <div className="text-3xl font-bold mb-1">
+                              {raceTimeline.reduce((sum, item) => {
+                                const sodium = item.sodium.replace('mg', '');
+                                return sum + (parseInt(sodium) || 0);
+                              }, 0)}mg
+                            </div>
+                            <div className="text-sm opacity-80">Total Sodium</div>
+                          </>
+                        )}
                       </div>
                     </div>
                     <div className="mt-4 pt-4 border-t border-orange-400/30">
@@ -2914,7 +2959,7 @@ export default function App(){
                                     <span className="text-slate-700 dark:text-slate-300">Fluid:</span> {session.totalFluid} ml
                                   </div>
                                   <div className="font-semibold text-orange-700 dark:text-orange-400">
-                                    <span className="text-slate-700 dark:text-slate-300">Sodium:</span> {session.totalSodium} mg
+                                    <span className="text-slate-700 dark:text-slate-300">Sodium:</span> Lost {session.totalSweatLossMg} mg / Replace {session.sodiumLowerReplace}–{session.sodiumUpperReplace} mg
                                   </div>
                                 </div>
                               </div>
@@ -2930,7 +2975,7 @@ export default function App(){
                                   <span className="text-slate-700 dark:text-slate-300 text-xs font-normal">Fluid:</span> {day.totalTrainingFluid} ml
                                 </div>
                                 <div className="text-xs text-slate-500">
-                                  <span className="font-semibold">Sodium:</span> {day.totalTrainingSodium} mg
+                                  <span className="font-semibold">Sodium:</span> Lost {day.totalTrainingSweatLossMg} mg / Replace {day.totalTrainingLowerReplace}–{day.totalTrainingUpperReplace} mg
                                 </div>
                               </div>
                               <div>
@@ -3057,7 +3102,9 @@ export default function App(){
                       <div className="rounded-xl border border-slate-200 dark:border-slate-700 p-4">
                         <div className="text-xs text-slate-500 dark:text-slate-400 mb-1">Total this session</div>
                         <div className="text-2xl font-bold text-orange-700 dark:text-orange-300">{totalFluidMl} ml</div>
-                        <div className="text-sm text-slate-600 dark:text-slate-400 mt-1">Sodium: {totalSodiumMg} mg</div>
+                        <div className="text-sm text-slate-600 dark:text-slate-400 mt-1">
+                          Sodium: Lost {totalSweatLossMg} mg / Replace {sodiumLowerReplace}–{sodiumUpperReplace} mg
+                        </div>
                       </div>
                     </div>
 
@@ -3872,9 +3919,15 @@ export default function App(){
                               🧂 Sodium
                             </div>
                             <div className="font-semibold text-slate-800 dark:text-slate-200">
-                              <div className="text-base sm:text-lg font-bold">Training: {day.totalTrainingSodium} mg</div>
+                              <div className="text-sm font-bold">
+                                {day.hasTraining ? (
+                                  <>Lost: {day.totalTrainingSweatLossMg} mg<br/>Replace: {day.totalTrainingLowerReplace}–{day.totalTrainingUpperReplace} mg</>
+                                ) : (
+                                  <>Rest day</>
+                                )}
+                              </div>
                               <div className="text-xs text-slate-500 mt-0.5 sm:mt-1">
-                                {day.hasTraining ? 'During session' : 'Rest day'}
+                                {day.hasTraining ? 'During session' : 'No training'}
                               </div>
                             </div>
                           </div>
