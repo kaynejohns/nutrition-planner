@@ -1814,34 +1814,34 @@ export default function App(){
                       <div className="flex flex-col md:flex-row items-center md:items-start gap-6">
                         <div className="flex-1">
                           <div className="flex items-center gap-2 mb-2">
-                            <span className="text-3xl">🚀</span>
-                            <h2 className="text-2xl font-bold text-slate-900 dark:text-slate-100">Upgrade to Premium</h2>
+                            <span className="text-2xl sm:text-3xl">🚀</span>
+                            <h2 className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-slate-100">Upgrade to Premium</h2>
                           </div>
-                          <p className="text-slate-700 dark:text-slate-300 mb-4">Unlock advanced features to take your nutrition planning to the next level</p>
+                          <p className="text-sm sm:text-base text-slate-700 dark:text-slate-300 mb-4">Unlock advanced features to take your nutrition planning to the next level</p>
                           
                           <div className="grid sm:grid-cols-2 gap-3 mb-4">
-                            <div className="flex items-start gap-2 text-sm text-slate-700 dark:text-slate-300">
-                              <span className="text-green-600 dark:text-green-400">✓</span>
+                            <div className="flex items-start gap-2 text-xs sm:text-sm text-slate-700 dark:text-slate-300 break-words">
+                              <span className="text-green-600 dark:text-green-400 flex-shrink-0">✓</span>
                               <span><strong>Training Tab:</strong> Detailed weekly training log with nutrition timing</span>
                             </div>
-                            <div className="flex items-start gap-2 text-sm text-slate-700 dark:text-slate-300">
-                              <span className="text-green-600 dark:text-green-400">✓</span>
+                            <div className="flex items-start gap-2 text-xs sm:text-sm text-slate-700 dark:text-slate-300 break-words">
+                              <span className="text-green-600 dark:text-green-400 flex-shrink-0">✓</span>
                               <span><strong>Race Week:</strong> Complete race nutrition planner with timeline</span>
                             </div>
-                            <div className="flex items-start gap-2 text-sm text-slate-700 dark:text-slate-300">
-                              <span className="text-green-600 dark:text-green-400">✓</span>
+                            <div className="flex items-start gap-2 text-xs sm:text-sm text-slate-700 dark:text-slate-300 break-words">
+                              <span className="text-green-600 dark:text-green-400 flex-shrink-0">✓</span>
                               <span><strong>Hydration:</strong> Advanced sodium calculator with weather</span>
                             </div>
-                            <div className="flex items-start gap-2 text-sm text-slate-700 dark:text-slate-300">
-                              <span className="text-green-600 dark:text-green-400">✓</span>
+                            <div className="flex items-start gap-2 text-xs sm:text-sm text-slate-700 dark:text-slate-300 break-words">
+                              <span className="text-green-600 dark:text-green-400 flex-shrink-0">✓</span>
                               <span><strong>Coach Reports:</strong> Weekly summaries and insights</span>
                             </div>
-                            <div className="flex items-start gap-2 text-sm text-slate-700 dark:text-slate-300">
-                              <span className="text-green-600 dark:text-green-400">✓</span>
+                            <div className="flex items-start gap-2 text-xs sm:text-sm text-slate-700 dark:text-slate-300 break-words">
+                              <span className="text-green-600 dark:text-green-400 flex-shrink-0">✓</span>
                               <span><strong>Product Library:</strong> Custom fueling solver & optimization</span>
                             </div>
-                            <div className="flex items-start gap-2 text-sm text-slate-700 dark:text-slate-300">
-                              <span className="text-green-600 dark:text-green-400">✓</span>
+                            <div className="flex items-start gap-2 text-xs sm:text-sm text-slate-700 dark:text-slate-300 break-words">
+                              <span className="text-green-600 dark:text-green-400 flex-shrink-0">✓</span>
                               <span><strong>Weather Integration:</strong> Race day climate adaptation</span>
                             </div>
                           </div>
@@ -1849,13 +1849,13 @@ export default function App(){
                         <div className="w-full md:w-auto flex flex-col gap-3">
                           <button
                             onClick={() => setIsPremium(true)}
-                            className="px-8 py-4 bg-gradient-to-r from-orange-500 to-purple-600 text-white rounded-xl font-bold text-lg hover:from-orange-600 hover:to-purple-700 transition-all shadow-lg hover:shadow-xl"
+                            className="px-6 sm:px-8 py-3 sm:py-4 bg-gradient-to-r from-orange-500 to-purple-600 text-white rounded-xl font-bold text-base sm:text-lg hover:from-orange-600 hover:to-purple-700 transition-all shadow-lg hover:shadow-xl"
                           >
                             Upgrade Now
                           </button>
                           <button
                             onClick={() => setIsPremium(true)}
-                            className="px-8 py-3 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 rounded-xl font-semibold border-2 border-slate-300 dark:border-slate-600 hover:bg-slate-50 dark:hover:bg-slate-700 transition-all"
+                            className="px-6 sm:px-8 py-2 sm:py-3 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 rounded-xl font-semibold text-sm sm:text-base border-2 border-slate-300 dark:border-slate-600 hover:bg-slate-50 dark:hover:bg-slate-700 transition-all"
                           >
                             Try Premium Free
                           </button>
@@ -1886,18 +1886,18 @@ export default function App(){
                 
                 {/* Help Modal */}
                 {showRaceHelp && (
-                  <div className="mb-6 p-6 bg-gradient-to-br from-orange-50 to-blue-50 dark:from-slate-800 dark:to-slate-900 border-2 border-orange-300 dark:border-orange-700 rounded-xl space-y-4">
+                  <div className="mb-6 p-4 sm:p-6 bg-gradient-to-br from-orange-50 to-blue-50 dark:from-slate-800 dark:to-slate-900 border-2 border-orange-300 dark:border-orange-700 rounded-xl space-y-4 overflow-hidden">
                     <div className="flex items-center justify-between">
-                      <h3 className="text-xl font-bold text-slate-900 dark:text-slate-100">📚 How to Use Race Week</h3>
+                      <h3 className="text-lg sm:text-xl font-bold text-slate-900 dark:text-slate-100">📚 How to Use Race Week</h3>
                       <button
                         onClick={() => setShowRaceHelp(false)}
-                        className="text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200 text-2xl font-bold"
+                        className="text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200 text-2xl font-bold flex-shrink-0 ml-2"
                       >
                         ×
                       </button>
                     </div>
                     
-                    <div className="space-y-3 text-sm text-slate-700 dark:text-slate-300">
+                    <div className="space-y-3 text-xs sm:text-sm text-slate-700 dark:text-slate-300 break-words">
                       <div>
                         <strong className="text-orange-600 dark:text-orange-400">1️⃣ Race Setup:</strong>
                         <p>Select your race type, date, and goal time. The system calculates your calorie and carbohydrate needs.</p>
@@ -2438,8 +2438,8 @@ export default function App(){
                   </div>
                   
                   {/* Product Mix Table with Steppers */}
-                  <div className="overflow-x-auto">
-                    <table className="w-full text-sm">
+                  <div className="overflow-x-auto -mx-2 px-2">
+                    <table className="w-full text-xs sm:text-sm min-w-[600px]">
                       <thead>
                         <tr className="border-b border-slate-200 dark:border-slate-700">
                           <th className="text-left py-3 px-2 font-semibold text-slate-700 dark:text-slate-300">Product</th>
@@ -2459,24 +2459,24 @@ export default function App(){
                           
                           return (
                             <tr key={p.id} className="border-b border-slate-100 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-900">
-                              <td className="py-3 px-2 font-medium text-slate-900 dark:text-slate-100">{p.name}</td>
+                              <td className="py-3 px-2 font-medium text-slate-900 dark:text-slate-100 break-words">{p.name}</td>
                               <td className="text-center py-3 px-2 text-slate-600 dark:text-slate-400">{p.carbs}g</td>
                               <td className="text-center py-3 px-2 text-slate-600 dark:text-slate-400">{p.fluid}ml</td>
                               <td className="text-center py-3 px-2 text-slate-600 dark:text-slate-400">{p.sodium}mg</td>
                               <td className="py-3 px-2">
-                                <div className="flex items-center justify-center gap-2">
+                                <div className="flex items-center justify-center gap-1 sm:gap-2">
                                   <button
                                     onClick={() => setProductCounts(prev => ({...prev, [p.id]: Math.max(0, (prev[p.id] || 0) - 1)}))}
-                                    className="w-8 h-8 flex items-center justify-center rounded-lg bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-300 dark:hover:bg-slate-600 font-bold"
+                                    className="w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center rounded-lg bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-300 dark:hover:bg-slate-600 font-bold text-sm"
                                     aria-label={`Decrease ${p.name}`}
                                     tabIndex={0}
                                   >
                                     −
                                   </button>
-                                  <div className="w-12 text-center font-bold text-slate-900 dark:text-slate-100">{count}</div>
+                                  <div className="w-10 sm:w-12 text-center font-bold text-slate-900 dark:text-slate-100">{count}</div>
                                   <button
                                     onClick={() => setProductCounts(prev => ({...prev, [p.id]: ((prev[p.id] || 0) + 1)}))}
-                                    className="w-8 h-8 flex items-center justify-center rounded-lg bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-300 dark:hover:bg-slate-600 font-bold"
+                                    className="w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center rounded-lg bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-300 dark:hover:bg-slate-600 font-bold text-sm"
                                     aria-label={`Increase ${p.name}`}
                                     tabIndex={0}
                                   >
@@ -2484,7 +2484,7 @@ export default function App(){
                                   </button>
                                 </div>
                               </td>
-                              <td className="text-right py-3 px-2 text-slate-600 dark:text-slate-400">
+                              <td className="text-right py-3 px-2 text-slate-600 dark:text-slate-400 text-xs sm:text-sm break-words">
                                 {carbs}g / {fluid}ml / {sodium}mg
                               </td>
                             </tr>
@@ -2528,54 +2528,54 @@ export default function App(){
                     </div>
                     
                     {/* Column Headers */}
-                    <div className="grid grid-cols-12 gap-2 mb-2 pb-2 border-b border-slate-300 dark:border-slate-600">
-                      <div className="col-span-3 font-semibold text-sm text-slate-700 dark:text-slate-300">Product</div>
-                      <div className="col-span-2 font-semibold text-sm text-slate-700 dark:text-slate-300">Carbs (g)</div>
-                      <div className="col-span-2 font-semibold text-sm text-slate-700 dark:text-slate-300">Fluid (ml)</div>
-                      <div className="col-span-2 font-semibold text-sm text-slate-700 dark:text-slate-300">Sodium (mg)</div>
+                    <div className="hidden sm:grid grid-cols-12 gap-2 mb-2 pb-2 border-b border-slate-300 dark:border-slate-600">
+                      <div className="col-span-3 font-semibold text-xs sm:text-sm text-slate-700 dark:text-slate-300">Product</div>
+                      <div className="col-span-2 font-semibold text-xs sm:text-sm text-slate-700 dark:text-slate-300">Carbs (g)</div>
+                      <div className="col-span-2 font-semibold text-xs sm:text-sm text-slate-700 dark:text-slate-300">Fluid (ml)</div>
+                      <div className="col-span-2 font-semibold text-xs sm:text-sm text-slate-700 dark:text-slate-300">Sodium (mg)</div>
                       <div className="col-span-3"></div>
                     </div>
                     
                     <div className="space-y-3">
                       {products.map(p => (
-                        <div key={p.id} className="grid grid-cols-12 gap-2 p-3 bg-slate-50 dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-700">
+                        <div key={p.id} className="flex flex-col sm:grid sm:grid-cols-12 gap-2 p-3 bg-slate-50 dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-700">
                           <input
                             type="text"
                             value={p.name}
                             onChange={e => setProducts(prev => prev.map(prod => prod.id === p.id ? {...prod, name: e.target.value} : prod))}
-                            className="col-span-3 border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 rounded px-2 py-1 text-sm"
+                            className="col-span-12 sm:col-span-3 border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 rounded px-2 py-1 text-xs sm:text-sm"
                             placeholder="Product name"
                           />
-                          <div className="col-span-2">
+                          <div className="col-span-12 sm:col-span-2">
                             <input
                               type="number"
                               value={p.carbs}
                               onChange={e => setProducts(prev => prev.map(prod => prod.id === p.id ? {...prod, carbs: parseInt(e.target.value) || 0} : prod))}
-                              className="w-full border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 rounded px-2 py-1 text-sm"
-                              placeholder="g"
+                              className="w-full border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 rounded px-2 py-1 text-xs sm:text-sm"
+                              placeholder="Carbs (g)"
                             />
                           </div>
-                          <div className="col-span-2">
+                          <div className="col-span-12 sm:col-span-2">
                             <input
                               type="number"
                               value={p.fluid}
                               onChange={e => setProducts(prev => prev.map(prod => prod.id === p.id ? {...prod, fluid: parseInt(e.target.value) || 0} : prod))}
-                              className="w-full border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 rounded px-2 py-1 text-sm"
-                              placeholder="ml"
+                              className="w-full border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 rounded px-2 py-1 text-xs sm:text-sm"
+                              placeholder="Fluid (ml)"
                             />
                           </div>
-                          <div className="col-span-2">
+                          <div className="col-span-12 sm:col-span-2">
                             <input
                               type="number"
                               value={p.sodium}
                               onChange={e => setProducts(prev => prev.map(prod => prod.id === p.id ? {...prod, sodium: parseInt(e.target.value) || 0} : prod))}
-                              className="w-full border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 rounded px-2 py-1 text-sm"
-                              placeholder="mg"
+                              className="w-full border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 rounded px-2 py-1 text-xs sm:text-sm"
+                              placeholder="Sodium (mg)"
                             />
                           </div>
                           <button
                             onClick={() => setProducts(prev => prev.filter(prod => prod.id !== p.id))}
-                            className="col-span-3 px-3 py-1 bg-red-500 text-white rounded text-sm hover:bg-red-600 transition-all"
+                            className="col-span-12 sm:col-span-3 px-3 py-1 bg-red-500 text-white rounded text-xs sm:text-sm hover:bg-red-600 transition-all"
                             aria-label={`Delete ${p.name}`}
                           >
                             Delete
