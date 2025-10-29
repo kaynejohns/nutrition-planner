@@ -1818,7 +1818,7 @@ export default function App(){
                       <KV label="Goal adjustment" value={`${goalAdj>0?"+":""}${goalAdj} kcal`} />
                       <KV label="Double sessions" value={`${doubleSessionAdj>0?"+":""}${doubleSessionAdj} kcal`} />
                       <hr className="my-2" />
-                      <KV big label="Target calories (today)" value={`${targetCalories} kcal`} />
+                      <KV big label="Target calories (today) - Averaged daily for exercise program" value={`${targetCalories} kcal`} />
                     </div>
                   </Card>
                 </motion.div>
@@ -1873,23 +1873,43 @@ export default function App(){
                       const scaleFactor = targetCalories / baseCalories;
                       const scale = (val) => Math.round(val * scaleFactor);
                       
+                      // Approximate macros for each meal (scaled)
+                      const meals = [
+                        {title:"Breakfast (Pre-Run)",items:[`Oats (${scale(80)} g) + milk`,`Banana + honey`,`Whey protein (${scale(25)} g)`],cals:scale(500),carbs:scale(65),protein:scale(30),fat:scale(12)},
+                        {title:"Post-Run Snack",items:[`Greek yogurt (${scale(200)} g)`,`Berries`,`Granola (${scale(40)} g)`],cals:scale(400),carbs:scale(45),protein:scale(25),fat:scale(15)},
+                        {title:"Lunch",items:[`Rice (${scale(200)} g cooked)`,`Chicken breast (${scale(180)} g)`,`Veg + olive oil`],cals:scale(650),carbs:scale(75),protein:scale(50),fat:scale(20)},
+                        {title:"Snack",items:[`Banana`,`Peanut butter toast`,`Electrolyte drink`],cals:scale(350),carbs:scale(50),protein:scale(10),fat:scale(12)},
+                        {title:"Dinner",items:[`Pasta (${scale(120)} g dry)`,`Lean beef (${scale(180)} g)`,`Tomato sauce`],cals:scale(700),carbs:scale(85),protein:scale(55),fat:scale(18)},
+                        {title:"Evening Snack",items:[`Milk`,`Toast + nut butter`],cals:scale(300),carbs:scale(30),protein:scale(15),fat:scale(15)},
+                      ];
+                      
+                      const totalMealCals = meals.reduce((sum, m) => sum + m.cals, 0);
+                      const totalMealCarbs = meals.reduce((sum, m) => sum + m.carbs, 0);
+                      const totalMealProtein = meals.reduce((sum, m) => sum + m.protein, 0);
+                      const totalMealFat = meals.reduce((sum, m) => sum + m.fat, 0);
+                      
                       return (
                         <div className="space-y-3">
-                          {[
-                            {title:"Breakfast (Pre-Run)",items:[`Oats (${scale(80)} g) + milk`,`Banana + honey`,`Whey protein (${scale(25)} g)`]},
-                            {title:"Post-Run Snack",items:[`Greek yogurt (${scale(200)} g)`,`Berries`,`Granola (${scale(40)} g)`]},
-                            {title:"Lunch",items:[`Rice (${scale(200)} g cooked)`,`Chicken breast (${scale(180)} g)`,`Veg + olive oil`]},
-                            {title:"Snack",items:[`Banana`,`Peanut butter toast`,`Electrolyte drink`]},
-                            {title:"Dinner",items:[`Pasta (${scale(120)} g dry)`,`Lean beef (${scale(180)} g)`,`Tomato sauce`]},
-                            {title:"Evening Snack",items:[`Milk`,`Toast + nut butter`]},
-                          ].map((m,i)=> (
+                          {meals.map((m,i)=> (
                             <div key={i} className="border border-[#2A2A35] rounded-card p-3 sm:p-4 bg-[#2A2A35]">
-                              <div className="font-semibold mb-2 text-[#FFFFFF]">{m.title}</div>
-                              <ul className="list-disc pl-4 text-sm text-[#FFFFFF] space-y-1">
+                              <div className="flex justify-between items-start mb-2">
+                                <div className="font-semibold text-[#FFFFFF]">{m.title}</div>
+                                <div className="text-xs text-[#FFCE34] font-bold">{m.cals} kcal</div>
+                              </div>
+                              <ul className="list-disc pl-4 text-sm text-[#FFFFFF] space-y-1 mb-2">
                                 {m.items.map((it,j)=>(<li key={j}>{it}</li>))}
                               </ul>
+                              <div className="text-xs text-[#A9A9B8] border-t border-[#2A2A35] pt-2">
+                                {m.carbs}g carbs • {m.protein}g protein • {m.fat}g fat
+                              </div>
                             </div>
                           ))}
+                          <div className="mt-4 pt-4 border-t-2 border-[#FFCE34] bg-[#2A2A35] rounded-lg p-4">
+                            <div className="text-sm font-semibold text-[#FFCE34] mb-2">Total: {totalMealCals} kcal</div>
+                            <div className="text-xs text-[#FFFFFF]">
+                              {totalMealCarbs}g carbs • {totalMealProtein}g protein • {totalMealFat}g fat
+                            </div>
+                          </div>
                         </div>
                       );
                     })()}
