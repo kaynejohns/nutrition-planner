@@ -175,6 +175,16 @@ input:focus-visible {
   scrollbar-width: none;  /* Firefox */
 }
 
+/* Force white text in select dropdowns on desktop */
+select {
+  color: #FFFFFF !important;
+}
+
+select option {
+  background: #24242A !important;
+  color: #FFFFFF !important;
+}
+
 /* Print styles */
 @media print {
   body {
