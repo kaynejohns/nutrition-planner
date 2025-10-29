@@ -134,48 +134,6 @@ const WeeklySummary: React.FC<WeeklySummaryProps> = ({
           })}
         </div>
       </div>
-      
-      {/* Intensity Distribution (80/20 Model) */}
-      <div>
-        <h3 className="text-base sm:text-lg font-bold mb-3 text-slate-900 dark:text-slate-100">Intensity Distribution</h3>
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-          <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg p-3">
-            <div className="flex items-center gap-2 mb-1">
-              <div className="w-3 h-3 bg-green-500 rounded-full"></div>
-              <div className="text-xs font-semibold text-green-700 dark:text-green-300">Aerobic</div>
-            </div>
-            <div className="text-xs text-slate-600 dark:text-slate-400">80% of volume</div>
-            <div className="text-lg font-bold text-green-700 dark:text-green-300">—</div>
-          </div>
-          
-          <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg p-3">
-            <div className="flex items-center gap-2 mb-1">
-              <div className="w-3 h-3 bg-yellow-500 rounded-full"></div>
-              <div className="text-xs font-semibold text-yellow-700 dark:text-yellow-300">Threshold</div>
-            </div>
-            <div className="text-xs text-slate-600 dark:text-slate-400">12% of volume</div>
-            <div className="text-lg font-bold text-yellow-700 dark:text-yellow-300">—</div>
-          </div>
-          
-          <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-3">
-            <div className="flex items-center gap-2 mb-1">
-              <div className="w-3 h-3 bg-red-500 rounded-full"></div>
-              <div className="text-xs font-semibold text-red-700 dark:text-red-300">VO2max</div>
-            </div>
-            <div className="text-xs text-slate-600 dark:text-slate-400">5% of volume</div>
-            <div className="text-lg font-bold text-red-700 dark:text-red-300">—</div>
-          </div>
-          
-          <div className="bg-purple-50 dark:bg-purple-900/20 border border-purple-200 dark:border-purple-800 rounded-lg p-3">
-            <div className="flex items-center gap-2 mb-1">
-              <div className="w-3 h-3 bg-purple-500 rounded-full"></div>
-              <div className="text-xs font-semibold text-purple-700 dark:text-purple-300">Strength</div>
-            </div>
-            <div className="text-xs text-slate-600 dark:text-slate-400">3% of volume</div>
-            <div className="text-lg font-bold text-purple-700 dark:text-purple-300">—</div>
-          </div>
-        </div>
-      </div>
     </div>
   );
 };
