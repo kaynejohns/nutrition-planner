@@ -1575,23 +1575,50 @@ export default function App(){
   const carbLoadingDays = Array.from({ length: 7 }, (_, i) => {
     const daysOut = 7 - i;
     const carbLoadDay = carbPlan.days >= daysOut;
-    let carbsG = Math.round(weightKg * 5); // Default normal training carbs
     
+    // Map days out to day names (counting backwards from race day)
+    const dayNames = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
+    const dayName = dayNames[(i + 1) % 7]; // +1 because race day is day 1
+    
+    // Get training data for this day
+    const session = weeklySessions[dayName];
+    const hasTraining = session && session.duration > 0;
+    const trainingCalories = hasTraining ? calculateSessionCalories(weightKg, session.duration, session.type, session.intensity) : 0;
+    
+    // Calculate base carbs (resting needs based on activity)
+    let baseCarbsG = Math.round(weightKg * 5); // Normal training carbs
+    
+    // Calculate carb loading additions
+    let carbLoadCarbsG = 0;
     if (carbLoadDay) {
-      // For carb loading, use the plan's carbs array
-      const carbsIndex = carbPlan.days - daysOut; // Days into carb loading
+      const carbsIndex = carbPlan.days - daysOut;
       if (carbsIndex >= 0 && carbsIndex < carbPlan.carbs.length) {
-        carbsG = Math.round(carbPlan.carbs[carbsIndex] * weightKg);
+        carbLoadCarbsG = Math.round((carbPlan.carbs[carbsIndex] - 5) * weightKg); // Extra on top of base
       }
     }
+    
+    // Total carbs for the day
+    const totalCarbsG = baseCarbsG + carbLoadCarbsG;
+    
+    // Calculate total calories: resting + training + carb loading
+    const restingCalories = nonTraining;
+    const totalCalories = restingCalories + trainingCalories;
     
     return {
       dayNumber: daysOut,
       daysOut: daysOut,
-      carbsG: carbsG,
+      dayName: dayName,
+      carbsG: totalCarbsG,
+      baseCarbsG: baseCarbsG,
+      carbLoadCarbsG: carbLoadCarbsG,
       isCarbLoading: carbLoadDay,
       isFiberCaution: daysOut <= 2,
-      isRaceDay: daysOut === 1
+      isRaceDay: daysOut === 1,
+      hasTraining: hasTraining,
+      trainingCalories: trainingCalories,
+      restingCalories: restingCalories,
+      totalCalories: totalCalories,
+      session: session
     };
   });
 
@@ -2314,12 +2341,20 @@ export default function App(){
                               {d.isCarbLoading ? 'Carb Loading Day' : 'Normal Training'}
                               {d.isFiberCaution && ' - ⚠️ Low Fiber'}
                             </div>
+                            {d.hasTraining && d.session && (
+                              <div className="text-xs text-blue-400 mt-1">
+                                {d.session.duration} min {d.session.type} ({d.session.intensity})
+                              </div>
+                            )}
                           </div>
                         </div>
-                        <div className="grid grid-cols-3 sm:grid-cols-3 gap-3 text-center sm:text-right">
+                        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-center sm:text-left">
                           <div>
                             <div className="text-xs text-[#A9A9B8] mb-1">Carbohydrate</div>
                             <div className="text-lg font-bold text-[#FFCE34]">{d.carbsG} g</div>
+                            {d.carbLoadCarbsG > 0 && (
+                              <div className="text-[10px] text-orange-400">+{d.carbLoadCarbsG}g carb load</div>
+                            )}
                           </div>
                           <div>
                             <div className="text-xs text-[#A9A9B8] mb-1">Protein</div>
@@ -2328,6 +2363,13 @@ export default function App(){
                           <div>
                             <div className="text-xs text-[#A9A9B8] mb-1">Fat</div>
                             <div className="text-lg font-bold text-[#FFFFFF]">{Math.round(weightKg * 1.2)} g</div>
+                          </div>
+                          <div>
+                            <div className="text-xs text-[#A9A9B8] mb-1">Calories</div>
+                            <div className="text-lg font-bold text-emerald-400">{d.totalCalories} kcal</div>
+                            <div className="text-[10px] text-[#A9A9B8]">
+                              Rest: {d.restingCalories} + Train: {d.trainingCalories}
+                            </div>
                           </div>
                         </div>
                       </div>
