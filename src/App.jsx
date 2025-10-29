@@ -491,6 +491,7 @@ export default function App(){
   const [fat, setFat] = useState(initial.fat);
   const [dark, setDark] = useState(Boolean(initial.dark));
   const [tab, setTab] = useState("daily"); // daily | race | hydration | performance
+  const [isPremium, setIsPremium] = useState(false); // Premium feature flag
   
   // Performance tab state
   const [weeklySessions, setWeeklySessions] = useState({
@@ -1566,13 +1567,13 @@ export default function App(){
           <div className="overflow-x-auto scrollbar-hide">
             <div className="inline-flex min-w-max rounded-2xl border border-slate-200 dark:border-slate-700 overflow-hidden shadow-sm">
               {[
-                {id:"daily",label:"Daily", icon:"📊"},
-                {id:"traininglog",label:"Training", icon:"🏃"},
-                {id:"race",label:"Race Week", icon:"🏁"},
-                {id:"hydration",label:"Hydration", icon:"💧"},
-                {id:"coach",label:"Coach", icon:"💡"},
-                {id:"reports",label:"Reports", icon:"📈"},
-              ].map(t => (
+                {id:"daily",label:"Daily", icon:"📊", premium:false},
+                {id:"traininglog",label:"Training", icon:"🏃", premium:true},
+                {id:"race",label:"Race Week", icon:"🏁", premium:true},
+                {id:"hydration",label:"Hydration", icon:"💧", premium:true},
+                {id:"coach",label:"Coach", icon:"💡", premium:true},
+                {id:"reports",label:"Reports", icon:"📈", premium:true},
+              ].filter(t => t.id === 'daily' || isPremium || !t.premium).map(t => (
                 <button 
                   key={t.id} 
                   onClick={()=>setTab(t.id)} 
@@ -1806,6 +1807,62 @@ export default function App(){
                       </button>
                     </div>
                   </Card>
+                  
+                  {/* Upgrade to Premium Card */}
+                  {!isPremium && (
+                    <Card className="bg-gradient-to-br from-orange-50 via-purple-50 to-blue-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 border-2 border-orange-300 dark:border-orange-700">
+                      <div className="flex flex-col md:flex-row items-center md:items-start gap-6">
+                        <div className="flex-1">
+                          <div className="flex items-center gap-2 mb-2">
+                            <span className="text-3xl">🚀</span>
+                            <h2 className="text-2xl font-bold text-slate-900 dark:text-slate-100">Upgrade to Premium</h2>
+                          </div>
+                          <p className="text-slate-700 dark:text-slate-300 mb-4">Unlock advanced features to take your nutrition planning to the next level</p>
+                          
+                          <div className="grid sm:grid-cols-2 gap-3 mb-4">
+                            <div className="flex items-start gap-2 text-sm text-slate-700 dark:text-slate-300">
+                              <span className="text-green-600 dark:text-green-400">✓</span>
+                              <span><strong>Training Tab:</strong> Detailed weekly training log with nutrition timing</span>
+                            </div>
+                            <div className="flex items-start gap-2 text-sm text-slate-700 dark:text-slate-300">
+                              <span className="text-green-600 dark:text-green-400">✓</span>
+                              <span><strong>Race Week:</strong> Complete race nutrition planner with timeline</span>
+                            </div>
+                            <div className="flex items-start gap-2 text-sm text-slate-700 dark:text-slate-300">
+                              <span className="text-green-600 dark:text-green-400">✓</span>
+                              <span><strong>Hydration:</strong> Advanced sodium calculator with weather</span>
+                            </div>
+                            <div className="flex items-start gap-2 text-sm text-slate-700 dark:text-slate-300">
+                              <span className="text-green-600 dark:text-green-400">✓</span>
+                              <span><strong>Coach Reports:</strong> Weekly summaries and insights</span>
+                            </div>
+                            <div className="flex items-start gap-2 text-sm text-slate-700 dark:text-slate-300">
+                              <span className="text-green-600 dark:text-green-400">✓</span>
+                              <span><strong>Product Library:</strong> Custom fueling solver & optimization</span>
+                            </div>
+                            <div className="flex items-start gap-2 text-sm text-slate-700 dark:text-slate-300">
+                              <span className="text-green-600 dark:text-green-400">✓</span>
+                              <span><strong>Weather Integration:</strong> Race day climate adaptation</span>
+                            </div>
+                          </div>
+                        </div>
+                        <div className="w-full md:w-auto flex flex-col gap-3">
+                          <button
+                            onClick={() => setIsPremium(true)}
+                            className="px-8 py-4 bg-gradient-to-r from-orange-500 to-purple-600 text-white rounded-xl font-bold text-lg hover:from-orange-600 hover:to-purple-700 transition-all shadow-lg hover:shadow-xl"
+                          >
+                            Upgrade Now
+                          </button>
+                          <button
+                            onClick={() => setIsPremium(true)}
+                            className="px-8 py-3 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 rounded-xl font-semibold border-2 border-slate-300 dark:border-slate-600 hover:bg-slate-50 dark:hover:bg-slate-700 transition-all"
+                          >
+                            Try Premium Free
+                          </button>
+                        </div>
+                      </div>
+                    </Card>
+                  )}
                 </motion.div>
               </div>
             </motion.div>
