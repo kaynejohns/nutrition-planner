@@ -1598,9 +1598,9 @@ export default function App(){
       baseCarbsG += trainingCarbs;
     }
     
-    // Calculate carb loading additions (but NOT on race day - day 0)
+    // Calculate carb loading additions (NOT on race day - daysOut === 1 is race day)
     let carbLoadCarbsG = 0;
-    if (carbLoadDay && daysOut > 0) { // Can carb load until day 1 (day before race), not on race day
+    if (carbLoadDay && daysOut > 1) { // Can carb load until day 2+, NOT on day 1 (race day) or day 0 (day before race shown as day 1)
       const carbsIndex = carbPlan.days - daysOut;
       if (carbsIndex >= 0 && carbsIndex < carbPlan.carbs.length) {
         carbLoadCarbsG = Math.round((carbPlan.carbs[carbsIndex] - 5) * weightKg); // Extra on top of base
@@ -1642,7 +1642,7 @@ export default function App(){
       carbLoadCarbsG: carbLoadCarbsG,
       proteinG: proteinG,
       fatG: fatG,
-      isCarbLoading: carbLoadDay && daysOut > 0, // Show as carb loading up until day before race (day 1)
+      isCarbLoading: carbLoadDay && daysOut > 1, // Show as carb loading on days 3+ before race (not day 1 = race day)
       isFiberCaution: daysOut <= 2,
       isRaceDay: daysOut === 1,
       hasTraining: hasTraining,
@@ -2383,9 +2383,11 @@ export default function App(){
                           <div>
                             <div className="text-xs text-[#A9A9B8] mb-1">Carbohydrate</div>
                             <div className="text-lg font-bold text-[#FFCE34]">{d.carbsG} g</div>
-                            {d.carbLoadCarbsG > 0 && (
+                            {d.isRaceDay ? (
+                              <div className="text-[10px] text-emerald-400">Ready! 🏁</div>
+                            ) : d.carbLoadCarbsG > 0 ? (
                               <div className="text-[10px] text-orange-400">+{d.carbLoadCarbsG}g carb load</div>
-                            )}
+                            ) : null}
                           </div>
                           <div>
                             <div className="text-xs text-[#A9A9B8] mb-1">Protein</div>
