@@ -1598,9 +1598,9 @@ export default function App(){
       baseCarbsG += trainingCarbs;
     }
     
-    // Calculate carb loading additions (but NOT on race day or day before race)
+    // Calculate carb loading additions (but NOT on race day - day 0)
     let carbLoadCarbsG = 0;
-    if (carbLoadDay && daysOut > 2) { // Only carb load 2+ days before race
+    if (carbLoadDay && daysOut > 0) { // Can carb load until day 1 (day before race), not on race day
       const carbsIndex = carbPlan.days - daysOut;
       if (carbsIndex >= 0 && carbsIndex < carbPlan.carbs.length) {
         carbLoadCarbsG = Math.round((carbPlan.carbs[carbsIndex] - 5) * weightKg); // Extra on top of base
@@ -1642,7 +1642,7 @@ export default function App(){
       carbLoadCarbsG: carbLoadCarbsG,
       proteinG: proteinG,
       fatG: fatG,
-      isCarbLoading: carbLoadDay && daysOut > 2, // Only show as carb loading if more than 2 days out
+      isCarbLoading: carbLoadDay && daysOut > 0, // Show as carb loading up until day before race (day 1)
       isFiberCaution: daysOut <= 2,
       isRaceDay: daysOut === 1,
       hasTraining: hasTraining,
