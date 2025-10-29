@@ -1559,36 +1559,6 @@ export default function App(){
                 <div className="text-xs sm:text-sm text-slate-600 dark:text-slate-400">Running fuel calculator</div>
               </div>
             </div>
-            <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
-              <button 
-                onClick={()=>setDark(v=>!v)} 
-                className="px-3 sm:px-4 py-2 sm:py-2.5 rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-xs sm:text-sm font-medium hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors min-h-[44px] active:scale-95"
-              >
-                <span className="hidden sm:inline">{dark ? "☀️ Light" : "🌙 Dark"}</span>
-                <span className="sm:hidden">{dark ? "☀️" : "🌙"}</span>
-              </button>
-              <button 
-                onClick={copyShareLink} 
-                className="px-3 sm:px-4 py-2 sm:py-2.5 rounded-xl bg-gradient-to-r from-orange-500 to-orange-600 text-white text-xs sm:text-sm font-medium hover:from-orange-600 hover:to-orange-700 transition-all shadow-sm min-h-[44px] active:scale-95"
-              >
-                <span className="hidden sm:inline">📋 Share</span>
-                <span className="sm:hidden">📋</span>
-              </button>
-              <button 
-                onClick={downloadCSV} 
-                className="px-3 sm:px-4 py-2 sm:py-2.5 rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-xs sm:text-sm font-medium hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors min-h-[44px] active:scale-95"
-              >
-                <span className="hidden sm:inline">📊 CSV</span>
-                <span className="sm:hidden">📊</span>
-              </button>
-              <button 
-                onClick={exportPDF} 
-                className="px-3 sm:px-4 py-2 sm:py-2.5 rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-xs sm:text-sm font-medium hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors min-h-[44px] active:scale-95"
-              >
-                <span className="hidden sm:inline">📄 PDF</span>
-                <span className="sm:hidden">📄</span>
-              </button>
-            </div>
           </div>
         </div>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 pb-3 sm:pb-4">
