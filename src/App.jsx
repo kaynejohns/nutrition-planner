@@ -610,6 +610,7 @@ export default function App(){
   // Tooltip visibility states
   const [showSaltinessTooltip, setShowSaltinessTooltip] = useState(false);
   const [showAcclimationTooltip, setShowAcclimationTooltip] = useState(false);
+  const [showRaceHelp, setShowRaceHelp] = useState(false);
   
   // Race Week states
   const [raceEvent, setRaceEvent] = useState('Marathon');
@@ -1815,7 +1816,74 @@ export default function App(){
               
               {/* Race Event Selection */}
               <Card>
-                <SectionTitle title="🎯 Race Setup" subtitle="Select your event and set your goal" />
+                <div className="flex items-start justify-between mb-4">
+                  <SectionTitle title="🎯 Race Setup" subtitle="Select your event and set your goal" />
+                  <button
+                    onClick={() => setShowRaceHelp(!showRaceHelp)}
+                    className="w-8 h-8 rounded-full bg-orange-500 text-white flex items-center justify-center hover:bg-orange-600 transition-all"
+                    aria-label="Help"
+                  >
+                    ?
+                  </button>
+                </div>
+                
+                {/* Help Modal */}
+                {showRaceHelp && (
+                  <div className="mb-6 p-6 bg-gradient-to-br from-orange-50 to-blue-50 dark:from-slate-800 dark:to-slate-900 border-2 border-orange-300 dark:border-orange-700 rounded-xl space-y-4">
+                    <div className="flex items-center justify-between">
+                      <h3 className="text-xl font-bold text-slate-900 dark:text-slate-100">📚 How to Use Race Week</h3>
+                      <button
+                        onClick={() => setShowRaceHelp(false)}
+                        className="text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200 text-2xl font-bold"
+                      >
+                        ×
+                      </button>
+                    </div>
+                    
+                    <div className="space-y-3 text-sm text-slate-700 dark:text-slate-300">
+                      <div>
+                        <strong className="text-orange-600 dark:text-orange-400">1️⃣ Race Setup:</strong>
+                        <p>Select your race type, date, and goal time. The system calculates your calorie and carbohydrate needs.</p>
+                      </div>
+                      
+                      <div>
+                        <strong className="text-orange-600 dark:text-orange-400">2️⃣ Fueling Strategy:</strong>
+                        <p>Choose your approach:</p>
+                        <ul className="list-disc list-inside ml-4 mt-1 space-y-1">
+                          <li><strong>Aggressive:</strong> +30% carbs for maximum performance (experienced racers)</li>
+                          <li><strong>Optimal:</strong> Balanced fueling for most athletes</li>
+                          <li><strong>Safe:</strong> -30% carbs for sensitive stomachs (first-timers)</li>
+                        </ul>
+                      </div>
+                      
+                      <div>
+                        <strong className="text-orange-600 dark:text-orange-400">3️⃣ Weather & Hydration:</strong>
+                        <p>Enter your race location and fetch weather. Configure:</p>
+                        <ul className="list-disc list-inside ml-4 mt-1 space-y-1">
+                          <li><strong>Sweat Rate:</strong> How much you sweat (Low to Very High)</li>
+                          <li><strong>Sodium Loss:</strong> How salty your sweat is (Low to Very High)</li>
+                          <li><strong>Heat Acclimation:</strong> Your adaptation to heat affects sodium needs</li>
+                        </ul>
+                      </div>
+                      
+                      <div>
+                        <strong className="text-orange-600 dark:text-orange-400">4️⃣ Race Day Timeline:</strong>
+                        <p>See when to fuel with carbs, fluids, and sodium. Timeline splits into 30-min (races &lt;4hrs) or 60-min buckets (races ≥4hrs).</p>
+                      </div>
+                      
+                      <div>
+                        <strong className="text-orange-600 dark:text-orange-400">5️⃣ Fueling Planner:</strong>
+                        <p>Use the Product Library to customize your fuel products, then click "Auto-Optimize Mix" to get quantities that meet your targets.</p>
+                        <p className="mt-2">Targets vs Plan badges show how close you are to meeting your needs (green = good, orange = close, red = far off).</p>
+                      </div>
+                      
+                      <div>
+                        <strong className="text-orange-600 dark:text-orange-400">6️⃣ Carb Loading Calendar:</strong>
+                        <p>See your 7-day carb loading plan leading up to race day. Avoid fiber-rich foods 2 days before your race.</p>
+                      </div>
+                    </div>
+                  </div>
+                )}
                 <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
                   <div>
                     <Label>Race Event</Label>
