@@ -1866,24 +1866,33 @@ export default function App(){
               <div className="grid lg:grid-cols-2 gap-4 sm:gap-6 mb-6 sm:mb-8">
                 <motion.div initial={{opacity:0,y:8}} animate={{opacity:1,y:0}} transition={{delay:0.2}}>
                   <Card>
-                    <SectionTitle title="Example Menu (scalable)" />
-                    <div className="space-y-3">
-                      {[
-                        {title:"Breakfast (Pre-Run)",items:["Oats (80 g) + milk","Banana + honey","Whey protein (25 g)"]},
-                        {title:"Post-Run Snack",items:["Greek yogurt (200 g)","Berries","Granola (40 g)"]},
-                        {title:"Lunch",items:["Rice (200 g cooked)","Chicken breast (180 g)","Veg + olive oil"]},
-                        {title:"Snack",items:["Banana","Peanut butter toast","Electrolyte drink"]},
-                        {title:"Dinner",items:["Pasta (120 g dry)","Lean beef (180 g)","Tomato sauce"]},
-                        {title:"Evening Snack",items:["Milk","Toast + nut butter"]},
-                      ].map((m,i)=> (
-                        <div key={i} className="border border-[#2A2A35] rounded-card p-3 sm:p-4 bg-[#2A2A35]">
-                          <div className="font-semibold mb-2 text-[#FFFFFF]">{m.title}</div>
-                          <ul className="list-disc pl-4 text-sm text-[#FFFFFF] space-y-1">
-                            {m.items.map((it,j)=>(<li key={j}>{it}</li>))}
-                          </ul>
+                    <SectionTitle title="Example Menu (scales with your calories)" />
+                    {(() => {
+                      // Calculate scaling factor based on target calories (base is 2500 kcal)
+                      const baseCalories = 2500;
+                      const scaleFactor = targetCalories / baseCalories;
+                      const scale = (val) => Math.round(val * scaleFactor);
+                      
+                      return (
+                        <div className="space-y-3">
+                          {[
+                            {title:"Breakfast (Pre-Run)",items:[`Oats (${scale(80)} g) + milk`,`Banana + honey`,`Whey protein (${scale(25)} g)`]},
+                            {title:"Post-Run Snack",items:[`Greek yogurt (${scale(200)} g)`,`Berries`,`Granola (${scale(40)} g)`]},
+                            {title:"Lunch",items:[`Rice (${scale(200)} g cooked)`,`Chicken breast (${scale(180)} g)`,`Veg + olive oil`]},
+                            {title:"Snack",items:[`Banana`,`Peanut butter toast`,`Electrolyte drink`]},
+                            {title:"Dinner",items:[`Pasta (${scale(120)} g dry)`,`Lean beef (${scale(180)} g)`,`Tomato sauce`]},
+                            {title:"Evening Snack",items:[`Milk`,`Toast + nut butter`]},
+                          ].map((m,i)=> (
+                            <div key={i} className="border border-[#2A2A35] rounded-card p-3 sm:p-4 bg-[#2A2A35]">
+                              <div className="font-semibold mb-2 text-[#FFFFFF]">{m.title}</div>
+                              <ul className="list-disc pl-4 text-sm text-[#FFFFFF] space-y-1">
+                                {m.items.map((it,j)=>(<li key={j}>{it}</li>))}
+                              </ul>
+                            </div>
+                          ))}
                         </div>
-                      ))}
-                    </div>
+                      );
+                    })()}
                   </Card>
                 </motion.div>
 
@@ -3208,7 +3217,7 @@ export default function App(){
 
               <div className="grid lg:grid-cols-2 gap-4 sm:gap-6">
                 <Card>
-                  <SectionTitle title="Daily Calories" subtitle="Total calories per day (resting + training)" />
+                  <SectionTitle title="Daily Calories" subtitle="Total calories today (averaged over weekly distance)" />
                   <div className="space-y-2">
                     {['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'].map((day, index) => (
                       <div key={day} className="flex justify-between items-center p-2 bg-[#24242A] rounded-lg">
