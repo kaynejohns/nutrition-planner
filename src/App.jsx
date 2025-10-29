@@ -1868,6 +1868,13 @@ export default function App(){
                   <Card>
                     <SectionTitle title="Example Menu (scales with your calories)" />
                     {(() => {
+                      // Use actual target macros
+                      const targetMacroCalories = Math.round(targetCalories * 0.95);
+                      const targetCals = targetMacroCalories;
+                      const targetCarbs = carbGFinal;
+                      const targetProtein = proteinGFinal;
+                      const targetFat = fatGFinal;
+                      
                       // Calculate scaling factor based on target calories (base is 2500 kcal)
                       const baseCalories = 2500;
                       const scaleFactor = targetCalories / baseCalories;
@@ -1888,9 +1895,28 @@ export default function App(){
                       const totalMealProtein = meals.reduce((sum, m) => sum + m.protein, 0);
                       const totalMealFat = meals.reduce((sum, m) => sum + m.fat, 0);
                       
+                      // Scale the meal totals to match target macros exactly
+                      const carbsScale = totalMealCarbs > 0 ? targetCarbs / totalMealCarbs : 1;
+                      const proteinScale = totalMealProtein > 0 ? targetProtein / totalMealProtein : 1;
+                      const fatScale = totalMealFat > 0 ? targetFat / totalMealFat : 1;
+                      
+                      // Adjust each meal's macros to match targets
+                      const adjustedMeals = meals.map(m => ({
+                        ...m,
+                        carbs: Math.round(m.carbs * carbsScale),
+                        protein: Math.round(m.protein * proteinScale),
+                        fat: Math.round(m.fat * fatScale),
+                        cals: Math.round(m.carbs * carbsScale * 4 + m.protein * proteinScale * 4 + m.fat * fatScale * 9)
+                      }));
+                      
+                      const adjustedTotalCals = adjustedMeals.reduce((sum, m) => sum + m.cals, 0);
+                      const adjustedTotalCarbs = adjustedMeals.reduce((sum, m) => sum + m.carbs, 0);
+                      const adjustedTotalProtein = adjustedMeals.reduce((sum, m) => sum + m.protein, 0);
+                      const adjustedTotalFat = adjustedMeals.reduce((sum, m) => sum + m.fat, 0);
+                      
                       return (
                         <div className="space-y-3">
-                          {meals.map((m,i)=> (
+                          {adjustedMeals.map((m,i)=> (
                             <div key={i} className="border border-[#2A2A35] rounded-card p-3 sm:p-4 bg-[#2A2A35]">
                               <div className="flex justify-between items-start mb-2">
                                 <div className="font-semibold text-[#FFFFFF]">{m.title}</div>
@@ -1905,9 +1931,12 @@ export default function App(){
                             </div>
                           ))}
                           <div className="mt-4 pt-4 border-t-2 border-[#FFCE34] bg-[#2A2A35] rounded-lg p-4">
-                            <div className="text-sm font-semibold text-[#FFCE34] mb-2">Total: {totalMealCals} kcal</div>
-                            <div className="text-xs text-[#FFFFFF]">
-                              {totalMealCarbs}g carbs • {totalMealProtein}g protein • {totalMealFat}g fat
+                            <div className="text-sm font-semibold text-[#FFCE34] mb-2">Total: {adjustedTotalCals} kcal</div>
+                            <div className="text-xs text-[#FFFFFF] mb-1">
+                              {adjustedTotalCarbs}g carbs • {adjustedTotalProtein}g protein • {adjustedTotalFat}g fat
+                            </div>
+                            <div className="text-[10px] text-[#A9A9B8] mt-2">
+                              Target: {targetCarbs}g carbs • {targetProtein}g protein • {targetFat}g fat
                             </div>
                           </div>
                         </div>
