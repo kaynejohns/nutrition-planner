@@ -3142,74 +3142,400 @@ export default function App(){
                 />
               </Card>
 
-              {/* Intensity Distribution */}
-              <Card>
-                <SectionTitle title="Intensity Distribution" subtitle="Breakdown of training intensities across the week" />
-                <div className="space-y-4">
-                  {(() => {
-                    const intensityCounts = { aerobic: 0, threshold: 0, vo2max: 0, strength: 0 };
-                    const dayNames = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
+              {/* Intensity Distribution - Advanced Analysis */}
+              {(() => {
+                const dayNames = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
+                const dayNamesShort = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+                
+                // Collect all sessions with data
+                const zoneMinutes = { aerobic: 0, threshold: 0, vo2max: 0, strength: 0 };
+                const zoneCounts = { aerobic: 0, threshold: 0, vo2max: 0, strength: 0 };
+                const hardDays = [];
+                let trainingDays = 0;
+                const dayLabels = [];
+                
+                dayNames.forEach((day, idx) => {
+                  const dayLabel = dayNamesShort[idx];
+                  const session = weeklySessions[day];
+                  let hasTraining = false;
+                  
+                  if (session && session.duration > 0) {
+                    hasTraining = true;
+                    const min = session.duration;
+                    const type = session.type?.toLowerCase();
                     
-                    dayNames.forEach(day => {
-                      const session = weeklySessions[day];
-                      if (session && session.duration > 0) {
-                        if (session.type === 'strength') {
-                          intensityCounts.strength++;
-                        } else if (session.intensity) {
-                          intensityCounts[session.intensity] = (intensityCounts[session.intensity] || 0) + 1;
-                        }
+                    if (type === 'strength') {
+                      zoneMinutes.strength += min;
+                      zoneCounts.strength++;
+                      hardDays.push({ day: idx, label: dayLabel, type: 'strength' });
+                    } else if (session.intensity) {
+                      const intensity = session.intensity.toLowerCase();
+                      zoneMinutes[intensity] += min;
+                      zoneCounts[intensity]++;
+                      if (intensity === 'threshold' || intensity === 'vo2max') {
+                        hardDays.push({ day: idx, label: dayLabel, type: intensity });
                       }
-                      if (session && session.doubleSession && session.secondSession && session.secondSession.duration > 0) {
-                        if (session.secondSession.type === 'strength') {
-                          intensityCounts.strength++;
-                        } else if (session.secondSession.intensity) {
-                          intensityCounts[session.secondSession.intensity] = (intensityCounts[session.secondSession.intensity] || 0) + 1;
-                        }
+                    }
+                  }
+                  
+                  if (session && session.doubleSession && session.secondSession && session.secondSession.duration > 0) {
+                    hasTraining = true;
+                    const min = session.secondSession.duration;
+                    const type = session.secondSession.type?.toLowerCase();
+                    
+                    if (type === 'strength') {
+                      zoneMinutes.strength += min;
+                      zoneCounts.strength++;
+                      hardDays.push({ day: idx, label: dayLabel, type: 'strength' });
+                    } else if (session.secondSession.intensity) {
+                      const intensity = session.secondSession.intensity.toLowerCase();
+                      zoneMinutes[intensity] += min;
+                      zoneCounts[intensity]++;
+                      if (intensity === 'threshold' || intensity === 'vo2max') {
+                        hardDays.push({ day: idx, label: dayLabel, type: intensity });
                       }
-                    });
-                    
-                    const total = intensityCounts.aerobic + intensityCounts.threshold + intensityCounts.vo2max + intensityCounts.strength;
-                    
-                    return (
-                      <div className="space-y-3">
-                        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                          <div className="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-3 border-2 border-blue-300 dark:border-blue-700">
-                            <div className="text-xs text-blue-700 dark:text-blue-300 mb-1">Aerobic</div>
-                            <div className="text-2xl font-bold text-blue-800 dark:text-blue-200">{intensityCounts.aerobic}</div>
-                            <div className="text-xs text-blue-600 dark:text-blue-400 mt-1">
-                              {total > 0 ? Math.round((intensityCounts.aerobic / total) * 100) : 0}% of sessions
+                    }
+                  }
+                  
+                  dayLabels.push({ day: idx, label: dayLabel, hasTraining });
+                  if (hasTraining) trainingDays++;
+                });
+                
+                const totalMinutes = zoneMinutes.aerobic + zoneMinutes.threshold + zoneMinutes.vo2max;
+                const totalAll = totalMinutes + zoneMinutes.strength;
+                
+                // Calculate percentages
+                const zonePercents = totalMinutes > 0 ? {
+                  aerobic: Math.round((zoneMinutes.aerobic / totalMinutes) * 100),
+                  threshold: Math.round((zoneMinutes.threshold / totalMinutes) * 100),
+                  vo2max: Math.round((zoneMinutes.vo2max / totalMinutes) * 100)
+                } : { aerobic: 0, threshold: 0, vo2max: 0 };
+                
+                // Polarization Score
+                const ps = (zoneMinutes.threshold + zoneMinutes.vo2max) > 0 
+                  ? zoneMinutes.aerobic / (zoneMinutes.threshold + zoneMinutes.vo2max) 
+                  : 0;
+                
+                // Intensity Density
+                const intensityDensity = trainingDays > 0 
+                  ? Math.round((zoneMinutes.threshold + zoneMinutes.vo2max) / trainingDays) 
+                  : 0;
+                
+                // Hard-day spacing
+                hardDays.sort((a, b) => a.day - b.day);
+                let hasBackToBack = false;
+                let spacingInfo = "";
+                if (hardDays.length > 1) {
+                  const gaps = [];
+                  for (let i = 1; i < hardDays.length; i++) {
+                    const gap = hardDays[i].day - hardDays[i-1].day;
+                    gaps.push(gap);
+                    if (gap === 0) hasBackToBack = true;
+                  }
+                  
+                  if (hasBackToBack) {
+                    // Find the specific back-to-back
+                    const btIdx = gaps.findIndex(g => g === 0);
+                    if (btIdx >= 0) {
+                      spacingInfo = `Back-to-back detected on ${hardDays[btIdx].label}→${hardDays[btIdx+1].label} ⚠️`;
+                    }
+                  } else {
+                    spacingInfo = "No back-to-back hard days ✅";
+                  }
+                } else if (hardDays.length === 0) {
+                  spacingInfo = "No hard days scheduled";
+                } else {
+                  spacingInfo = "Single hard day ✅";
+                }
+                
+                // Grade calculation
+                let score = 0;
+                
+                // Aerobic share (30 pts)
+                if (zonePercents.aerobic >= 70 && zonePercents.aerobic <= 85) {
+                  score += 30;
+                } else if ((zonePercents.aerobic >= 60 && zonePercents.aerobic <= 69) || 
+                          (zonePercents.aerobic >= 86 && zonePercents.aerobic <= 90)) {
+                  score += 20;
+                } else {
+                  score += 10;
+                }
+                
+                // Hard-day count (25 pts)
+                const hardDayCount = hardDays.filter(d => d.type !== 'strength').length;
+                if (hardDayCount >= 2 && hardDayCount <= 3) {
+                  score += 25;
+                } else if (hardDayCount === 1 || hardDayCount === 4) {
+                  score += 15;
+                } else {
+                  score += 5;
+                }
+                
+                // Hard-day spacing (20 pts)
+                if (!hasBackToBack && hardDayCount > 0) {
+                  score += 20;
+                } else if (hasBackToBack) {
+                  score += 10;
+                }
+                
+                // VO2 share (10 pts)
+                const vo2Percent = totalMinutes > 0 ? Math.round((zoneMinutes.vo2max / totalMinutes) * 100) : 0;
+                if (vo2Percent >= 5 && vo2Percent <= 12) {
+                  score += 10;
+                } else {
+                  score += 5;
+                }
+                
+                // Strength sessions (10 pts)
+                if (zoneCounts.strength >= 1 && zoneCounts.strength <= 2) {
+                  score += 10;
+                } else {
+                  score += 5;
+                }
+                
+                // Completion (5 pts)
+                if (trainingDays > 0) {
+                  score += 5;
+                }
+                
+                // Grade mapping
+                let grade = 'D';
+                let gradeNumber = 0;
+                if (score >= 85) {
+                  grade = 'A';
+                  gradeNumber = Math.min(100, 100 - (100 - score) * 0.5);
+                } else if (score >= 75) {
+                  grade = 'B';
+                  gradeNumber = 75 + (score - 75);
+                } else if (score >= 65) {
+                  grade = 'C';
+                  gradeNumber = 65 + (score - 65);
+                } else {
+                  gradeNumber = score;
+                }
+                
+                gradeNumber = Math.round(gradeNumber);
+                
+                // Verdict
+                let verdict = "";
+                if (score >= 85) {
+                  verdict = "Well-structured polarized week with excellent intensity distribution.";
+                } else if (score >= 75) {
+                  verdict = "Balanced polarized week with good spacing.";
+                } else if (score >= 65) {
+                  verdict = "Decent balance but could improve intensity distribution.";
+                } else {
+                  verdict = "Week needs restructuring for better balance.";
+                }
+                
+                // Coaching recommendations
+                const recommendations = [];
+                
+                if (zonePercents.aerobic < 65) {
+                  recommendations.push({ type: 'warning', text: `Raise easy volume. Current: ${zonePercents.aerobic}%. Add one 40–60 min aerobic session.` });
+                }
+                
+                if (ps < 2.0 || hardDayCount >= 4) {
+                  recommendations.push({ type: 'warning', text: "Too much intensity. Cap at 2–3 hard days per week." });
+                }
+                
+                if (vo2Percent < 5) {
+                  recommendations.push({ type: 'info', text: "VO2max training missing. Insert 6–8 × 2 min @ VO2 with full recovery if speed is a goal." });
+                }
+                
+                if (zoneCounts.strength === 0) {
+                  recommendations.push({ type: 'info', text: "Add 1 lower-body strength session for durability." });
+                }
+                
+                if (hasBackToBack) {
+                  recommendations.push({ type: 'warning', text: "Move one hard session +1 day to improve recovery." });
+                }
+                
+                if (ps > 5.0) {
+                  recommendations.push({ type: 'info', text: "Week is easy. Consider adding more intensity." });
+                }
+                
+                return (
+                  <Card>
+                    <SectionTitle title="Intensity Distribution Analysis" subtitle="Advanced breakdown of training intensities" />
+                    <div className="space-y-6">
+                      {/* Grade Card */}
+                      <div className="bg-gradient-to-br from-emerald-50 to-emerald-100 dark:from-emerald-900/20 dark:to-emerald-800/20 rounded-2xl p-6 border-2 border-emerald-300 dark:border-emerald-700">
+                        <div className="flex items-center justify-between mb-2">
+                          <div>
+                            <div className="text-lg sm:text-xl font-bold text-emerald-900 dark:text-emerald-100 mb-1">
+                              Grade {grade} / {gradeNumber}
+                            </div>
+                            <div className="text-sm text-emerald-700 dark:text-emerald-300">{verdict}</div>
+                          </div>
+                          <div className="text-6xl font-bold text-emerald-400 dark:text-emerald-500">{grade}</div>
+                        </div>
+                      </div>
+                      
+                      {/* Polarization Score */}
+                      <div className="bg-slate-50 dark:bg-slate-800 rounded-xl p-4 border border-slate-200 dark:border-slate-700">
+                        <div className="flex items-center justify-between mb-2">
+                          <div className="text-sm font-semibold text-slate-900 dark:text-slate-100">
+                            Polarization Score: {ps.toFixed(1)}
+                          </div>
+                          <div className="text-xs text-slate-600 dark:text-slate-400">
+                            {ps >= 2.5 && ps <= 4.0 ? 'Ideal' : ps < 2.0 ? 'Too Intense' : 'Too Easy'}
+                          </div>
+                        </div>
+                        <div className="h-2 bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden">
+                          <div 
+                            className="h-full bg-gradient-to-r from-emerald-500 to-emerald-600 transition-all"
+                            style={{ width: `${Math.min(100, (ps / 6) * 100)}%` }}
+                          />
+                        </div>
+                        <div className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+                          Target: 2.5–4.0 (easy minutes / hard minutes)
+                        </div>
+                      </div>
+                      
+                      {/* Stacked Time-in-Zone Bars */}
+                      <div>
+                        <div className="text-sm font-semibold text-slate-900 dark:text-slate-100 mb-3">Time in Zones</div>
+                        <div className="space-y-3">
+                          {/* Aerobic */}
+                          <div>
+                            <div className="flex justify-between text-xs mb-1">
+                              <span className="text-blue-700 dark:text-blue-300 font-medium">Aerobic</span>
+                              <span className="text-slate-600 dark:text-slate-400">{zoneMinutes.aerobic} min ({zonePercents.aerobic}%)</span>
+                            </div>
+                            <div className="h-6 bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden">
+                              <div 
+                                className="h-full bg-gradient-to-r from-blue-400 to-blue-500"
+                                style={{ width: `${zonePercents.aerobic}%` }}
+                              />
                             </div>
                           </div>
                           
-                          <div className="bg-orange-50 dark:bg-orange-900/20 rounded-lg p-3 border-2 border-orange-300 dark:border-orange-700">
-                            <div className="text-xs text-orange-700 dark:text-orange-300 mb-1">Threshold</div>
-                            <div className="text-2xl font-bold text-orange-800 dark:text-orange-200">{intensityCounts.threshold}</div>
-                            <div className="text-xs text-orange-600 dark:text-orange-400 mt-1">
-                              {total > 0 ? Math.round((intensityCounts.threshold / total) * 100) : 0}% of sessions
+                          {/* Threshold */}
+                          <div>
+                            <div className="flex justify-between text-xs mb-1">
+                              <span className="text-orange-700 dark:text-orange-300 font-medium">Threshold</span>
+                              <span className="text-slate-600 dark:text-slate-400">{zoneMinutes.threshold} min ({zonePercents.threshold}%)</span>
+                            </div>
+                            <div className="h-6 bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden">
+                              <div 
+                                className="h-full bg-gradient-to-r from-orange-400 to-orange-500"
+                                style={{ width: `${zonePercents.threshold}%` }}
+                              />
                             </div>
                           </div>
                           
-                          <div className="bg-red-50 dark:bg-red-900/20 rounded-lg p-3 border-2 border-red-300 dark:border-red-700">
-                            <div className="text-xs text-red-700 dark:text-red-300 mb-1">VO2max</div>
-                            <div className="text-2xl font-bold text-red-800 dark:text-red-200">{intensityCounts.vo2max}</div>
-                            <div className="text-xs text-red-600 dark:text-red-400 mt-1">
-                              {total > 0 ? Math.round((intensityCounts.vo2max / total) * 100) : 0}% of sessions
+                          {/* VO2max */}
+                          <div>
+                            <div className="flex justify-between text-xs mb-1">
+                              <span className="text-red-700 dark:text-red-300 font-medium">VO2max</span>
+                              <span className="text-slate-600 dark:text-slate-400">{zoneMinutes.vo2max} min ({zonePercents.vo2max}%)</span>
+                            </div>
+                            <div className="h-6 bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden">
+                              <div 
+                                className="h-full bg-gradient-to-r from-red-400 to-red-500"
+                                style={{ width: `${zonePercents.vo2max}%` }}
+                              />
                             </div>
                           </div>
                           
-                          <div className="bg-purple-50 dark:bg-purple-900/20 rounded-lg p-3 border-2 border-purple-300 dark:border-purple-700">
-                            <div className="text-xs text-purple-700 dark:text-purple-300 mb-1">Strength</div>
-                            <div className="text-2xl font-bold text-purple-800 dark:text-purple-200">{intensityCounts.strength}</div>
-                            <div className="text-xs text-purple-600 dark:text-purple-400 mt-1">
-                              {total > 0 ? Math.round((intensityCounts.strength / total) * 100) : 0}% of sessions
+                          {/* Strength */}
+                          <div>
+                            <div className="flex justify-between text-xs mb-1">
+                              <span className="text-purple-700 dark:text-purple-300 font-medium">Strength</span>
+                              <span className="text-slate-600 dark:text-slate-400">{zoneMinutes.strength} min • {zoneCounts.strength} sessions</span>
+                            </div>
+                            <div className="h-6 bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden">
+                              <div 
+                                className="h-full bg-gradient-to-r from-purple-400 to-purple-500"
+                                style={{ width: zoneMinutes.strength > 0 ? `${Math.min(100, (zoneMinutes.strength / totalAll) * 100)}%` : '0%' }}
+                              />
                             </div>
                           </div>
                         </div>
                       </div>
-                    );
-                  })()}
-                </div>
-              </Card>
+                      
+                      {/* Hard-Day Placement Strip */}
+                      <div>
+                        <div className="text-sm font-semibold text-slate-900 dark:text-slate-100 mb-2">Hard-Day Placement</div>
+                        <div className="flex gap-1 mb-2">
+                          {dayNamesShort.map(label => {
+                            const hardDay = hardDays.find(d => d.label === label);
+                            const isHard = !!hardDay;
+                            const isRed = hardDay && (hardDay.type === 'threshold' || hardDay.type === 'vo2max');
+                            const isPurple = hardDay && hardDay.type === 'strength';
+                            
+                            return (
+                              <div key={label} className="flex-1 flex flex-col items-center p-2 bg-slate-50 dark:bg-slate-800 rounded-lg border-2 border-transparent">
+                                <div className="text-xs font-semibold text-slate-700 dark:text-slate-300 mb-2">{label}</div>
+                                {isHard && (
+                                  <div className={`w-6 h-6 rounded-full ${isRed ? 'bg-red-500' : 'bg-purple-500'} shadow-sm`} />
+                                )}
+                                {!isHard && (
+                                  <div className="w-6 h-6 rounded-full bg-slate-300 dark:bg-slate-600" />
+                                )}
+                              </div>
+                            );
+                          })}
+                        </div>
+                        <div className="text-xs text-slate-600 dark:text-slate-400 mb-2">{spacingInfo}</div>
+                        <div className="text-xs text-slate-500 dark:text-slate-500 flex gap-4">
+                          <div className="flex items-center gap-1">
+                            <div className="w-3 h-3 bg-red-500 rounded-full" />
+                            <span>Threshold/VO2</span>
+                          </div>
+                          <div className="flex items-center gap-1">
+                            <div className="w-3 h-3 bg-purple-500 rounded-full" />
+                            <span>Strength</span>
+                          </div>
+                        </div>
+                      </div>
+                      
+                      {/* Metrics Summary */}
+                      <div className="grid grid-cols-2 gap-3">
+                        <div className="bg-slate-50 dark:bg-slate-800 rounded-lg p-3 border border-slate-200 dark:border-slate-700">
+                          <div className="text-xs text-slate-600 dark:text-slate-400 mb-1">Hard Days</div>
+                          <div className="text-lg font-bold text-emerald-700 dark:text-emerald-300">{hardDayCount}</div>
+                        </div>
+                        <div className="bg-slate-50 dark:bg-slate-800 rounded-lg p-3 border border-slate-200 dark:border-slate-700">
+                          <div className="text-xs text-slate-600 dark:text-slate-400 mb-1">Intensity Density</div>
+                          <div className="text-lg font-bold text-orange-700 dark:text-orange-300">{intensityDensity} min/day</div>
+                        </div>
+                        <div className="bg-slate-50 dark:bg-slate-800 rounded-lg p-3 border border-slate-200 dark:border-slate-700">
+                          <div className="text-xs text-slate-600 dark:text-slate-400 mb-1">Training Days</div>
+                          <div className="text-lg font-bold text-blue-700 dark:text-blue-300">{trainingDays}</div>
+                        </div>
+                        <div className="bg-slate-50 dark:bg-slate-800 rounded-lg p-3 border border-slate-200 dark:border-slate-700">
+                          <div className="text-xs text-slate-600 dark:text-slate-400 mb-1">Total Volume</div>
+                          <div className="text-lg font-bold text-slate-900 dark:text-slate-100">{totalAll} min</div>
+                        </div>
+                      </div>
+                      
+                      {/* Coaching Recommendations */}
+                      {recommendations.length > 0 && (
+                        <div>
+                          <div className="text-sm font-semibold text-slate-900 dark:text-slate-100 mb-2">Coaching Recommendations</div>
+                          <div className="space-y-2">
+                            {recommendations.map((rec, idx) => (
+                              <div 
+                                key={idx} 
+                                className={`flex items-start gap-2 p-3 rounded-lg border ${
+                                  rec.type === 'warning' 
+                                    ? 'bg-orange-50 dark:bg-orange-900/20 border-orange-200 dark:border-orange-800' 
+                                    : 'bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800'
+                                }`}
+                              >
+                                <span className="text-sm">{rec.type === 'warning' ? '⚠️' : '💡'}</span>
+                                <span className="text-xs text-slate-700 dark:text-slate-300">{rec.text}</span>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </Card>
+                );
+              })()}
 
               {/* Daily Hydration Schedule */}
               <Card>
