@@ -1758,23 +1758,23 @@ export default function App(){
       {/* Header */}
       <header className="sticky top-0 z-20 backdrop-blur-md bg-[#1A1A1E]/95 border-b border-[#2A2A35] print:hidden shadow-elevated">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 sm:py-4">
-          <div className="flex items-center justify-between gap-3 sm:gap-4">
-            <div className="flex items-center gap-3">
+          <div className="grid grid-cols-[1fr_auto] md:flex items-center gap-3 md:gap-4">
+            <div className="flex items-center gap-3 min-w-0">
               <img 
                 src="/logo.png" 
                 alt="Nutrition Planner Logo" 
-                className="h-10 w-10 sm:h-12 sm:w-12 rounded-card shadow-soft object-contain bg-[#24242A] p-1"
+                className="h-10 w-10 sm:h-12 sm:w-12 rounded-card shadow-soft object-contain bg-[#24242A] p-1 flex-shrink-0"
               />
-              <div>
-                <div className="text-lg sm:text-xl font-bold leading-tight text-[#FFCE34]">Nutrition Planner</div>
-                <div className="text-xs sm:text-sm text-[#A9A9B8]">Running fuel calculator</div>
+              <div className="min-w-0">
+                <div className="text-lg sm:text-xl font-bold leading-tight text-[#FFCE34] truncate max-w-[70vw]">Nutrition Planner</div>
+                <div className="text-xs sm:text-sm text-[#A9A9B8] truncate">Running fuel calculator</div>
               </div>
             </div>
             {/* Hamburger menu button - mobile only */}
             <button
               onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className="md:hidden w-10 h-10 rounded-lg bg-[#24242A] border border-[#2A2A35] flex items-center justify-center hover:bg-[#2A2A35] transition-colors"
-              aria-label="Main menu"
+              className="md:hidden w-11 h-11 rounded-lg bg-[#24242A] border border-[#2A2A35] flex items-center justify-center hover:bg-[#2A2A35] transition-colors flex-shrink-0"
+              aria-label="Open main menu"
               aria-expanded={isMenuOpen}
             >
               <svg className="w-6 h-6 text-[#FFFFFF]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
