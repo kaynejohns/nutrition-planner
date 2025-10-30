@@ -7,7 +7,7 @@ import WeeklySummary from "./components/WeeklySummary";
 import DailyCalories from "./components/DailyCalories";
 import { fetchWeatherByCity, fetchForecastByCity, calculateHydrationNeeds } from "./utils/weather.js";
 import { loadStripe } from '@stripe/stripe-js';
-import { requireLogin, checkPremium } from './lib/auth';
+import { requireLogin, checkPremium, currentUser } from './lib/auth';
 
 // ---------- UI primitives ----------
 const Card = ({ children, className = "" }) => (
@@ -602,14 +602,40 @@ export default function App(){
     }
   }, [productCounts]);
 
-  // Check premium status from user metadata
+  // Check premium status from user metadata and sync with Stripe
   useEffect(() => {
     const isUserPremium = checkPremium();
     setIsPremium(isUserPremium);
     
+    // Check subscription status with Stripe on load
+    const checkSubscription = async () => {
+      const user = currentUser();
+      if (!user) return;
+      
+      try {
+        const token = await user.jwt();
+        await fetch('/.netlify/functions/check-subscription', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+          body: JSON.stringify({ email: user.email, userId: user.id }),
+        });
+        // Update premium status after sync
+        setIsPremium(checkPremium());
+      } catch (error) {
+        console.error('Error checking subscription:', error);
+      }
+    };
+    
+    checkSubscription();
+    
     // Listen for Identity events to update premium status
     // @ts-ignore
-    window.netlifyIdentity?.on('login', () => setIsPremium(checkPremium()));
+    window.netlifyIdentity?.on('login', async () => {
+      setIsPremium(checkPremium());
+      // Re-check subscription after login
+      await checkSubscription();
+      setIsPremium(checkPremium());
+    });
     // @ts-ignore
     window.netlifyIdentity?.on('logout', () => setIsPremium(false));
   }, []);
