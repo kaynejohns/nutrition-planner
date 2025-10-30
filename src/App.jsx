@@ -7,7 +7,6 @@ import WeeklySummary from "./components/WeeklySummary";
 import DailyCalories from "./components/DailyCalories";
 import { fetchWeatherByCity, fetchForecastByCity, calculateHydrationNeeds } from "./utils/weather.js";
 import { loadStripe } from '@stripe/stripe-js';
-import { requireLogin, currentUser } from './lib/auth';
 
 // ---------- UI primitives ----------
 const Card = ({ children, className = "" }) => (
@@ -501,33 +500,10 @@ export default function App(){
   const [tab, setTab] = useState("daily"); // daily | race | hydration | performance
   const [isPremium, setIsPremium] = useState(false); // Premium feature flag
   
-  // Handle premium upgrade with Stripe
-  const handleUpgrade = async () => {
-    try {
-      const user = await requireLogin();
-      const token = await user.jwt();
-
-      const res = await fetch("/.netlify/functions/create-checkout-session", {
-        method: "POST",
-        headers: { 
-          "Content-Type": "application/json", 
-          Authorization: `Bearer ${token}` 
-        },
-        body: JSON.stringify({
-          priceId: import.meta.env.VITE_STRIPE_PRICE_ID,
-          userId: user.id,
-          email: user.email,
-        }),
-      });
-
-      const { sessionUrl, error } = await res.json();
-      if (error) return alert(error);
-
-      window.location.href = sessionUrl;
-    } catch (error) {
-      console.error('Error creating checkout session:', error);
-      alert('Failed to start checkout. Please try again.');
-    }
+  // Handle premium upgrade - simple toggle for everyone
+  const handleUpgrade = () => {
+    setIsPremium(true);
+    localStorage.setItem("ff_isPremium", "true");
   };
   
   // Performance tab state
@@ -602,72 +578,12 @@ export default function App(){
     }
   }, [productCounts]);
 
-  // Check premium status from entitlement store
+  // Check premium status from localStorage
   useEffect(() => {
-    const run = async () => {
-      // Wait for Netlify Identity to initialize
-      // @ts-ignore
-      const id = window?.netlifyIdentity;
-      if (id) {
-        await new Promise((res) => id?.on?.("init", () => res()));
-      }
-
-      // Check localStorage first for fast initial load
-      const cachedPremium = localStorage.getItem("ff_isPremium");
-      if (cachedPremium) {
-        setIsPremium(JSON.parse(cachedPremium));
-      }
-
-      const user = currentUser();
-      if (!user) {
-        setIsPremium(false);
-        localStorage.setItem("ff_isPremium", "false");
-        return;
-      }
-
-      try {
-        const token = await user.jwt();
-        const res = await fetch("/.netlify/functions/get-entitlement", {
-          method: "POST",
-          headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
-          body: JSON.stringify({ userId: user.id }),
-        });
-        const { isPremium } = await res.json();
-        setIsPremium(!!isPremium);
-        localStorage.setItem("ff_isPremium", JSON.stringify(!!isPremium));
-      } catch (error) {
-        console.error("Error checking entitlement:", error);
-        // Keep existing localStorage value on error
-      }
-    };
-
-    run();
-
-    // Listen for Identity events
-    // @ts-ignore
-    window.netlifyIdentity?.on("login", async () => {
-      const user = currentUser();
-      if (!user) return;
-      try {
-        const token = await user.jwt();
-        const res = await fetch("/.netlify/functions/get-entitlement", {
-          method: "POST",
-          headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
-          body: JSON.stringify({ userId: user.id }),
-        });
-        const { isPremium } = await res.json();
-        setIsPremium(!!isPremium);
-        localStorage.setItem("ff_isPremium", JSON.stringify(!!isPremium));
-      } catch (error) {
-        console.error("Error checking entitlement after login:", error);
-      }
-    });
-
-    // @ts-ignore
-    window.netlifyIdentity?.on("logout", () => {
-      setIsPremium(false);
-      localStorage.setItem("ff_isPremium", "false");
-    });
+    const cachedPremium = localStorage.getItem("ff_isPremium");
+    if (cachedPremium) {
+      setIsPremium(JSON.parse(cachedPremium));
+    }
   }, []);
   
 
@@ -1771,42 +1687,6 @@ export default function App(){
                 <div className="text-lg sm:text-xl font-bold leading-tight text-[#FFCE34]">Nutrition Planner</div>
                 <div className="text-xs sm:text-sm text-[#A9A9B8]">Running fuel calculator</div>
               </div>
-            </div>
-            
-            {/* Login/Logout Button */}
-            <div>
-              {currentUser() ? (
-                <div className="flex items-center gap-2">
-                  <span className="text-xs sm:text-sm text-[#A9A9B8] hidden sm:inline">
-                    {currentUser()?.email}
-                  </span>
-                  <button
-                    onClick={() => {
-                      // @ts-ignore
-                      window.netlifyIdentity?.logout();
-                    }}
-                    className="px-3 sm:px-4 py-2 text-xs sm:text-sm font-medium bg-[#2A2A35] text-[#A9A9B8] rounded-card border border-[#2A2A35] hover:bg-[#3A3A45] hover:text-white transition-all"
-                  >
-                    Logout
-                  </button>
-                </div>
-              ) : (
-                <button
-                  onClick={() => {
-                    // @ts-ignore
-                    if (!window.netlifyIdentity) {
-                      alert('Netlify Identity is not loaded. Please check your configuration and ensure it is enabled in Netlify.');
-                      console.error('Netlify Identity is not available');
-                      return;
-                    }
-                    // @ts-ignore
-                    window.netlifyIdentity.open('login');
-                  }}
-                  className="px-3 sm:px-4 py-2 text-xs sm:text-sm bg-[#FFCE34] text-[#1A1A1E] rounded-card border border-[#FFCE34] hover:bg-[#FFD84D] font-bold transition-all"
-                >
-                  Login / Sign Up
-                </button>
-              )}
             </div>
           </div>
         </div>
