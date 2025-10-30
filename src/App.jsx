@@ -7,6 +7,7 @@ import WeeklySummary from "./components/WeeklySummary";
 import DailyCalories from "./components/DailyCalories";
 import { fetchWeatherByCity, fetchForecastByCity, calculateHydrationNeeds } from "./utils/weather.js";
 import { loadStripe } from '@stripe/stripe-js';
+import { sumMacros, scaleMacros, macrosFromKcalDefault } from "./utils/macros";
 
 // ---------- UI primitives ----------
 const Card = ({ children, className = "" }) => (
@@ -1119,63 +1120,90 @@ export default function App(){
     [dailyTotalCalories]
   );
 
-  // Calculate daily macros for each day
-  const dailyMacros = useMemo(() => {
+  // Calculate rest and training macros separately for each day
+  const dailyMacroTargets = useMemo(() => {
     return dailyTotalCalories.map((totalCalories, index) => {
-      // Use the same macro calculation logic as the main app
-      const targetMacroCalories = Math.round(totalCalories * 0.95); // 95% of total calories for macros
-      
-      // Calculate daily training multiplier based on this day's training load
       const dayTrainingCalories = dailyTrainingCalories[index];
       const dayTrainingTime = dailyTrainingTime[index];
+      const restCalories = totalCalories - dayTrainingCalories;
       
-      // Estimate training load multiplier (1.0 for rest days, up to 1.3 for very heavy training)
-      // Base multiplier on training duration and intensity
-      let dayTrainingMultiplier = 1.0;
+      // Get training macros based on training calories (for recovery fueling)
+      // Training macros: higher carbs for replenishment
+      let trainingMacros;
       if (dayTrainingCalories > 0) {
         const trainingHours = dayTrainingTime / 60;
-        dayTrainingMultiplier = Math.min(1.3, 1.0 + trainingHours * 0.08); // ~8% per hour
+        const trainingMultiplier = Math.min(1.3, 1.0 + trainingHours * 0.08);
+        
+        // Training carbs: higher for recovery (6-9g/kg during heavy training)
+        const baseTrainingCarbs = Math.round(weightKg * (carbLow + carbHigh) / 2);
+        const trainingCarbs = Math.round(baseTrainingCarbs * Math.min(1.3, trainingMultiplier));
+        
+        // Training protein: for muscle recovery (1.8-2.2g/kg on training days)
+        const trainingProtein = Math.round(weightKg * protein * 1.1);
+        
+        // Training fat: minimal (20-25% of training calories)
+        const trainingFatKcal = dayTrainingCalories * 0.20;
+        const trainingFat = Math.round(trainingFatKcal / 9);
+        
+        trainingMacros = { carbs_g: trainingCarbs, protein_g: trainingProtein, fat_g: trainingFat };
+      } else {
+        trainingMacros = { carbs_g: 0, protein_g: 0, fat_g: 0 };
       }
       
-      // Base macros from user settings
-      const baseCarbG = Math.round(weightKg * (carbLow + carbHigh) / 2);
-      const baseProteinG = Math.round(weightKg * protein);
-      const baseFatG = Math.round(weightKg * fat);
+      // Get rest macros: base maintenance macros
+      let restMacros;
+      if (restCalories > 0) {
+        // Use actual macro calculation from Daily tab for consistency
+        const targetMacroCalories = Math.round(restCalories * 0.95);
+        
+        // Base macros from user settings
+        const baseCarbG = Math.round(weightKg * (carbLow + carbHigh) / 2);
+        const baseProteinG = Math.round(weightKg * protein);
+        const baseFatG = Math.round(weightKg * fat);
+        
+        const carbKcal = baseCarbG * 4;
+        const proteinKcal = baseProteinG * 4;
+        const fatKcal = baseFatG * 9;
+        const macroTotalKcal = carbKcal + proteinKcal + fatKcal;
+        
+        // Scale to fit rest calories
+        const scale = macroTotalKcal > targetMacroCalories ? targetMacroCalories / macroTotalKcal : 1;
+        
+        restMacros = {
+          carbs_g: Math.round(baseCarbG * scale),
+          protein_g: Math.round(baseProteinG * scale),
+          fat_g: Math.round(baseFatG * scale)
+        };
+      } else {
+        restMacros = macrosFromKcalDefault(restCalories);
+      }
       
-      // Adjust carbs based on training load (5-8g/kg range scales with training)
-      const carbG = Math.round(baseCarbG * dayTrainingMultiplier);
-      
-      // Protein increases slightly with training load
-      const proteinG = Math.round(baseProteinG * (1 + (dayTrainingMultiplier - 1) * 0.2));
-      
-      // Fat stays relatively stable but can decrease slightly with very high training
-      const fatG = Math.round(baseFatG * Math.max(0.8, 1.1 - (dayTrainingMultiplier - 1) * 0.3));
-      
-      const carbKcal = carbG * 4;
-      const proteinKcal = proteinG * 4;
-      const fatKcal = fatG * 9;
-      const macroTotalKcal = carbKcal + proteinKcal + fatKcal;
-      
-      // Final scaling to fit target calories with 5% buffer for micronutrients
-      const scale = macroTotalKcal > targetMacroCalories ? targetMacroCalories / macroTotalKcal : 1;
-      
-      const carbGFinal = Math.round(carbG * scale);
-      const proteinGFinal = Math.round(proteinG * scale);
-      const fatGFinal = Math.round(fatG * scale);
-      
-      const carbKcalFinal = carbGFinal * 4;
-      const proteinKcalFinal = proteinGFinal * 4;
-      const fatKcalFinal = fatGFinal * 9;
+      // Sum to get daily 100% targets
+      const daily100 = sumMacros(restMacros, trainingMacros);
+      const daily85 = scaleMacros(daily100, 0.85);
+      const daily110 = scaleMacros(daily100, 1.10);
       
       return {
-        carbs: carbGFinal,
-        protein: proteinGFinal,
-        fat: fatGFinal,
-        totalCalories: totalCalories,
-        macroCalories: carbKcalFinal + proteinKcalFinal + fatKcalFinal
+        rest: restMacros,
+        training: trainingMacros,
+        daily100,
+        daily85,
+        daily110,
+        totalCalories
       };
     });
   }, [dailyTotalCalories, dailyTrainingCalories, dailyTrainingTime, weightKg, carbLow, carbHigh, protein, fat]);
+  
+  // Legacy dailyMacros for backwards compatibility (using daily100 values)
+  const dailyMacros = useMemo(() => {
+    return dailyMacroTargets.map(targets => ({
+      carbs: targets.daily100.carbs_g,
+      protein: targets.daily100.protein_g,
+      fat: targets.daily100.fat_g,
+      totalCalories: targets.totalCalories,
+      macroCalories: targets.daily100.carbs_g * 4 + targets.daily100.protein_g * 4 + targets.daily100.fat_g * 9
+    }));
+  }, [dailyMacroTargets]);
 
   // ---------- Actions ----------
   const copyShareLink = async () => {
@@ -4207,7 +4235,7 @@ export default function App(){
                         </div>
 
                         {/* Macro Breakdown */}
-                        {dailyMacros[index] && (
+                        {dailyMacroTargets[index] && (
                           <div className="mt-4">
                             <div className="text-xs sm:text-sm font-bold uppercase tracking-wide text-[#FFFFFF] mb-2">
                               Daily Macros
@@ -4217,9 +4245,9 @@ export default function App(){
                               <div className="border-2 border-red-500 bg-red-950/40 rounded-lg p-1.5 sm:p-2">
                                 <div className="text-[10px] sm:text-xs font-semibold text-red-300 mb-1 leading-tight text-center">Under</div>
                                 <div className="space-y-0.5 text-[9px] sm:text-xs">
-                                  <div className="text-red-200"><span className="text-orange-300 font-semibold">C:</span> {Math.round(dailyMacros[index].carbs * 0.85)}g</div>
-                                  <div className="text-red-200"><span className="text-purple-300 font-semibold">P:</span> {dailyMacros[index].protein}g</div>
-                                  <div className="text-red-200"><span className="text-yellow-300 font-semibold">F:</span> {Math.round(dailyMacros[index].fat * 0.85)}g</div>
+                                  <div className="text-red-200"><span className="text-orange-300 font-semibold">C:</span> {dailyMacroTargets[index].daily85.carbs_g}g</div>
+                                  <div className="text-red-200"><span className="text-purple-300 font-semibold">P:</span> {dailyMacroTargets[index].daily85.protein_g}g</div>
+                                  <div className="text-red-200"><span className="text-yellow-300 font-semibold">F:</span> {dailyMacroTargets[index].daily85.fat_g}g</div>
                                 </div>
                               </div>
 
@@ -4227,9 +4255,9 @@ export default function App(){
                               <div className="border-2 border-green-500 bg-green-950/40 rounded-lg p-1.5 sm:p-2">
                                 <div className="text-[10px] sm:text-xs font-semibold text-green-300 mb-1 leading-tight text-center">Optimal</div>
                                 <div className="space-y-0.5 text-[9px] sm:text-xs">
-                                  <div className="text-green-200"><span className="text-orange-300 font-semibold">C:</span> {dailyMacros[index].carbs}g</div>
-                                  <div className="text-green-200"><span className="text-purple-300 font-semibold">P:</span> {dailyMacros[index].protein}g</div>
-                                  <div className="text-green-200"><span className="text-yellow-300 font-semibold">F:</span> {dailyMacros[index].fat}g</div>
+                                  <div className="text-green-200"><span className="text-orange-300 font-semibold">C:</span> {dailyMacroTargets[index].daily100.carbs_g}g</div>
+                                  <div className="text-green-200"><span className="text-purple-300 font-semibold">P:</span> {dailyMacroTargets[index].daily100.protein_g}g</div>
+                                  <div className="text-green-200"><span className="text-yellow-300 font-semibold">F:</span> {dailyMacroTargets[index].daily100.fat_g}g</div>
                                 </div>
                               </div>
 
@@ -4237,9 +4265,9 @@ export default function App(){
                               <div className="border-2 border-orange-500 bg-orange-950/40 rounded-lg p-1.5 sm:p-2">
                                 <div className="text-[10px] sm:text-xs font-semibold text-[#FFCE34] mb-1 leading-tight text-center">Over</div>
                                 <div className="space-y-0.5 text-[9px] sm:text-xs">
-                                  <div className="text-[#FFCE34]"><span className="text-orange-300 font-semibold">C:</span> {Math.round(dailyMacros[index].carbs * 1.1)}g</div>
-                                  <div className="text-[#FFCE34]"><span className="text-purple-300 font-semibold">P:</span> {dailyMacros[index].protein}g</div>
-                                  <div className="text-[#FFCE34]"><span className="text-yellow-300 font-semibold">F:</span> {Math.round(dailyMacros[index].fat * 1.1)}g</div>
+                                  <div className="text-[#FFCE34]"><span className="text-orange-300 font-semibold">C:</span> {dailyMacroTargets[index].daily110.carbs_g}g</div>
+                                  <div className="text-[#FFCE34]"><span className="text-purple-300 font-semibold">P:</span> {dailyMacroTargets[index].daily110.protein_g}g</div>
+                                  <div className="text-[#FFCE34]"><span className="text-yellow-300 font-semibold">F:</span> {dailyMacroTargets[index].daily110.fat_g}g</div>
                                 </div>
                               </div>
                             </div>
