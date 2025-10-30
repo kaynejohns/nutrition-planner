@@ -6,6 +6,8 @@ import AthleteProfile from "./components/AthleteProfile";
 import WeeklySummary from "./components/WeeklySummary";
 import DailyCalories from "./components/DailyCalories";
 import { fetchWeatherByCity, fetchForecastByCity, calculateHydrationNeeds } from "./utils/weather.js";
+import { loadStripe } from '@stripe/stripe-js';
+import { currentUser } from './lib/auth';
 
 // ---------- UI primitives ----------
 const Card = ({ children, className = "" }) => (
@@ -498,6 +500,38 @@ export default function App(){
   const [dark, setDark] = useState(Boolean(initial.dark));
   const [tab, setTab] = useState("daily"); // daily | race | hydration | performance
   const [isPremium, setIsPremium] = useState(false); // Premium feature flag
+  
+  // Handle premium upgrade with Stripe
+  const handleUpgrade = async () => {
+    // Check if user is logged in
+    const user = currentUser();
+    if (!user) {
+      // Open login modal
+      // @ts-ignore
+      window.netlifyIdentity?.open('login');
+      return;
+    }
+    
+    try {
+      // Call Netlify function to create checkout session
+      const response = await fetch('/.netlify/functions/create-checkout-session', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId: user.id, userEmail: user.email })
+      });
+      
+      const { sessionId } = await response.json();
+      
+      // Redirect to Stripe Checkout
+      const stripe = await loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY || 'pk_test_placeholder');
+      if (stripe) {
+        await stripe.redirectToCheckout({ sessionId });
+      }
+    } catch (error) {
+      console.error('Error creating checkout session:', error);
+      alert('Failed to start checkout. Please try again.');
+    }
+  };
   
   // Performance tab state
   const [weeklySessions, setWeeklySessions] = useState({
@@ -2068,13 +2102,13 @@ export default function App(){
                         </div>
                         <div className="w-full md:w-auto flex flex-col gap-3">
                           <button
-                            onClick={() => setIsPremium(true)}
+                            onClick={handleUpgrade}
                             className="px-6 sm:px-8 py-3 sm:py-4 bg-gradient-to-r from-orange-500 to-purple-600 text-white rounded-card font-bold text-base sm:text-lg hover:from-orange-600 hover:to-purple-700 transition-all shadow-lg hover:shadow-xl"
                           >
                             Upgrade Now
                           </button>
                           <button
-                            onClick={() => setIsPremium(true)}
+                            onClick={handleUpgrade}
                             className="px-6 sm:px-8 py-2 sm:py-3 bg-[#24242A] text-[#FFFFFF] rounded-card font-semibold text-sm sm:text-base border-2 border-[#2A2A35] hover:bg-[#2A2A35] transition-all"
                           >
                             Try Premium Free
