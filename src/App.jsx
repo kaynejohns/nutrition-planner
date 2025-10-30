@@ -5,7 +5,7 @@ import DayCard from "./components/Week/DayCard";
 import AthleteProfile from "./components/AthleteProfile";
 import WeeklySummary from "./components/WeeklySummary";
 import DailyCalories from "./components/DailyCalories";
-import { fetchWeatherByCity, fetchForecastByCity, calculateHydrationNeeds } from "./utils/weather.js";
+import { fetchWeatherByCity, fetchForecastByCity, fetchHourlyForecastByCity, getWeatherAt, calculateHydrationNeeds } from "./utils/weather.js";
 import { loadStripe } from '@stripe/stripe-js';
 import { sumMacros, scaleMacros, macrosFromKcalDefault } from "./utils/macros";
 
@@ -675,11 +675,13 @@ export default function App(){
     date.setDate(date.getDate() + 7);
     return date.toISOString().split('T')[0];
   });
+  const [raceStartTime, setRaceStartTime] = useState('07:00'); // Default 7:00 AM
   const [raceGoalHours, setRaceGoalHours] = useState(3);
   const [raceGoalMins, setRaceGoalMins] = useState(30);
   const [raceLocation, setRaceLocation] = useState('');
   const [raceWeather, setRaceWeather] = useState(null);
   const [loadingRaceWeather, setLoadingRaceWeather] = useState(false);
+  const [raceWeatherSnapshots, setRaceWeatherSnapshots] = useState({ start: null, mid: null, finish: null });
   const [fuelStrategy, setFuelStrategy] = useState('optimal'); // aggressive, optimal, safe
   
   // Race-specific hydration settings
@@ -1312,6 +1314,43 @@ export default function App(){
     };
     return plans[eventType] || plans['Marathon'];
   };
+  
+  // Calculate race weather snapshots for Start, Mid, and Finish
+  useEffect(() => {
+    const calculateRaceWeatherSnapshots = async () => {
+      if (!raceLocation || !raceDate || !raceStartTime) return;
+      
+      try {
+        // Calculate start, mid, and finish times
+        const goalDurationMinutes = raceGoalHours * 60 + raceGoalMins;
+        const [startHour, startMinute] = raceStartTime.split(':').map(Number);
+        
+        const startDate = new Date(`${raceDate}T${raceStartTime}:00`);
+        const midDate = new Date(startDate.getTime() + (goalDurationMinutes / 2) * 60 * 1000);
+        const finishDate = new Date(startDate.getTime() + goalDurationMinutes * 60 * 1000);
+        
+        // Fetch hourly forecast
+        const hourlyData = await fetchHourlyForecastByCity(raceLocation);
+        
+        if (hourlyData && hourlyData.length > 0) {
+          const startSnapshot = getWeatherAt(startDate.toISOString(), hourlyData);
+          const midSnapshot = getWeatherAt(midDate.toISOString(), hourlyData);
+          const finishSnapshot = getWeatherAt(finishDate.toISOString(), hourlyData);
+          
+          setRaceWeatherSnapshots({
+            start: startSnapshot,
+            mid: midSnapshot,
+            finish: finishSnapshot
+          });
+        }
+      } catch (error) {
+        console.error('Error calculating race weather snapshots:', error);
+        setRaceWeatherSnapshots({ start: null, mid: null, finish: null });
+      }
+    };
+    
+    calculateRaceWeatherSnapshots();
+  }, [raceLocation, raceDate, raceStartTime, raceGoalHours, raceGoalMins]);
   
   // Calculate race nutrition targets (will be inlined in useMemo)
   const calculateRaceTargets = (timeline) => {
@@ -2217,7 +2256,7 @@ export default function App(){
                     </div>
                   </div>
                 )}
-                <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
+                <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
                   <div>
                     <Label>Race Event</Label>
                     <select 
@@ -2243,6 +2282,18 @@ export default function App(){
                       onChange={(e) => setRaceDate(e.target.value)}
                     />
                   </div>
+                  <div>
+                    <Label>Race Start Time</Label>
+                    <input 
+                      type="time" 
+                      className="w-full mt-1 border border-[#2A2A35] bg-[#24242A] rounded-lg px-3 py-2 text-[#FFFFFF] focus:ring-2 focus:ring-[#FFCE34]"
+                      value={raceStartTime}
+                      onChange={(e) => setRaceStartTime(e.target.value)}
+                    />
+                  </div>
+                </div>
+                
+                <div className="grid sm:grid-cols-2 gap-4 mb-4">
                   <div>
                     <Label>Goal Time (hours)</Label>
                     <input 
@@ -2392,6 +2443,150 @@ export default function App(){
                   </div>
                 )}
               </Card>
+              
+              {/* Race Day Weather Snapshots */}
+              {(raceWeatherSnapshots.start || raceWeatherSnapshots.mid || raceWeatherSnapshots.finish) && (
+                <Card>
+                  <SectionTitle title="🌦️ Race Day Weather" subtitle="Weather conditions at Start, Midpoint, and Finish" />
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    {/* Start Card */}
+                    <div className="bg-[#2A2A35] rounded-lg p-4 border border-[#3A3A45]">
+                      <div className="text-xs text-[#A9A9B8] uppercase mb-2">Start</div>
+                      {raceWeatherSnapshots.start ? (
+                        <>
+                          <div className="text-xl font-bold text-[#FFCE34] mb-2">
+                            {raceStartTime}
+                          </div>
+                          <div className="flex items-center gap-2 mb-3">
+                            <img src={raceWeatherSnapshots.start.icon} alt={raceWeatherSnapshots.start.condition} className="w-10 h-10" />
+                            <div>
+                              <div className="text-2xl font-bold text-white">{raceWeatherSnapshots.start.tempC}°C</div>
+                              <div className="text-xs text-[#A9A9B8]">Feels {raceWeatherSnapshots.start.feelsLikeC}°C</div>
+                            </div>
+                          </div>
+                          <div className="grid grid-cols-2 gap-2 text-xs">
+                            <div>
+                              <div className="text-[#A9A9B8]">Humidity</div>
+                              <div className="text-white font-medium">{raceWeatherSnapshots.start.humidity}%</div>
+                            </div>
+                            <div>
+                              <div className="text-[#A9A9B8]">Wind</div>
+                              <div className="text-white font-medium">{raceWeatherSnapshots.start.windKph} kph</div>
+                            </div>
+                            <div>
+                              <div className="text-[#A9A9B8]">Gusts</div>
+                              <div className="text-white font-medium">{raceWeatherSnapshots.start.gustKph} kph</div>
+                            </div>
+                            <div>
+                              <div className="text-[#A9A9B8]">Precip</div>
+                              <div className="text-white font-medium">{raceWeatherSnapshots.start.precipMm}mm</div>
+                            </div>
+                          </div>
+                          {raceWeatherSnapshots.start.isInterpolated && (
+                            <div className="mt-2 text-xs text-amber-400">~ interpolated</div>
+                          )}
+                        </>
+                      ) : (
+                        <div className="text-sm text-[#A9A9B8]">Not available yet</div>
+                      )}
+                    </div>
+                    
+                    {/* Mid Card */}
+                    <div className="bg-[#2A2A35] rounded-lg p-4 border border-[#3A3A45]">
+                      <div className="text-xs text-[#A9A9B8] uppercase mb-2">Midpoint</div>
+                      {raceWeatherSnapshots.mid ? (
+                        <>
+                          <div className="text-xl font-bold text-[#FFCE34] mb-2">
+                            {(() => {
+                              const goalMinutes = raceGoalHours * 60 + raceGoalMins;
+                              const midDate = new Date(`${raceDate}T${raceStartTime}:00`);
+                              midDate.setMinutes(midDate.getMinutes() + goalMinutes / 2);
+                              return midDate.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
+                            })()}
+                          </div>
+                          <div className="flex items-center gap-2 mb-3">
+                            <img src={raceWeatherSnapshots.mid.icon} alt={raceWeatherSnapshots.mid.condition} className="w-10 h-10" />
+                            <div>
+                              <div className="text-2xl font-bold text-white">{raceWeatherSnapshots.mid.tempC}°C</div>
+                              <div className="text-xs text-[#A9A9B8]">Feels {raceWeatherSnapshots.mid.feelsLikeC}°C</div>
+                            </div>
+                          </div>
+                          <div className="grid grid-cols-2 gap-2 text-xs">
+                            <div>
+                              <div className="text-[#A9A9B8]">Humidity</div>
+                              <div className="text-white font-medium">{raceWeatherSnapshots.mid.humidity}%</div>
+                            </div>
+                            <div>
+                              <div className="text-[#A9A9B8]">Wind</div>
+                              <div className="text-white font-medium">{raceWeatherSnapshots.mid.windKph} kph</div>
+                            </div>
+                            <div>
+                              <div className="text-[#A9A9B8]">Gusts</div>
+                              <div className="text-white font-medium">{raceWeatherSnapshots.mid.gustKph} kph</div>
+                            </div>
+                            <div>
+                              <div className="text-[#A9A9B8]">Precip</div>
+                              <div className="text-white font-medium">{raceWeatherSnapshots.mid.precipMm}mm</div>
+                            </div>
+                          </div>
+                          {raceWeatherSnapshots.mid.isInterpolated && (
+                            <div className="mt-2 text-xs text-amber-400">~ interpolated</div>
+                          )}
+                        </>
+                      ) : (
+                        <div className="text-sm text-[#A9A9B8]">Not available yet</div>
+                      )}
+                    </div>
+                    
+                    {/* Finish Card */}
+                    <div className="bg-[#2A2A35] rounded-lg p-4 border border-[#3A3A45]">
+                      <div className="text-xs text-[#A9A9B8] uppercase mb-2">Finish</div>
+                      {raceWeatherSnapshots.finish ? (
+                        <>
+                          <div className="text-xl font-bold text-[#FFCE34] mb-2">
+                            {(() => {
+                              const goalMinutes = raceGoalHours * 60 + raceGoalMins;
+                              const finishDate = new Date(`${raceDate}T${raceStartTime}:00`);
+                              finishDate.setMinutes(finishDate.getMinutes() + goalMinutes);
+                              return finishDate.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
+                            })()}
+                          </div>
+                          <div className="flex items-center gap-2 mb-3">
+                            <img src={raceWeatherSnapshots.finish.icon} alt={raceWeatherSnapshots.finish.condition} className="w-10 h-10" />
+                            <div>
+                              <div className="text-2xl font-bold text-white">{raceWeatherSnapshots.finish.tempC}°C</div>
+                              <div className="text-xs text-[#A9A9B8]">Feels {raceWeatherSnapshots.finish.feelsLikeC}°C</div>
+                            </div>
+                          </div>
+                          <div className="grid grid-cols-2 gap-2 text-xs">
+                            <div>
+                              <div className="text-[#A9A9B8]">Humidity</div>
+                              <div className="text-white font-medium">{raceWeatherSnapshots.finish.humidity}%</div>
+                            </div>
+                            <div>
+                              <div className="text-[#A9A9B8]">Wind</div>
+                              <div className="text-white font-medium">{raceWeatherSnapshots.finish.windKph} kph</div>
+                            </div>
+                            <div>
+                              <div className="text-[#A9A9B8]">Gusts</div>
+                              <div className="text-white font-medium">{raceWeatherSnapshots.finish.gustKph} kph</div>
+                            </div>
+                            <div>
+                              <div className="text-[#A9A9B8]">Precip</div>
+                              <div className="text-white font-medium">{raceWeatherSnapshots.finish.precipMm}mm</div>
+                            </div>
+                          </div>
+                          {raceWeatherSnapshots.finish.isInterpolated && (
+                            <div className="mt-2 text-xs text-amber-400">~ interpolated</div>
+                          )}
+                        </>
+                      ) : (
+                        <div className="text-sm text-[#A9A9B8]">Not available yet</div>
+                      )}
+                    </div>
+                  </div>
+                </Card>
+              )}
               
               <Card>
                 <SectionTitle title="📅 7-Day Race Week Calendar" subtitle={carbPlan.description} />

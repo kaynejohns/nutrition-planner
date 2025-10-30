@@ -76,6 +76,136 @@ export async function fetchForecastByCity(cityName) {
   }
 }
 
+// Fetch hourly forecast by city name with date range
+export async function fetchHourlyForecastByCity(cityName, fromDate, toDate) {
+  try {
+    const url = import.meta.env.PROD
+      ? `/.netlify/functions/weather?path=forecast.json&q=${encodeURIComponent(cityName)}&days=14&aqi=no&alerts=no`
+      : `/api/weather/forecast.json?q=${encodeURIComponent(cityName)}&days=14&aqi=no&alerts=no`;
+    
+    console.log('Fetching hourly forecast from:', url);
+    const response = await fetch(url);
+    
+    if (!response.ok) {
+      throw new Error('Forecast fetch failed');
+    }
+    
+    const data = await response.json();
+    
+    // Extract hourly data and flatten into array
+    const hourlyPoints = [];
+    
+    data.forecast.forecastday.forEach(day => {
+      day.hour.forEach(hour => {
+        hourlyPoints.push({
+          time: hour.time,
+          tempC: hour.temp_c,
+          feelsLikeC: hour.feelslike_c,
+          dewpointC: hour.dewpoint_c || hour.temp_c - 5, // Estimate if not provided
+          humidity: hour.humidity,
+          windKph: hour.wind_kph,
+          gustKph: hour.gust_kph || hour.wind_kph * 1.3,
+          precipMm: hour.precip_mm,
+          cloud: hour.cloud,
+          condition: hour.condition.text,
+          icon: hour.condition.icon
+        });
+      });
+    });
+    
+    // Filter by date range if provided
+    if (fromDate && toDate) {
+      const from = new Date(fromDate);
+      const to = new Date(toDate);
+      return hourlyPoints.filter(point => {
+        const pointTime = new Date(point.time);
+        return pointTime >= from && pointTime <= to;
+      });
+    }
+    
+    return hourlyPoints;
+  } catch (error) {
+    console.error('Hourly forecast fetch error:', error);
+    return [];
+  }
+}
+
+/**
+ * Get weather at a specific datetime from hourly forecast data
+ * @param {string} datetime - ISO datetime string (e.g., '2024-01-15T07:00:00')
+ * @param {Array} hourlyData - Array of hourly forecast points
+ * @returns {Object|null} Weather snapshot or null if not found
+ */
+export function getWeatherAt(datetime, hourlyData) {
+  if (!hourlyData || hourlyData.length === 0) return null;
+  
+  const targetTime = new Date(datetime);
+  
+  // Find closest hour
+  let closestIndex = 0;
+  let closestDiff = Infinity;
+  
+  hourlyData.forEach((point, index) => {
+    const pointTime = new Date(point.time);
+    const diff = Math.abs(targetTime - pointTime);
+    if (diff < closestDiff) {
+      closestDiff = diff;
+      closestIndex = index;
+    }
+  });
+  
+  const closestPoint = hourlyData[closestIndex];
+  
+  // Check if we should interpolate
+  const pointTime = new Date(closestPoint.time);
+  const timeDiff = Math.abs(targetTime - pointTime);
+  const isInterpolated = timeDiff > 30 * 60 * 1000; // More than 30 min difference
+  
+  // If interpolation needed and we have neighboring points
+  if (isInterpolated && hourlyData.length > 1) {
+    const nextIndex = closestDiff > 0 ? closestIndex + 1 : closestIndex - 1;
+    const prevPoint = hourlyData[nextIndex];
+    
+    if (prevPoint) {
+      // Linear interpolation
+      const t = timeDiff / (60 * 60 * 1000); // Hours
+      
+      return {
+        time: datetime,
+        tempC: Math.round(closestPoint.tempC * (1 - t) + prevPoint.tempC * t),
+        feelsLikeC: Math.round(closestPoint.feelsLikeC * (1 - t) + prevPoint.feelsLikeC * t),
+        dewpointC: Math.round((closestPoint.dewpointC * (1 - t) + prevPoint.dewpointC * t) * 10) / 10,
+        humidity: Math.round(closestPoint.humidity * (1 - t) + prevPoint.humidity * t),
+        windKph: Math.round(closestPoint.windKph * (1 - t) + prevPoint.windKph * t),
+        gustKph: Math.round(closestPoint.gustKph * (1 - t) + prevPoint.gustKph * t),
+        precipMm: (closestPoint.precipMm * (1 - t) + prevPoint.precipMm * t).toFixed(1),
+        cloud: Math.round(closestPoint.cloud * (1 - t) + prevPoint.cloud * t),
+        condition: closestPoint.condition,
+        icon: closestPoint.icon,
+        isInterpolated: true,
+        sourceNote: 'Interpolated between hours'
+      };
+    }
+  }
+  
+  // Return closest point
+  return {
+    time: datetime,
+    tempC: Math.round(closestPoint.tempC),
+    feelsLikeC: Math.round(closestPoint.feelsLikeC),
+    dewpointC: closestPoint.dewpointC,
+    humidity: closestPoint.humidity,
+    windKph: Math.round(closestPoint.windKph),
+    gustKph: Math.round(closestPoint.gustKph),
+    precipMm: closestPoint.precipMm,
+    cloud: closestPoint.cloud,
+    condition: closestPoint.condition,
+    icon: closestPoint.icon,
+    isInterpolated: false,
+    sourceNote: 'Hourly forecast'
+  };
+}
+
 // Calculate hydration needs based on weather
 // Now uses premium sodium calculation system
 export function calculateHydrationNeeds(temp, humidity, duration, effectiveSweatRate = 1.2, options = {}) {
