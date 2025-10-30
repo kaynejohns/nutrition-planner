@@ -1121,28 +1121,61 @@ export default function App(){
 
   // Calculate daily macros for each day
   const dailyMacros = useMemo(() => {
-    return dailyTotalCalories.map(totalCalories => {
+    return dailyTotalCalories.map((totalCalories, index) => {
       // Use the same macro calculation logic as the main app
       const targetMacroCalories = Math.round(totalCalories * 0.95); // 95% of total calories for macros
       
-      // Calculate carbs based on training load (5-8g/kg range)
-      const carbG = Math.round(weightKg * 6.5); // Middle of 5-8g range
-      const proteinG = Math.round(weightKg * 1.8); // 1.8g/kg as specified
+      // Calculate daily training multiplier based on this day's training load
+      const dayTrainingCalories = dailyTrainingCalories[index];
+      const dayTrainingTime = dailyTrainingTime[index];
+      
+      // Estimate training load multiplier (1.0 for rest days, up to 1.3 for very heavy training)
+      // Base multiplier on training duration and intensity
+      let dayTrainingMultiplier = 1.0;
+      if (dayTrainingCalories > 0) {
+        const trainingHours = dayTrainingTime / 60;
+        dayTrainingMultiplier = Math.min(1.3, 1.0 + trainingHours * 0.08); // ~8% per hour
+      }
+      
+      // Base macros from user settings
+      const baseCarbG = Math.round(weightKg * (carbLow + carbHigh) / 2);
+      const baseProteinG = Math.round(weightKg * protein);
+      const baseFatG = Math.round(weightKg * fat);
+      
+      // Adjust carbs based on training load (5-8g/kg range scales with training)
+      const carbG = Math.round(baseCarbG * dayTrainingMultiplier);
+      
+      // Protein increases slightly with training load
+      const proteinG = Math.round(baseProteinG * (1 + (dayTrainingMultiplier - 1) * 0.2));
+      
+      // Fat stays relatively stable but can decrease slightly with very high training
+      const fatG = Math.round(baseFatG * Math.max(0.8, 1.1 - (dayTrainingMultiplier - 1) * 0.3));
+      
       const carbKcal = carbG * 4;
       const proteinKcal = proteinG * 4;
-      const remainingKcal = targetMacroCalories - carbKcal - proteinKcal;
-      const fatG = Math.round(remainingKcal / 9);
       const fatKcal = fatG * 9;
+      const macroTotalKcal = carbKcal + proteinKcal + fatKcal;
+      
+      // Final scaling to fit target calories with 5% buffer for micronutrients
+      const scale = macroTotalKcal > targetMacroCalories ? targetMacroCalories / macroTotalKcal : 1;
+      
+      const carbGFinal = Math.round(carbG * scale);
+      const proteinGFinal = Math.round(proteinG * scale);
+      const fatGFinal = Math.round(fatG * scale);
+      
+      const carbKcalFinal = carbGFinal * 4;
+      const proteinKcalFinal = proteinGFinal * 4;
+      const fatKcalFinal = fatGFinal * 9;
       
       return {
-        carbs: carbG,
-        protein: proteinG,
-        fat: fatG,
+        carbs: carbGFinal,
+        protein: proteinGFinal,
+        fat: fatGFinal,
         totalCalories: totalCalories,
-        macroCalories: carbKcal + proteinKcal + fatKcal
+        macroCalories: carbKcalFinal + proteinKcalFinal + fatKcalFinal
       };
     });
-  }, [dailyTotalCalories, weightKg]);
+  }, [dailyTotalCalories, dailyTrainingCalories, dailyTrainingTime, weightKg, carbLow, carbHigh, protein, fat]);
 
   // ---------- Actions ----------
   const copyShareLink = async () => {
@@ -4172,6 +4205,46 @@ export default function App(){
                           </div>
                           </div>
                         </div>
+
+                        {/* Macro Breakdown */}
+                        {dailyMacros[index] && (
+                          <div className="mt-4">
+                            <div className="text-xs sm:text-sm font-bold uppercase tracking-wide text-[#FFFFFF] mb-2">
+                              Daily Macros
+                            </div>
+                            <div className="grid grid-cols-3 gap-1.5 sm:gap-2">
+                              {/* Underfueling Macros */}
+                              <div className="border-2 border-red-500 bg-red-950/40 rounded-lg p-1.5 sm:p-2">
+                                <div className="text-[10px] sm:text-xs font-semibold text-red-300 mb-1 leading-tight text-center">Under</div>
+                                <div className="space-y-0.5 text-[9px] sm:text-xs">
+                                  <div className="text-red-200"><span className="text-orange-300 font-semibold">C:</span> {Math.round(dailyMacros[index].carbs * 0.85)}g</div>
+                                  <div className="text-red-200"><span className="text-purple-300 font-semibold">P:</span> {dailyMacros[index].protein}g</div>
+                                  <div className="text-red-200"><span className="text-yellow-300 font-semibold">F:</span> {Math.round(dailyMacros[index].fat * 0.85)}g</div>
+                                </div>
+                              </div>
+
+                              {/* Optimal Macros */}
+                              <div className="border-2 border-green-500 bg-green-950/40 rounded-lg p-1.5 sm:p-2">
+                                <div className="text-[10px] sm:text-xs font-semibold text-green-300 mb-1 leading-tight text-center">Optimal</div>
+                                <div className="space-y-0.5 text-[9px] sm:text-xs">
+                                  <div className="text-green-200"><span className="text-orange-300 font-semibold">C:</span> {dailyMacros[index].carbs}g</div>
+                                  <div className="text-green-200"><span className="text-purple-300 font-semibold">P:</span> {dailyMacros[index].protein}g</div>
+                                  <div className="text-green-200"><span className="text-yellow-300 font-semibold">F:</span> {dailyMacros[index].fat}g</div>
+                                </div>
+                              </div>
+
+                              {/* Overfueling Macros */}
+                              <div className="border-2 border-orange-500 bg-orange-950/40 rounded-lg p-1.5 sm:p-2">
+                                <div className="text-[10px] sm:text-xs font-semibold text-[#FFCE34] mb-1 leading-tight text-center">Over</div>
+                                <div className="space-y-0.5 text-[9px] sm:text-xs">
+                                  <div className="text-[#FFCE34]"><span className="text-orange-300 font-semibold">C:</span> {Math.round(dailyMacros[index].carbs * 1.1)}g</div>
+                                  <div className="text-[#FFCE34]"><span className="text-purple-300 font-semibold">P:</span> {dailyMacros[index].protein}g</div>
+                                  <div className="text-[#FFCE34]"><span className="text-yellow-300 font-semibold">F:</span> {Math.round(dailyMacros[index].fat * 1.1)}g</div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        )}
                       </div>
                     );
                   })}
