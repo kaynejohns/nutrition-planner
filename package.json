@@ -10,10 +10,14 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@netlify/blobs": "^10.3.1",
+    "@stripe/stripe-js": "^8.2.0",
     "@tailwindcss/postcss": "^4.1.13",
     "framer-motion": "^12.23.21",
+    "netlify-identity-widget": "^1.9.2",
     "react": "^19.1.1",
-    "react-dom": "^19.1.1"
+    "react-dom": "^19.1.1",
+    "stripe": "^19.2.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.36.0",
