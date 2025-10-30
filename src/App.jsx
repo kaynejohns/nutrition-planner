@@ -1742,6 +1742,36 @@ export default function App(){
                 <div className="text-xs sm:text-sm text-[#A9A9B8]">Running fuel calculator</div>
               </div>
             </div>
+            
+            {/* Login/Logout Button */}
+            <div>
+              {currentUser() ? (
+                <div className="flex items-center gap-2">
+                  <span className="text-xs sm:text-sm text-[#A9A9B8] hidden sm:inline">
+                    {currentUser()?.email}
+                  </span>
+                  <button
+                    onClick={() => {
+                      // @ts-ignore
+                      window.netlifyIdentity?.logout();
+                    }}
+                    className="px-3 sm:px-4 py-2 text-xs sm:text-sm font-medium bg-[#2A2A35] text-[#A9A9B8] rounded-card border border-[#2A2A35] hover:bg-[#3A3A45] hover:text-white transition-all"
+                  >
+                    Logout
+                  </button>
+                </div>
+              ) : (
+                <button
+                  onClick={() => {
+                    // @ts-ignore
+                    window.netlifyIdentity?.open('login');
+                  }}
+                  className="px-3 sm:px-4 py-2 text-xs sm:text-sm bg-[#FFCE34] text-[#1A1A1E] rounded-card border border-[#FFCE34] hover:bg-[#FFD84D] font-bold transition-all"
+                >
+                  Login / Sign Up
+                </button>
+              )}
+            </div>
           </div>
         </div>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 pb-3 sm:pb-4">
