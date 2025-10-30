@@ -225,8 +225,8 @@ const WeeklySessionDay = ({ day, dayIndex, session, onUpdate, trainingCalories, 
                 onFocus={(e) => { if (session.duration === 0) { e.target.select(); } }}
                 min="0"
                 max="300"
-                className="w-full mt-1 border border-[#2A2A35] bg-[#24242A] rounded-lg px-3 py-2 text-white focus:ring-2 focus:ring-[#FFCE34] focus:border-[#FFCE34]"
-                style={{ color: '#FFFFFF' }}
+                className="w-full mt-1 border border-[#2A2A35] bg-[#24242A] rounded-lg px-3 py-2 text-[#FFCE34] focus:ring-2 focus:ring-[#FFCE34] focus:border-[#FFCE34]"
+                style={{ color: '#FFCE34' }}
               />
         </div>
 
@@ -296,8 +296,8 @@ const WeeklySessionDay = ({ day, dayIndex, session, onUpdate, trainingCalories, 
                 onFocus={(e) => { if (session.secondSession.duration === 0) { e.target.select(); } }}
                 min="0"
                 max="300"
-                className="w-full mt-1 border border-[#2A2A35] bg-[#24242A] rounded-lg px-3 py-2 text-white focus:ring-2 focus:ring-[#FFCE34] focus:border-[#FFCE34]"
-                style={{ color: '#FFFFFF' }}
+                className="w-full mt-1 border border-[#2A2A35] bg-[#24242A] rounded-lg px-3 py-2 text-[#FFCE34] focus:ring-2 focus:ring-[#FFCE34] focus:border-[#FFCE34]"
+                style={{ color: '#FFCE34' }}
               />
             </div>
 
