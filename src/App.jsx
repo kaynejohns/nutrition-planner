@@ -7,7 +7,7 @@ import WeeklySummary from "./components/WeeklySummary";
 import DailyCalories from "./components/DailyCalories";
 import { fetchWeatherByCity, fetchForecastByCity, calculateHydrationNeeds } from "./utils/weather.js";
 import { loadStripe } from '@stripe/stripe-js';
-import { currentUser } from './lib/auth';
+import { requireLogin } from './lib/auth';
 
 // ---------- UI primitives ----------
 const Card = ({ children, className = "" }) => (
@@ -503,30 +503,27 @@ export default function App(){
   
   // Handle premium upgrade with Stripe
   const handleUpgrade = async () => {
-    // Check if user is logged in
-    const user = currentUser();
-    if (!user) {
-      // Open login modal
-      // @ts-ignore
-      window.netlifyIdentity?.open('login');
-      return;
-    }
-    
     try {
-      // Call Netlify function to create checkout session
-      const response = await fetch('/.netlify/functions/create-checkout-session', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userId: user.id, userEmail: user.email })
+      const user = await requireLogin();
+      const token = await user.jwt();
+
+      const res = await fetch("/.netlify/functions/create-checkout-session", {
+        method: "POST",
+        headers: { 
+          "Content-Type": "application/json", 
+          Authorization: `Bearer ${token}` 
+        },
+        body: JSON.stringify({
+          priceId: import.meta.env.VITE_STRIPE_PRICE_ID,
+          userId: user.id,
+          email: user.email,
+        }),
       });
-      
-      const { sessionId } = await response.json();
-      
-      // Redirect to Stripe Checkout
-      const stripe = await loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY || 'pk_test_placeholder');
-      if (stripe) {
-        await stripe.redirectToCheckout({ sessionId });
-      }
+
+      const { sessionUrl, error } = await res.json();
+      if (error) return alert(error);
+
+      window.location.href = sessionUrl;
     } catch (error) {
       console.error('Error creating checkout session:', error);
       alert('Failed to start checkout. Please try again.');

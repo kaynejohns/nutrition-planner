@@ -9,25 +9,35 @@ exports.handler = async (event) => {
 
   try {
     const stripe = Stripe(process.env.STRIPE_SECRET_KEY);
-    const { userId, userEmail } = JSON.parse(event.body);
+    const { userId, email, priceId } = JSON.parse(event.body);
 
-    if (!userId || !userEmail) {
+    if (!userId || !email) {
       return { 
         statusCode: 400, 
-        body: JSON.stringify({ error: 'Missing userId or userEmail' }) 
+        body: JSON.stringify({ error: 'Missing userId or email' }) 
+      };
+    }
+
+    // Use priceId from request or fall back to environment variable
+    const stripePriceId = priceId || process.env.STRIPE_PRICE_ID;
+
+    if (!stripePriceId) {
+      return { 
+        statusCode: 400, 
+        body: JSON.stringify({ error: 'Missing priceId' }) 
       };
     }
 
     // Create Stripe Checkout Session
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ['card'],
-      customer_email: userEmail,
+      customer_email: email,
       metadata: {
         userId, // Store Netlify Identity user ID
       },
       line_items: [
         {
-          price: process.env.STRIPE_PRICE_ID, // Your Stripe Price ID
+          price: stripePriceId,
           quantity: 1,
         },
       ],
@@ -38,7 +48,7 @@ exports.handler = async (event) => {
 
     return {
       statusCode: 200,
-      body: JSON.stringify({ sessionId: session.id }),
+      body: JSON.stringify({ sessionUrl: session.url }),
     };
   } catch (error) {
     console.error('Error creating checkout session:', error);
