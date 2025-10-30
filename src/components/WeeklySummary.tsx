@@ -138,7 +138,7 @@ const WeeklySummary: React.FC<WeeklySummaryProps> = ({
         {dailyMacros.length > 0 && (
           <div className="mb-4">
             <h4 className="text-sm font-semibold text-[#FFFFFF] mb-3 uppercase">Weekly Macros</h4>
-            <div className="grid sm:grid-cols-3 gap-3 mb-3">
+            <div className="grid sm:grid-cols-3 gap-3">
               <div className="bg-orange-900/20 border border-orange-800 rounded-card p-3">
                 <div className="text-xs text-[#A9A9B8] mb-1">Weekly Total Carbs</div>
                 <div className="text-xl font-bold text-orange-300">{weeklyMacros.carbs.toLocaleString()}g</div>
@@ -154,32 +154,6 @@ const WeeklySummary: React.FC<WeeklySummaryProps> = ({
                 <div className="text-xl font-bold text-yellow-300">{weeklyMacros.fat.toLocaleString()}g</div>
                 <div className="text-xs text-[#A9A9B8] mt-1">Avg: {avgDailyFat}g/day</div>
               </div>
-            </div>
-            
-            {/* Daily macro breakdown */}
-            <div className="space-y-2">
-              <div className="text-xs font-semibold text-[#A9A9B8] uppercase mb-2">Daily Macro Breakdown</div>
-              {dayNames.map((day, index) => {
-                const macros = dailyMacros[index];
-                if (!macros) return null;
-                
-                return (
-                  <div key={day} className="flex items-center gap-2 text-xs">
-                    <div className="w-12 font-medium text-[#FFFFFF]">{day}</div>
-                    <div className="flex-1 flex gap-3">
-                      <div className="flex-1">
-                        <span className="text-orange-300 font-medium">C:</span> {macros.carbs}g
-                      </div>
-                      <div className="flex-1">
-                        <span className="text-purple-300 font-medium">P:</span> {macros.protein}g
-                      </div>
-                      <div className="flex-1">
-                        <span className="text-yellow-300 font-medium">F:</span> {macros.fat}g
-                      </div>
-                    </div>
-                  </div>
-                );
-              })}
             </div>
           </div>
         )}
