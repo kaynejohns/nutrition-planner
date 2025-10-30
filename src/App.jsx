@@ -500,6 +500,7 @@ export default function App(){
   const [dark, setDark] = useState(Boolean(initial.dark));
   const [tab, setTab] = useState("daily"); // daily | race | hydration | performance
   const [isPremium, setIsPremium] = useState(false); // Premium feature flag
+  const [isMenuOpen, setIsMenuOpen] = useState(false); // Mobile menu state
   
   // Handle premium upgrade - simple toggle for everyone
   const handleUpgrade = () => {
@@ -1768,10 +1769,28 @@ export default function App(){
                 <div className="text-xs sm:text-sm text-[#A9A9B8]">Running fuel calculator</div>
               </div>
             </div>
+            {/* Hamburger menu button - mobile only */}
+            <button
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
+              className="md:hidden w-10 h-10 rounded-lg bg-[#24242A] border border-[#2A2A35] flex items-center justify-center hover:bg-[#2A2A35] transition-colors"
+              aria-label="Main menu"
+              aria-expanded={isMenuOpen}
+            >
+              <svg className="w-6 h-6 text-[#FFFFFF]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                {isMenuOpen ? (
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                ) : (
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                )}
+              </svg>
+            </button>
           </div>
         </div>
+        
+        {/* Navigation - Desktop tabs always visible, Mobile menu animated */}
         <div className="max-w-7xl mx-auto px-4 sm:px-6 pb-3 sm:pb-4">
-          <div className="flex flex-wrap gap-2">
+          {/* Desktop tabs */}
+          <div className="hidden md:flex flex-wrap gap-2">
             {[
               {id:"daily",label:"Daily", icon:"📊", premium:false},
               {id:"traininglog",label:"Training", icon:"🏃", premium:true},
@@ -1793,6 +1812,45 @@ export default function App(){
               </button>
             ))}
           </div>
+          
+          {/* Mobile menu */}
+          <AnimatePresence>
+            {isMenuOpen && (
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: "auto" }}
+                exit={{ opacity: 0, height: 0 }}
+                transition={{ duration: 0.2 }}
+                className="md:hidden overflow-hidden"
+              >
+                <div className="flex flex-col gap-2 pt-2">
+                  {[
+                    {id:"daily",label:"Daily", icon:"📊", premium:false},
+                    {id:"traininglog",label:"Training", icon:"🏃", premium:true},
+                    {id:"race",label:"Race Week", icon:"🏁", premium:true},
+                    {id:"hydration",label:"Hydration", icon:"💧", premium:true},
+                    {id:"coach",label:"Coach", icon:"💡", premium:true},
+                    {id:"reports",label:"Reports", icon:"📈", premium:true},
+                  ].filter(t => t.id === 'daily' || isPremium || !t.premium).map(t => (
+                    <button 
+                      key={t.id} 
+                      onClick={() => {
+                        setTab(t.id);
+                        setIsMenuOpen(false);
+                      }} 
+                      className={`w-full px-4 py-3 text-sm font-medium transition-all rounded-card border-2 ${
+                        tab===t.id
+                          ? "bg-[#FFCE34] text-[#1A1A1E] border-[#FFCE34] shadow-soft font-bold" 
+                          : "bg-[#24242A] text-[#A9A9B8] border-[#2A2A35] hover:bg-[#2A2A35] hover:text-[#FFFFFF]"
+                      }`}
+                    >
+                      {t.icon} {t.label}
+                    </button>
+                  ))}
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
       </header>
 
