@@ -7,7 +7,7 @@ import WeeklySummary from "./components/WeeklySummary";
 import DailyCalories from "./components/DailyCalories";
 import { fetchWeatherByCity, fetchForecastByCity, calculateHydrationNeeds } from "./utils/weather.js";
 import { loadStripe } from '@stripe/stripe-js';
-import { requireLogin } from './lib/auth';
+import { requireLogin, checkPremium } from './lib/auth';
 
 // ---------- UI primitives ----------
 const Card = ({ children, className = "" }) => (
@@ -601,6 +601,18 @@ export default function App(){
       console.error('Error saving product counts:', e);
     }
   }, [productCounts]);
+
+  // Check premium status from user metadata
+  useEffect(() => {
+    const isUserPremium = checkPremium();
+    setIsPremium(isUserPremium);
+    
+    // Listen for Identity events to update premium status
+    // @ts-ignore
+    window.netlifyIdentity?.on('login', () => setIsPremium(checkPremium()));
+    // @ts-ignore
+    window.netlifyIdentity?.on('logout', () => setIsPremium(false));
+  }, []);
   
 
   // ---------- Derived numbers ----------

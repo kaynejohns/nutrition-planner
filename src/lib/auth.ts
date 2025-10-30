@@ -26,3 +26,10 @@ export async function requireLogin(): Promise<any> {
   return id?.currentUser();
 }
 
+export function checkPremium(): boolean {
+  const user = currentUser();
+  return user?.app_metadata?.isPremium || 
+         user?.app_metadata?.roles?.includes('premium') || 
+         false;
+}
+
