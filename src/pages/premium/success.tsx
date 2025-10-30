@@ -14,11 +14,12 @@ export default function Success() {
 
         const user = currentUser();
         if (!user) throw new Error("Not logged in");
+        const token = await user.jwt();
 
-        const res = await fetch("/.netlify/functions/confirm-checkout", {
+        const res = await fetch("/.netlify/functions/verify-checkout-session", {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ session_id: sessionId }),
+          headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+          body: JSON.stringify({ sessionId }),
         });
         if (!res.ok) throw new Error(await res.text());
         setDone(true);

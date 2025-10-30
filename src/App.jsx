@@ -7,7 +7,7 @@ import WeeklySummary from "./components/WeeklySummary";
 import DailyCalories from "./components/DailyCalories";
 import { fetchWeatherByCity, fetchForecastByCity, calculateHydrationNeeds } from "./utils/weather.js";
 import { loadStripe } from '@stripe/stripe-js';
-import { requireLogin, checkPremium, currentUser } from './lib/auth';
+import { requireLogin, currentUser } from './lib/auth';
 
 // ---------- UI primitives ----------
 const Card = ({ children, className = "" }) => (
@@ -602,42 +602,72 @@ export default function App(){
     }
   }, [productCounts]);
 
-  // Check premium status from user metadata and sync with Stripe
+  // Check premium status from entitlement store
   useEffect(() => {
-    const isUserPremium = checkPremium();
-    setIsPremium(isUserPremium);
-    
-    // Check subscription status with Stripe on load
-    const checkSubscription = async () => {
+    const run = async () => {
+      // Wait for Netlify Identity to initialize
+      // @ts-ignore
+      const id = window?.netlifyIdentity;
+      if (id) {
+        await new Promise((res) => id?.on?.("init", () => res()));
+      }
+
+      // Check localStorage first for fast initial load
+      const cachedPremium = localStorage.getItem("ff_isPremium");
+      if (cachedPremium) {
+        setIsPremium(JSON.parse(cachedPremium));
+      }
+
       const user = currentUser();
-      if (!user) return;
-      
+      if (!user) {
+        setIsPremium(false);
+        localStorage.setItem("ff_isPremium", "false");
+        return;
+      }
+
       try {
         const token = await user.jwt();
-        await fetch('/.netlify/functions/check-subscription', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
-          body: JSON.stringify({ email: user.email, userId: user.id }),
+        const res = await fetch("/.netlify/functions/get-entitlement", {
+          method: "POST",
+          headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+          body: JSON.stringify({ userId: user.id }),
         });
-        // Update premium status after sync
-        setIsPremium(checkPremium());
+        const { isPremium } = await res.json();
+        setIsPremium(!!isPremium);
+        localStorage.setItem("ff_isPremium", JSON.stringify(!!isPremium));
       } catch (error) {
-        console.error('Error checking subscription:', error);
+        console.error("Error checking entitlement:", error);
+        // Keep existing localStorage value on error
       }
     };
-    
-    checkSubscription();
-    
-    // Listen for Identity events to update premium status
+
+    run();
+
+    // Listen for Identity events
     // @ts-ignore
-    window.netlifyIdentity?.on('login', async () => {
-      setIsPremium(checkPremium());
-      // Re-check subscription after login
-      await checkSubscription();
-      setIsPremium(checkPremium());
+    window.netlifyIdentity?.on("login", async () => {
+      const user = currentUser();
+      if (!user) return;
+      try {
+        const token = await user.jwt();
+        const res = await fetch("/.netlify/functions/get-entitlement", {
+          method: "POST",
+          headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+          body: JSON.stringify({ userId: user.id }),
+        });
+        const { isPremium } = await res.json();
+        setIsPremium(!!isPremium);
+        localStorage.setItem("ff_isPremium", JSON.stringify(!!isPremium));
+      } catch (error) {
+        console.error("Error checking entitlement after login:", error);
+      }
     });
+
     // @ts-ignore
-    window.netlifyIdentity?.on('logout', () => setIsPremium(false));
+    window.netlifyIdentity?.on("logout", () => {
+      setIsPremium(false);
+      localStorage.setItem("ff_isPremium", "false");
+    });
   }, []);
   
 
