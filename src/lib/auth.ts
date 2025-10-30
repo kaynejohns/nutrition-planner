@@ -19,6 +19,11 @@ export function currentUser() {
 export async function requireLogin(): Promise<any> {
   // @ts-ignore
   const id = window?.netlifyIdentity;
+  if (!id) {
+    alert('Netlify Identity is not loaded. Please check your configuration.');
+    console.error('Netlify Identity is not available');
+    return null;
+  }
   if (!id?.currentUser()) {
     id?.open('login');
     await new Promise<void>(resolve => id?.on('login', () => resolve()));

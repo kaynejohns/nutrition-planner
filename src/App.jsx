@@ -1764,7 +1764,13 @@ export default function App(){
                 <button
                   onClick={() => {
                     // @ts-ignore
-                    window.netlifyIdentity?.open('login');
+                    if (!window.netlifyIdentity) {
+                      alert('Netlify Identity is not loaded. Please check your configuration and ensure it is enabled in Netlify.');
+                      console.error('Netlify Identity is not available');
+                      return;
+                    }
+                    // @ts-ignore
+                    window.netlifyIdentity.open('login');
                   }}
                   className="px-3 sm:px-4 py-2 text-xs sm:text-sm bg-[#FFCE34] text-[#1A1A1E] rounded-card border border-[#FFCE34] hover:bg-[#FFD84D] font-bold transition-all"
                 >
