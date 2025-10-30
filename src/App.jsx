@@ -4175,34 +4175,51 @@ export default function App(){
                         </div>
 
                         {/* Fuel Status Boxes */}
-                        <div className="mt-4">
-                          <div className="text-xs sm:text-sm font-bold uppercase tracking-wide text-[#FFFFFF] mb-2">
-                            Daily Calories
-                          </div>
-                          <div className="grid grid-cols-3 gap-1.5 sm:gap-2">
-                          <div className="border-2 border-red-500 bg-red-950/40 rounded-lg p-1.5 sm:p-2 text-center">
-                            <div className="text-[10px] sm:text-xs font-semibold text-red-300 mb-0.5 sm:mb-1 leading-tight">Under</div>
-                            <div className="text-xs sm:text-sm font-bold text-red-200">
-                              {Math.round(dailyCalories * 0.85)} kcal
+                        {dailyMacroTargets[index] && (
+                          <div className="mt-4">
+                            <div className="text-xs sm:text-sm font-bold uppercase tracking-wide text-[#FFFFFF] mb-2">
+                              Daily Calories
                             </div>
-                            <div className="text-[9px] sm:text-xs text-red-300 mt-0.5">&lt;85%</div>
-                          </div>
-                          <div className="border-2 border-green-500 bg-green-950/40 rounded-lg p-1.5 sm:p-2 text-center">
-                            <div className="text-[10px] sm:text-xs font-semibold text-green-300 mb-0.5 sm:mb-1 leading-tight">Optimal</div>
-                            <div className="text-xs sm:text-sm font-bold text-green-200">
-                              {dailyCalories} kcal
+                            <div className="grid grid-cols-3 gap-1.5 sm:gap-2">
+                              <div className="border-2 border-red-500 bg-red-950/40 rounded-lg p-1.5 sm:p-2 text-center">
+                                <div className="text-[10px] sm:text-xs font-semibold text-red-300 mb-0.5 sm:mb-1 leading-tight">Under</div>
+                                <div className="text-xs sm:text-sm font-bold text-red-200">
+                                  {Math.round(dailyCalories * 0.85)} kcal
+                                </div>
+                                <div className="text-[9px] sm:text-xs text-red-300 mt-1 space-y-0.5">
+                                  <div>C: {dailyMacroTargets[index].daily85.carbs_g}g</div>
+                                  <div>P: {dailyMacroTargets[index].daily85.protein_g}g</div>
+                                  <div>F: {dailyMacroTargets[index].daily85.fat_g}g</div>
+                                </div>
+                                <div className="text-[8px] sm:text-[9px] text-red-400 mt-0.5">&lt;85%</div>
+                              </div>
+                              <div className="border-2 border-green-500 bg-green-950/40 rounded-lg p-1.5 sm:p-2 text-center">
+                                <div className="text-[10px] sm:text-xs font-semibold text-green-300 mb-0.5 sm:mb-1 leading-tight">Optimal</div>
+                                <div className="text-xs sm:text-sm font-bold text-green-200">
+                                  {dailyCalories} kcal
+                                </div>
+                                <div className="text-[9px] sm:text-xs text-green-300 mt-1 space-y-0.5">
+                                  <div>C: {dailyMacroTargets[index].daily100.carbs_g}g</div>
+                                  <div>P: {dailyMacroTargets[index].daily100.protein_g}g</div>
+                                  <div>F: {dailyMacroTargets[index].daily100.fat_g}g</div>
+                                </div>
+                                <div className="text-[8px] sm:text-[9px] text-green-400 mt-0.5">100%</div>
+                              </div>
+                              <div className="border-2 border-orange-500 bg-orange-950/40 rounded-lg p-1.5 sm:p-2 text-center">
+                                <div className="text-[10px] sm:text-xs font-semibold text-[#FFCE34] mb-0.5 sm:mb-1 leading-tight">Over</div>
+                                <div className="text-xs sm:text-sm font-bold text-[#FFCE34]">
+                                  {Math.round(dailyCalories * 1.1)} kcal
+                                </div>
+                                <div className="text-[9px] sm:text-xs text-[#FFCE34] mt-1 space-y-0.5">
+                                  <div>C: {dailyMacroTargets[index].daily110.carbs_g}g</div>
+                                  <div>P: {dailyMacroTargets[index].daily110.protein_g}g</div>
+                                  <div>F: {dailyMacroTargets[index].daily110.fat_g}g</div>
+                                </div>
+                                <div className="text-[8px] sm:text-[9px] text-[#FFD966] mt-0.5">&gt;110%</div>
+                              </div>
                             </div>
-                            <div className="text-[9px] sm:text-xs text-green-300 mt-0.5">100%</div>
                           </div>
-                          <div className="border-2 border-orange-500 bg-orange-950/40 rounded-lg p-1.5 sm:p-2 text-center">
-                            <div className="text-[10px] sm:text-xs font-semibold text-[#FFCE34] mb-0.5 sm:mb-1 leading-tight">Over</div>
-                            <div className="text-xs sm:text-sm font-bold text-[#FFCE34]">
-                              {Math.round(dailyCalories * 1.1)} kcal
-                            </div>
-                            <div className="text-[9px] sm:text-xs text-[#FFCE34] mt-0.5">&gt;110%</div>
-                          </div>
-                          </div>
-                        </div>
+                        )}
 
                         {/* Hydration Status Boxes */}
                         <div className="mt-4">
@@ -4234,45 +4251,6 @@ export default function App(){
                           </div>
                         </div>
 
-                        {/* Macro Breakdown */}
-                        {dailyMacroTargets[index] && (
-                          <div className="mt-4">
-                            <div className="text-xs sm:text-sm font-bold uppercase tracking-wide text-[#FFFFFF] mb-2">
-                              Daily Macros
-                            </div>
-                            <div className="grid grid-cols-3 gap-1.5 sm:gap-2">
-                              {/* Underfueling Macros */}
-                              <div className="border-2 border-red-500 bg-red-950/40 rounded-lg p-1.5 sm:p-2">
-                                <div className="text-[10px] sm:text-xs font-semibold text-red-300 mb-1 leading-tight text-center">Under</div>
-                                <div className="space-y-0.5 text-[9px] sm:text-xs">
-                                  <div className="text-red-200"><span className="text-orange-300 font-semibold">C:</span> {dailyMacroTargets[index].daily85.carbs_g}g</div>
-                                  <div className="text-red-200"><span className="text-purple-300 font-semibold">P:</span> {dailyMacroTargets[index].daily85.protein_g}g</div>
-                                  <div className="text-red-200"><span className="text-yellow-300 font-semibold">F:</span> {dailyMacroTargets[index].daily85.fat_g}g</div>
-                                </div>
-                              </div>
-
-                              {/* Optimal Macros */}
-                              <div className="border-2 border-green-500 bg-green-950/40 rounded-lg p-1.5 sm:p-2">
-                                <div className="text-[10px] sm:text-xs font-semibold text-green-300 mb-1 leading-tight text-center">Optimal</div>
-                                <div className="space-y-0.5 text-[9px] sm:text-xs">
-                                  <div className="text-green-200"><span className="text-orange-300 font-semibold">C:</span> {dailyMacroTargets[index].daily100.carbs_g}g</div>
-                                  <div className="text-green-200"><span className="text-purple-300 font-semibold">P:</span> {dailyMacroTargets[index].daily100.protein_g}g</div>
-                                  <div className="text-green-200"><span className="text-yellow-300 font-semibold">F:</span> {dailyMacroTargets[index].daily100.fat_g}g</div>
-                                </div>
-                              </div>
-
-                              {/* Overfueling Macros */}
-                              <div className="border-2 border-orange-500 bg-orange-950/40 rounded-lg p-1.5 sm:p-2">
-                                <div className="text-[10px] sm:text-xs font-semibold text-[#FFCE34] mb-1 leading-tight text-center">Over</div>
-                                <div className="space-y-0.5 text-[9px] sm:text-xs">
-                                  <div className="text-[#FFCE34]"><span className="text-orange-300 font-semibold">C:</span> {dailyMacroTargets[index].daily110.carbs_g}g</div>
-                                  <div className="text-[#FFCE34]"><span className="text-purple-300 font-semibold">P:</span> {dailyMacroTargets[index].daily110.protein_g}g</div>
-                                  <div className="text-[#FFCE34]"><span className="text-yellow-300 font-semibold">F:</span> {dailyMacroTargets[index].daily110.fat_g}g</div>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                        )}
                       </div>
                     );
                   })}
