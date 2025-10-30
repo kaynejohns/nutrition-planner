@@ -3641,6 +3641,7 @@ export default function App(){
                   dailyTrainingTime={dailyTrainingTime}
                   trainingDays={trainingDays}
                   doubleDays={doubleDays}
+                  dailyMacros={dailyMacros}
                 />
               </Card>
 

@@ -1,5 +1,13 @@
 import React from 'react';
 
+interface DailyMacros {
+  carbs: number;
+  protein: number;
+  fat: number;
+  totalCalories: number;
+  macroCalories: number;
+}
+
 interface WeeklySummaryProps {
   dailyCalories: number[];
   dailyTrainingCalories: number[];
@@ -11,6 +19,8 @@ interface WeeklySummaryProps {
   dailyTrainingTime?: number[];
   trainingDays?: number;
   doubleDays?: number;
+  // Macro data
+  dailyMacros?: DailyMacros[];
 }
 
 const WeeklySummary: React.FC<WeeklySummaryProps> = ({
@@ -22,7 +32,8 @@ const WeeklySummary: React.FC<WeeklySummaryProps> = ({
   fatPerKg,
   dailyTrainingTime = [0, 60, 0, 45, 0, 120, 90],
   trainingDays = 5,
-  doubleDays = 2
+  doubleDays = 2,
+  dailyMacros = []
 }) => {
   const weekTotal = dailyCalories.reduce((sum, cal) => sum + cal, 0);
   const avgDaily = Math.round(weekTotal / 7);
@@ -31,6 +42,17 @@ const WeeklySummary: React.FC<WeeklySummaryProps> = ({
   const totalTrainingTime = dailyTrainingTime.reduce((sum, min) => sum + min, 0);
   const peakDay = Math.max(...dailyCalories);
   const dayNames = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+  
+  // Calculate weekly macro totals
+  const weeklyMacros = dailyMacros.reduce((acc, macros) => ({
+    carbs: acc.carbs + macros.carbs,
+    protein: acc.protein + macros.protein,
+    fat: acc.fat + macros.fat,
+  }), { carbs: 0, protein: 0, fat: 0 });
+  
+  const avgDailyCarbs = Math.round(weeklyMacros.carbs / 7);
+  const avgDailyProtein = Math.round(weeklyMacros.protein / 7);
+  const avgDailyFat = Math.round(weeklyMacros.fat / 7);
   
   return (
     <div className="space-y-6">
@@ -111,6 +133,56 @@ const WeeklySummary: React.FC<WeeklySummaryProps> = ({
             <div className="text-xs text-[#A9A9B8] mt-1">Average: {Math.round(totalTraining / 7)} kcal/day</div>
           </div>
         </div>
+        
+        {/* Weekly Macro Summary */}
+        {dailyMacros.length > 0 && (
+          <div className="mb-4">
+            <h4 className="text-sm font-semibold text-[#FFFFFF] mb-3 uppercase">Weekly Macros</h4>
+            <div className="grid sm:grid-cols-3 gap-3 mb-3">
+              <div className="bg-orange-900/20 border border-orange-800 rounded-card p-3">
+                <div className="text-xs text-[#A9A9B8] mb-1">Weekly Total Carbs</div>
+                <div className="text-xl font-bold text-orange-300">{weeklyMacros.carbs.toLocaleString()}g</div>
+                <div className="text-xs text-[#A9A9B8] mt-1">Avg: {avgDailyCarbs}g/day</div>
+              </div>
+              <div className="bg-purple-900/20 border border-purple-800 rounded-card p-3">
+                <div className="text-xs text-[#A9A9B8] mb-1">Weekly Total Protein</div>
+                <div className="text-xl font-bold text-purple-300">{weeklyMacros.protein.toLocaleString()}g</div>
+                <div className="text-xs text-[#A9A9B8] mt-1">Avg: {avgDailyProtein}g/day</div>
+              </div>
+              <div className="bg-yellow-900/20 border border-yellow-800 rounded-card p-3">
+                <div className="text-xs text-[#A9A9B8] mb-1">Weekly Total Fat</div>
+                <div className="text-xl font-bold text-yellow-300">{weeklyMacros.fat.toLocaleString()}g</div>
+                <div className="text-xs text-[#A9A9B8] mt-1">Avg: {avgDailyFat}g/day</div>
+              </div>
+            </div>
+            
+            {/* Daily macro breakdown */}
+            <div className="space-y-2">
+              <div className="text-xs font-semibold text-[#A9A9B8] uppercase mb-2">Daily Macro Breakdown</div>
+              {dayNames.map((day, index) => {
+                const macros = dailyMacros[index];
+                if (!macros) return null;
+                
+                return (
+                  <div key={day} className="flex items-center gap-2 text-xs">
+                    <div className="w-12 font-medium text-[#FFFFFF]">{day}</div>
+                    <div className="flex-1 flex gap-3">
+                      <div className="flex-1">
+                        <span className="text-orange-300 font-medium">C:</span> {macros.carbs}g
+                      </div>
+                      <div className="flex-1">
+                        <span className="text-purple-300 font-medium">P:</span> {macros.protein}g
+                      </div>
+                      <div className="flex-1">
+                        <span className="text-yellow-300 font-medium">F:</span> {macros.fat}g
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
         
         {/* TRIMP-style bars per day */}
         <div className="space-y-2">
