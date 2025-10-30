@@ -1120,72 +1120,52 @@ export default function App(){
     [dailyTotalCalories]
   );
 
-  // Calculate rest and training macros separately for each day
+  // Calculate daily macro targets for each day based on total calories
   const dailyMacroTargets = useMemo(() => {
     return dailyTotalCalories.map((totalCalories, index) => {
       const dayTrainingCalories = dailyTrainingCalories[index];
       const dayTrainingTime = dailyTrainingTime[index];
-      const restCalories = totalCalories - dayTrainingCalories;
       
-      // Get training macros based on training calories (for recovery fueling)
-      // Training macros: higher carbs for replenishment
-      let trainingMacros;
+      // Calculate daily training multiplier based on this day's training load
+      let dayTrainingMultiplier = 1.0;
       if (dayTrainingCalories > 0) {
         const trainingHours = dayTrainingTime / 60;
-        const trainingMultiplier = Math.min(1.3, 1.0 + trainingHours * 0.08);
-        
-        // Training carbs: higher for recovery (6-9g/kg during heavy training)
-        const baseTrainingCarbs = Math.round(weightKg * (carbLow + carbHigh) / 2);
-        const trainingCarbs = Math.round(baseTrainingCarbs * Math.min(1.3, trainingMultiplier));
-        
-        // Training protein: for muscle recovery (1.8-2.2g/kg on training days)
-        const trainingProtein = Math.round(weightKg * protein * 1.1);
-        
-        // Training fat: minimal (20-25% of training calories)
-        const trainingFatKcal = dayTrainingCalories * 0.20;
-        const trainingFat = Math.round(trainingFatKcal / 9);
-        
-        trainingMacros = { carbs_g: trainingCarbs, protein_g: trainingProtein, fat_g: trainingFat };
-      } else {
-        trainingMacros = { carbs_g: 0, protein_g: 0, fat_g: 0 };
+        dayTrainingMultiplier = Math.min(1.3, 1.0 + trainingHours * 0.08); // ~8% per hour
       }
       
-      // Get rest macros: base maintenance macros
-      let restMacros;
-      if (restCalories > 0) {
-        // Use actual macro calculation from Daily tab for consistency
-        const targetMacroCalories = Math.round(restCalories * 0.95);
-        
-        // Base macros from user settings
-        const baseCarbG = Math.round(weightKg * (carbLow + carbHigh) / 2);
-        const baseProteinG = Math.round(weightKg * protein);
-        const baseFatG = Math.round(weightKg * fat);
-        
-        const carbKcal = baseCarbG * 4;
-        const proteinKcal = baseProteinG * 4;
-        const fatKcal = baseFatG * 9;
-        const macroTotalKcal = carbKcal + proteinKcal + fatKcal;
-        
-        // Scale to fit rest calories
-        const scale = macroTotalKcal > targetMacroCalories ? targetMacroCalories / macroTotalKcal : 1;
-        
-        restMacros = {
-          carbs_g: Math.round(baseCarbG * scale),
-          protein_g: Math.round(baseProteinG * scale),
-          fat_g: Math.round(baseFatG * scale)
-        };
-      } else {
-        restMacros = macrosFromKcalDefault(restCalories);
-      }
+      // Base macros from user settings
+      const baseCarbG = Math.round(weightKg * (carbLow + carbHigh) / 2);
+      const baseProteinG = Math.round(weightKg * protein);
+      const baseFatG = Math.round(weightKg * fat);
       
-      // Sum to get daily 100% targets
-      const daily100 = sumMacros(restMacros, trainingMacros);
+      // Adjust carbs based on training load
+      const carbG = Math.round(baseCarbG * dayTrainingMultiplier);
+      
+      // Protein increases slightly with training load
+      const proteinG = Math.round(baseProteinG * (1 + (dayTrainingMultiplier - 1) * 0.2));
+      
+      // Fat stays relatively stable but can decrease slightly with very high training
+      const fatG = Math.round(baseFatG * Math.max(0.8, 1.1 - (dayTrainingMultiplier - 1) * 0.3));
+      
+      const carbKcal = carbG * 4;
+      const proteinKcal = proteinG * 4;
+      const fatKcal = fatG * 9;
+      const macroTotalKcal = carbKcal + proteinKcal + fatKcal;
+      
+      // Final scaling to fit target calories with 5% buffer for micronutrients
+      const targetMacroCalories = Math.round(totalCalories * 0.95); // 95% of total calories for macros
+      const scale = macroTotalKcal > targetMacroCalories ? targetMacroCalories / macroTotalKcal : 1;
+      
+      const daily100 = {
+        carbs_g: Math.round(carbG * scale),
+        protein_g: Math.round(proteinG * scale),
+        fat_g: Math.round(fatG * scale)
+      };
+      
       const daily85 = scaleMacros(daily100, 0.85);
       const daily110 = scaleMacros(daily100, 1.10);
       
       return {
-        rest: restMacros,
-        training: trainingMacros,
         daily100,
         daily85,
         daily110,
