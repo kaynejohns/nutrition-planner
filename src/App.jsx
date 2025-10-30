@@ -8,6 +8,7 @@ import DailyCalories from "./components/DailyCalories";
 import { fetchWeatherByCity, fetchForecastByCity, fetchHourlyForecastByCity, getWeatherAt, calculateHydrationNeeds } from "./utils/weather.js";
 import { loadStripe } from '@stripe/stripe-js';
 import { sumMacros, scaleMacros, macrosFromKcalDefault } from "./utils/macros";
+import { formatMl, formatMg, formatG } from "./utils/format";
 
 // ---------- UI primitives ----------
 const Card = ({ children, className = "" }) => (
@@ -2900,50 +2901,60 @@ export default function App(){
                   </div>
                   
                   {/* Race Totals Summary */}
-                  <div className="mt-6 p-6 bg-[#FFCE34] rounded-card text-white">
+                  <div className="mt-6 p-5 sm:p-6 md:p-8 bg-[#FFCE34] rounded-card text-white overflow-hidden">
                     <div className="text-center mb-4">
                       <div className="text-lg font-semibold mb-2">📊 Race Totals - What You Need</div>
                       <div className="text-sm opacity-90">Total amounts for the entire race</div>
                     </div>
-                    <div className="grid grid-cols-3 gap-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                       <div className="text-center">
-                        <div className="text-3xl font-bold mb-1">
-                          {raceTimeline.reduce((sum, item) => {
-                            const carbs = item.carbs.replace('g', '');
-                            return sum + (parseInt(carbs) || 0);
-                          }, 0)}g
+                        <div className="text-[clamp(24px,6vw,40px)] font-extrabold leading-tight tracking-tight mb-1">
+                          <span className="whitespace-nowrap">
+                            {formatG(raceTimeline.reduce((sum, item) => {
+                              const carbs = item.carbs.replace('g', '');
+                              return sum + (parseInt(carbs) || 0);
+                            }, 0))}
+                          </span>
                         </div>
-                        <div className="text-sm opacity-80">Total Carbs</div>
+                        <div className="text-sm opacity-80 mt-1">Total Carbs</div>
                       </div>
                       <div className="text-center">
-                        <div className="text-3xl font-bold mb-1">
-                          {raceTimeline.reduce((sum, item) => {
-                            const fluid = item.fluid.replace('ml', '');
-                            return sum + (parseInt(fluid) || 0);
-                          }, 0)}ml
+                        <div className="text-[clamp(24px,6vw,40px)] font-extrabold leading-tight tracking-tight mb-1">
+                          <span className="whitespace-nowrap">
+                            {formatMl(raceTimeline.reduce((sum, item) => {
+                              const fluid = item.fluid.replace('ml', '');
+                              return sum + (parseInt(fluid) || 0);
+                            }, 0))}
+                          </span>
                         </div>
-                        <div className="text-sm opacity-80">Total Fluid</div>
+                        <div className="text-sm opacity-80 mt-1">Total Fluid</div>
                       </div>
                       <div className="text-center">
                         {raceHydration ? (
                           <>
-                            <div className="text-2xl font-bold mb-1">
-                              Lost {raceHydration.totalSweatLossMg}mg
+                            <div className="text-[clamp(24px,6vw,40px)] font-extrabold leading-tight tracking-tight mb-1">
+                              <span className="whitespace-nowrap">
+                                Lost {formatMg(raceHydration.totalSweatLossMg)}
+                              </span>
                             </div>
-                            <div className="text-xl font-semibold mb-1">
-                              Replace {raceHydration.sodiumLowerReplace}–{raceHydration.sodiumUpperReplace}mg
+                            <div className="text-[clamp(20px,5vw,32px)] font-semibold leading-tight mb-1">
+                              <span className="whitespace-nowrap">
+                                Replace {formatMg(raceHydration.sodiumLowerReplace)}–{formatMg(raceHydration.sodiumUpperReplace)}
+                              </span>
                             </div>
-                            <div className="text-sm opacity-80">Total Sodium</div>
+                            <div className="text-sm opacity-80 mt-1">Total Sodium</div>
                           </>
                         ) : (
                           <>
-                            <div className="text-3xl font-bold mb-1">
-                              {raceTimeline.reduce((sum, item) => {
-                                const sodium = item.sodium.replace('mg', '');
-                                return sum + (parseInt(sodium) || 0);
-                              }, 0)}mg
+                            <div className="text-[clamp(24px,6vw,40px)] font-extrabold leading-tight tracking-tight mb-1">
+                              <span className="whitespace-nowrap">
+                                {formatMg(raceTimeline.reduce((sum, item) => {
+                                  const sodium = item.sodium.replace('mg', '');
+                                  return sum + (parseInt(sodium) || 0);
+                                }, 0))}
+                              </span>
                             </div>
-                            <div className="text-sm opacity-80">Total Sodium</div>
+                            <div className="text-sm opacity-80 mt-1">Total Sodium</div>
                           </>
                         )}
                       </div>
