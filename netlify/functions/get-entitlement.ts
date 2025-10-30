@@ -1,5 +1,5 @@
 import type { Handler } from "@netlify/functions";
-import { blobs } from "@netlify/blobs";
+import { getStore } from "@netlify/blobs";
 
 export const handler: Handler = async (event) => {
   try {
@@ -11,8 +11,12 @@ export const handler: Handler = async (event) => {
     const { userId } = JSON.parse(event.body || "{}");
     if (!userId) return { statusCode: 400, body: "Missing userId" };
 
-    const store = blobs();
-    const data = await store.getJSON<{ isPremium: boolean }>(`entitlements/${userId}.json`);
+    const store = getStore({
+      name: "entitlements",
+      siteID: event.site?.id,
+      token: event.netlifyToken,
+    });
+    const data = await store.get(`entitlements/${userId}.json`, { type: "json" }) as { isPremium: boolean } | null;
     const isPremium = !!data?.isPremium;
 
     return { statusCode: 200, body: JSON.stringify({ isPremium }) };

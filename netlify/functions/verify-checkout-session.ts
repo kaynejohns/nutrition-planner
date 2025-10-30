@@ -1,6 +1,6 @@
 import Stripe from "stripe";
 import type { Handler } from "@netlify/functions";
-import { blobs } from "@netlify/blobs";
+import { getStore } from "@netlify/blobs";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string, { apiVersion: "2024-06-20" });
 
@@ -24,12 +24,16 @@ export const handler: Handler = async (event) => {
     }
 
     // Save entitlement server-side (no Identity admin API needed)
-    const store = blobs();
-    await store.setJSON(`entitlements/${userId}.json`, {
+    const store = getStore({
+      name: "entitlements",
+      siteID: event.site?.id,
+      token: event.netlifyToken,
+    });
+    await store.set(`entitlements/${userId}.json`, JSON.stringify({
       isPremium,
       updatedAt: new Date().toISOString(),
       source: "checkout-success",
-    });
+    }));
 
     return { statusCode: 200, body: JSON.stringify({ ok: true, isPremium }) };
   } catch (e: any) {
