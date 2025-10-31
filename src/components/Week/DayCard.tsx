@@ -41,6 +41,13 @@ const capitalizeIntensity = (str: string) => {
   return str.charAt(0).toUpperCase() + str.slice(1);
 };
 
+// Helper to convert intensity back to lowercase for parent
+const intensityToLowercase = (str: string) => {
+  if (!str) return 'aerobic';
+  if (str === 'VO2max') return 'vo2max';
+  return str.toLowerCase();
+};
+
 const DayCard: React.FC<DayCardProps> = ({ 
   day, 
   baseCalories, 
@@ -71,13 +78,13 @@ const DayCard: React.FC<DayCardProps> = ({
       onUpdate({
         duration: min,
         type: type.toLowerCase(),
-        intensity: intensity.toLowerCase(),
+        intensity: intensityToLowercase(intensity), // Convert to lowercase for parent
         timeOfDay,
         doubleSession: secondSession,
         secondSession: secondSession ? {
           duration: min2,
           type: type2.toLowerCase(),
-          intensity: intensity2.toLowerCase(),
+          intensity: intensityToLowercase(intensity2), // Convert to lowercase for parent
           timeOfDay: timeOfDay2
         } : undefined
       });
