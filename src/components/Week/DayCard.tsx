@@ -31,6 +31,16 @@ const capitalize = (str: string) => {
   return str.charAt(0).toUpperCase() + str.slice(1);
 };
 
+// Helper to capitalize intensity properly (handles VO2max)
+const capitalizeIntensity = (str: string) => {
+  if (!str) return 'Aerobic';
+  const lower = str.toLowerCase();
+  if (lower === 'vo2max' || lower === 'vo2') return 'VO2max';
+  if (lower === 'threshold') return 'Threshold';
+  if (lower === 'aerobic') return 'Aerobic';
+  return str.charAt(0).toUpperCase() + str.slice(1);
+};
+
 const DayCard: React.FC<DayCardProps> = ({ 
   day, 
   baseCalories, 
@@ -47,12 +57,12 @@ const DayCard: React.FC<DayCardProps> = ({
 
   const [min, setMin] = useState(session?.duration || 0);
   const [type, setType] = useState(session?.type ? capitalize(session.type) : 'Run');
-  const [intensity, setIntensity] = useState(session?.intensity ? capitalize(session.intensity) : 'Aerobic');
+  const [intensity, setIntensity] = useState(session?.intensity ? capitalizeIntensity(session.intensity) : 'Aerobic');
   const [timeOfDay, setTimeOfDay] = useState(session?.timeOfDay || 'Morning');
   const [secondSession, setSecondSession] = useState(session?.doubleSession || false);
   const [min2, setMin2] = useState(session?.secondSession?.duration || 0);
   const [type2, setType2] = useState(session?.secondSession?.type ? capitalize(session.secondSession.type) : 'Run');
-  const [intensity2, setIntensity2] = useState(session?.secondSession?.intensity ? capitalize(session.secondSession.intensity) : 'Aerobic');
+  const [intensity2, setIntensity2] = useState(session?.secondSession?.intensity ? capitalizeIntensity(session.secondSession.intensity) : 'Aerobic');
   const [timeOfDay2, setTimeOfDay2] = useState(session?.secondSession?.timeOfDay || 'Morning');
 
   // Helper to send updates to parent
@@ -80,12 +90,12 @@ const DayCard: React.FC<DayCardProps> = ({
       isUpdatingFromProps.current = true;
       setMin(session.duration || 0);
       setType(session.type ? capitalize(session.type) : 'Run');
-      setIntensity(session.intensity ? capitalize(session.intensity) : 'Aerobic');
+      setIntensity(session.intensity ? capitalizeIntensity(session.intensity) : 'Aerobic');
       setTimeOfDay(session.timeOfDay || 'Morning');
       setSecondSession(session.doubleSession || false);
       setMin2(session.secondSession?.duration || 0);
       setType2(session.secondSession?.type ? capitalize(session.secondSession.type) : 'Run');
-      setIntensity2(session.secondSession?.intensity ? capitalize(session.secondSession.intensity) : 'Aerobic');
+      setIntensity2(session.secondSession?.intensity ? capitalizeIntensity(session.secondSession.intensity) : 'Aerobic');
       setTimeOfDay2(session.secondSession?.timeOfDay || 'Morning');
       hasInitialized.current = true;
       // Reset flag after a moment
