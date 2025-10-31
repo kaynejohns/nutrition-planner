@@ -157,14 +157,15 @@ const DayCard: React.FC<DayCardProps> = ({
             <select
               value={type}
               onChange={(e) => setType(e.target.value)}
-              className="w-full border border-[#2A2A35] bg-[#24242A] rounded-card px-2 py-1.5 text-sm"
+              className="w-full border border-[#2A2A35] bg-[#24242A] rounded-card px-2 py-1.5 text-sm text-[#FFFFFF]"
+              style={{ color: '#FFFFFF' }}
             >
-              <option>Run</option>
-              <option>Bike</option>
-              <option>Swim</option>
-              <option>Strength</option>
-              <option>Cross-Train</option>
-              <option>Rest</option>
+              <option style={{ background: '#24242A', color: '#FFFFFF' }}>Run</option>
+              <option style={{ background: '#24242A', color: '#FFFFFF' }}>Bike</option>
+              <option style={{ background: '#24242A', color: '#FFFFFF' }}>Swim</option>
+              <option style={{ background: '#24242A', color: '#FFFFFF' }}>Strength</option>
+              <option style={{ background: '#24242A', color: '#FFFFFF' }}>Cross-Train</option>
+              <option style={{ background: '#24242A', color: '#FFFFFF' }}>Rest</option>
             </select>
           </div>
           {type.toLowerCase() !== 'strength' && (
@@ -175,11 +176,12 @@ const DayCard: React.FC<DayCardProps> = ({
               <select
                 value={intensity}
                 onChange={(e) => setIntensity(e.target.value)}
-                className="w-full border border-[#2A2A35] bg-[#24242A] rounded-card px-2 py-1.5 text-sm"
+                className="w-full border border-[#2A2A35] bg-[#24242A] rounded-card px-2 py-1.5 text-sm text-[#FFFFFF]"
+                style={{ color: '#FFFFFF' }}
               >
-                <option>Aerobic</option>
-                <option>Threshold</option>
-                <option>VO2max</option>
+                <option style={{ background: '#24242A', color: '#FFFFFF' }}>Aerobic</option>
+                <option style={{ background: '#24242A', color: '#FFFFFF' }}>Threshold</option>
+                <option style={{ background: '#24242A', color: '#FFFFFF' }}>VO2max</option>
               </select>
             </div>
           )}
@@ -191,12 +193,13 @@ const DayCard: React.FC<DayCardProps> = ({
             <select
               value={timeOfDay}
               onChange={(e) => setTimeOfDay(e.target.value)}
-              className="w-full border border-[#2A2A35] bg-[#24242A] rounded-card px-2 py-1.5 text-sm"
+              className="w-full border border-[#2A2A35] bg-[#24242A] rounded-card px-2 py-1.5 text-sm text-[#FFFFFF]"
+              style={{ color: '#FFFFFF' }}
             >
-              <option>Morning</option>
-              <option>Lunchtime</option>
-              <option>Afternoon</option>
-              <option>Evening</option>
+              <option style={{ background: '#24242A', color: '#FFFFFF' }}>Morning</option>
+              <option style={{ background: '#24242A', color: '#FFFFFF' }}>Lunchtime</option>
+              <option style={{ background: '#24242A', color: '#FFFFFF' }}>Afternoon</option>
+              <option style={{ background: '#24242A', color: '#FFFFFF' }}>Evening</option>
             </select>
           </div>
           <div className="flex items-end">
@@ -242,14 +245,15 @@ const DayCard: React.FC<DayCardProps> = ({
                 <select
                   value={type2}
                   onChange={(e) => setType2(e.target.value)}
-                  className="w-full border border-[#2A2A35] bg-[#24242A] rounded-card px-2 py-1.5 text-sm"
+                  className="w-full border border-[#2A2A35] bg-[#24242A] rounded-card px-2 py-1.5 text-sm text-[#FFFFFF]"
+                  style={{ color: '#FFFFFF' }}
                 >
-                  <option>Run</option>
-                  <option>Bike</option>
-                  <option>Swim</option>
-                  <option>Strength</option>
-                  <option>Cross-Train</option>
-                  <option>Rest</option>
+                  <option style={{ background: '#24242A', color: '#FFFFFF' }}>Run</option>
+                  <option style={{ background: '#24242A', color: '#FFFFFF' }}>Bike</option>
+                  <option style={{ background: '#24242A', color: '#FFFFFF' }}>Swim</option>
+                  <option style={{ background: '#24242A', color: '#FFFFFF' }}>Strength</option>
+                  <option style={{ background: '#24242A', color: '#FFFFFF' }}>Cross-Train</option>
+                  <option style={{ background: '#24242A', color: '#FFFFFF' }}>Rest</option>
                 </select>
               </div>
               {type2.toLowerCase() !== 'strength' && (
@@ -260,11 +264,12 @@ const DayCard: React.FC<DayCardProps> = ({
                   <select
                     value={intensity2}
                     onChange={(e) => setIntensity2(e.target.value)}
-                    className="w-full border border-[#2A2A35] bg-[#24242A] rounded-card px-2 py-1.5 text-sm"
+                    className="w-full border border-[#2A2A35] bg-[#24242A] rounded-card px-2 py-1.5 text-sm text-[#FFFFFF]"
+                    style={{ color: '#FFFFFF' }}
                   >
-                    <option>Aerobic</option>
-                    <option>Threshold</option>
-                    <option>VO2max</option>
+                    <option style={{ background: '#24242A', color: '#FFFFFF' }}>Aerobic</option>
+                    <option style={{ background: '#24242A', color: '#FFFFFF' }}>Threshold</option>
+                    <option style={{ background: '#24242A', color: '#FFFFFF' }}>VO2max</option>
                   </select>
                 </div>
               )}
@@ -276,12 +281,13 @@ const DayCard: React.FC<DayCardProps> = ({
                 <select
                   value={timeOfDay2}
                   onChange={(e) => setTimeOfDay2(e.target.value)}
-                  className="w-full border border-[#2A2A35] bg-[#24242A] rounded-card px-2 py-1.5 text-sm"
+                  className="w-full border border-[#2A2A35] bg-[#24242A] rounded-card px-2 py-1.5 text-sm text-[#FFFFFF]"
+                  style={{ color: '#FFFFFF' }}
                 >
-                  <option>Morning</option>
-                  <option>Lunchtime</option>
-                  <option>Afternoon</option>
-                  <option>Evening</option>
+                  <option style={{ background: '#24242A', color: '#FFFFFF' }}>Morning</option>
+                  <option style={{ background: '#24242A', color: '#FFFFFF' }}>Lunchtime</option>
+                  <option style={{ background: '#24242A', color: '#FFFFFF' }}>Afternoon</option>
+                  <option style={{ background: '#24242A', color: '#FFFFFF' }}>Evening</option>
                 </select>
               </div>
             </div>
