@@ -104,6 +104,7 @@ function calculateSessionCalories(weightKg, duration, type, intensity) {
     'cross-train': 'run', // Map Cross-Train to Run for calorie calculation
     'hiit': 'hitt', // Map HIIT
     'hitt': 'hitt',
+    'hyrox': 'hyrox',
     'rest': null // Return 0 for rest
   };
   
@@ -134,7 +135,8 @@ function calculateSessionCalories(weightKg, duration, type, intensity) {
     bike: { aerobic: 6.5, threshold: 9.5, vo2max: 12.5 },
     swim: { aerobic: 6.0, threshold: 9.0, vo2max: 11.5 },
     hitt: { aerobic: 7.5, threshold: 10.5, vo2max: 14.0 },
-    strength: { aerobic: 3.5, threshold: 5.0, vo2max: 6.5 }
+    strength: { aerobic: 3.5, threshold: 5.0, vo2max: 6.5 },
+    hyrox: { aerobic: 10.0, threshold: 12.5, vo2max: 15.0 } // Multi-modality gym workout (running + functional)
   };
   
   // Get MET value, with fallback to default
@@ -252,6 +254,7 @@ const WeeklySessionDay = ({ day, dayIndex, session, onUpdate, trainingCalories, 
             <option value="swim" style={{ background: '#24242A', color: '#FFFFFF' }}>Swim</option>
             <option value="hitt" style={{ background: '#24242A', color: '#FFFFFF' }}>HIIT</option>
             <option value="strength" style={{ background: '#24242A', color: '#FFFFFF' }}>Strength</option>
+            <option value="hyrox" style={{ background: '#24242A', color: '#FFFFFF' }}>Hyrox</option>
           </select>
         </div>
 
@@ -1218,12 +1221,16 @@ export default function App(){
     const totalHours = totalMinutes / 60;
     
     // More accurate calorie burn calculation based on metabolic equivalents (METs)
-    // Average MET values: 5km=9, 10km=10, Half=11, Marathon=12, Ironman=14
+    // Average MET values: 5km=9, 10km=10, Half=11, Marathon=12, Ultra distances vary by intensity
     const metValues = {
       '5km': 9,
       '10km': 10,
       'Half Marathon': 11,
       'Marathon': 12,
+      '50km Ultra': 11, // Similar to Half Marathon pace initially
+      '100km Ultra': 10, // Lower intensity, endurance pace
+      '160km Ultra': 9.5, // Ultra-endurance, very controlled pace
+      'Hyrox': 13, // High-intensity multi-modality
       'Ironman 70.3': 13,
       'Ironman': 14
     };
@@ -1311,6 +1318,10 @@ export default function App(){
       '10km': { days: 1, carbs: [8], description: '1 day moderate carb load' },
       'Half Marathon': { days: 2, carbs: [7, 8], description: '2 day progressive carb load' },
       'Marathon': { days: 3, carbs: [6, 8, 10], description: '3 day progressive carb load' },
+      '50km Ultra': { days: 3, carbs: [6, 8, 10], description: '3 day progressive carb load' },
+      '100km Ultra': { days: 4, carbs: [5, 7, 9, 10], description: '4 day progressive carb load' },
+      '160km Ultra': { days: 4, carbs: [5, 7, 9, 10], description: '4 day progressive carb load' },
+      'Hyrox': { days: 2, carbs: [7, 8], description: '2 day progressive carb load' },
       'Ironman 70.3': { days: 3, carbs: [6, 8, 10], description: '3 day progressive carb load' },
       'Ironman': { days: 4, carbs: [5, 7, 9, 10], description: '4 day progressive carb load' }
     };
@@ -1462,6 +1473,8 @@ export default function App(){
     // Calculate effective sweat rate based on intensity
     const intensityMultiplier = raceEvent.includes('Ironman') ? 1.15 : 
                                raceEvent === 'Marathon' ? 1.10 : 
+                               raceEvent === 'Hyrox' ? 1.15 : // High-intensity multi-modality
+                               raceEvent.includes('Ultra') ? 1.05 : // Ultra distance endurance
                                raceEvent === 'Half Marathon' ? 1.05 : 1.0;
     
     // Baseline sweat rate from race-specific settings
@@ -1490,6 +1503,8 @@ export default function App(){
     
     const intensityNaMult = raceEvent.includes('Ironman') ? 1.20 :
                             raceEvent === 'Marathon' ? 1.10 :
+                            raceEvent === 'Hyrox' ? 1.15 : // High-intensity multi-modality
+                            raceEvent.includes('Ultra') ? 1.10 : // Ultra distance endurance
                             raceEvent === 'Half Marathon' ? 1.05 : 1.0;
     
     const acclimationMult = raceHeatAcclimation === 'Not acclimated' ? 1.00 :
@@ -2328,6 +2343,10 @@ export default function App(){
                       <option style={{ background: '#24242A', color: '#FFFFFF' }}>10km</option>
                       <option style={{ background: '#24242A', color: '#FFFFFF' }}>Half Marathon</option>
                       <option style={{ background: '#24242A', color: '#FFFFFF' }}>Marathon</option>
+                      <option style={{ background: '#24242A', color: '#FFFFFF' }}>50km Ultra</option>
+                      <option style={{ background: '#24242A', color: '#FFFFFF' }}>100km Ultra</option>
+                      <option style={{ background: '#24242A', color: '#FFFFFF' }}>160km Ultra</option>
+                      <option style={{ background: '#24242A', color: '#FFFFFF' }}>Hyrox</option>
                       <option style={{ background: '#24242A', color: '#FFFFFF' }}>Ironman 70.3</option>
                       <option style={{ background: '#24242A', color: '#FFFFFF' }}>Ironman</option>
                     </select>

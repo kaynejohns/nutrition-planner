@@ -181,6 +181,7 @@ const DayCard: React.FC<DayCardProps> = ({
               <option style={{ background: '#24242A', color: '#FFFFFF' }}>Bike</option>
               <option style={{ background: '#24242A', color: '#FFFFFF' }}>Swim</option>
               <option style={{ background: '#24242A', color: '#FFFFFF' }}>Strength</option>
+              <option style={{ background: '#24242A', color: '#FFFFFF' }}>Hyrox</option>
               <option style={{ background: '#24242A', color: '#FFFFFF' }}>Cross-Train</option>
               <option style={{ background: '#24242A', color: '#FFFFFF' }}>Rest</option>
             </select>
@@ -269,6 +270,7 @@ const DayCard: React.FC<DayCardProps> = ({
                   <option style={{ background: '#24242A', color: '#FFFFFF' }}>Bike</option>
                   <option style={{ background: '#24242A', color: '#FFFFFF' }}>Swim</option>
                   <option style={{ background: '#24242A', color: '#FFFFFF' }}>Strength</option>
+                  <option style={{ background: '#24242A', color: '#FFFFFF' }}>Hyrox</option>
                   <option style={{ background: '#24242A', color: '#FFFFFF' }}>Cross-Train</option>
                   <option style={{ background: '#24242A', color: '#FFFFFF' }}>Rest</option>
                 </select>
